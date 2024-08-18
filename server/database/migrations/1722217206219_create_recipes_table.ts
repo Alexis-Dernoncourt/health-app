@@ -6,14 +6,14 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.string('title')
-      table.string('image')
-      table.string('description')
-      table.json('ingredients')
-      table.json('steps')
-      table.json('calories')
-      table.timestamp('created_at')
-      table.timestamp('updated_at')
+      table.string('title').notNullable()
+      table.integer('image').nullable().references('id').inTable('images').onDelete('CASCADE')
+      table.string('description').notNullable()
+      table.json('ingredients').notNullable()
+      table.json('steps').notNullable()
+      table.json('calories').nullable()
+      table.timestamp('created_at').notNullable()
+      table.timestamp('updated_at').nullable()
     })
   }
 
