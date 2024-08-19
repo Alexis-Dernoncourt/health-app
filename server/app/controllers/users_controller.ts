@@ -1,4 +1,5 @@
 import User from '#models/user'
+import { userPayloadValidator } from '#validators/user'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class UsersController {
@@ -23,18 +24,22 @@ export default class UsersController {
     if (!user) return response.notFound({ message: 'Invalid request' })
     if (auth.user?.id !== user.id)
       return response.forbidden({ message: "You don't have permission to perform this action" })
-    const userBody = request.only(['firstname', 'lastname', 'email', 'password'])
-    if (userBody) {
-      // validate the body
-      if (userBody.password) user.password = userBody.password
-      if (userBody.email) user.email = userBody.email
-      if (userBody.firstname) user.firstname = userBody.firstname
-      if (userBody.lastname) user.lastname = userBody.lastname
-      await user.save()
-      return response.ok({ message: 'User successfully updated', user: user.toJSON() })
-    } else {
-      return response.badRequest({ message: 'Missing body' })
-    }
+
+    const arrayOfAcceptedInputs = ['firstname', 'lastname', 'email', 'password']
+    const payloadHasAcceptedInputs = arrayOfAcceptedInputs.some(
+      (key: string) => key in request.body()
+    )
+    if (false === payloadHasAcceptedInputs)
+      return response.badRequest({ message: 'Missing body parameters' })
+    const userBody = request.only(arrayOfAcceptedInputs)
+    const payload = await request.validateUsing(userPayloadValidator)
+
+    if (userBody.password) user.password = payload.password as string
+    if (userBody.email) user.email = payload.email as string
+    if (userBody.firstname) user.firstname = payload.firstname as string
+    if (userBody.lastname) user.lastname = payload.lastname as string
+    await user.save()
+    return response.ok({ message: 'User successfully updated', user: user.toJSON() })
   }
 
   async destroy({ request, response, params, auth }: HttpContext) {

@@ -1,5 +1,6 @@
 import { RecipeImageFactory } from '#database/factories/image_factory'
 import Recipe from '#models/recipe'
+import { storeRecipeValidator } from '#validators/recipe'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class RecipesController {
@@ -20,18 +21,17 @@ export default class RecipesController {
     if (auth.user?.id !== currentUser.id)
       return response.forbidden({ message: "You don't have permission to perform this action" })
 
-    // TODO: validate the body
-    const bodyRecipe = request.body()
-    const newIngredients = JSON.stringify(bodyRecipe.ingredients)
-    const newSteps = JSON.stringify(bodyRecipe.steps)
+    const bodyRecipe = await request.validateUsing(storeRecipeValidator)
+    // const bodyRecipe = request.body()
+    const newIngredients = JSON.stringify(request.input('ingredients'))
+    const newSteps = JSON.stringify(request.input('steps'))
     const image = await RecipeImageFactory.create()
-    console.log('🚀 ~ RecipesController ~ store ~ image:', image.id)
     const newRecipe = {
       ...bodyRecipe,
       image: image.id,
       ingredients: newIngredients,
       steps: newSteps,
-    }
+    } as Recipe
     const recipe = await Recipe.create(newRecipe)
     return response.ok({ message: 'Recipe created !', recipe: recipe.toJSON() })
   }

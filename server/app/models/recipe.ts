@@ -20,7 +20,7 @@ export default class Recipe extends BaseModel {
   // MUST BE :
   // {
   //   name: string
-  //   quantity: string
+  //   quantity: number
   //   unit: string | null
   // }[]
 
@@ -28,7 +28,7 @@ export default class Recipe extends BaseModel {
   declare steps: string
   // MUST BE :
   // {
-  //   number: string | number | null
+  //   number: number | null
   //   text: string
   //   warning: string | null
   // }[]
