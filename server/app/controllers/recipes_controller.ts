@@ -1,6 +1,6 @@
 import { RecipeImageFactory } from '#database/factories/image_factory'
 import Recipe from '#models/recipe'
-import { storeRecipeValidator } from '#validators/recipe'
+import { storeRecipeValidator, updateRecipeValidator } from '#validators/recipe'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class RecipesController {
@@ -45,14 +45,23 @@ export default class RecipesController {
     if (auth.user?.id !== currentUser.id)
       return response.forbidden({ message: "You don't have permission to perform this action" })
 
-    const bodyRecipe = request.body()
+    // TODO: add recipe image
+    const arrayOfAcceptedInputs = ['title', 'description', 'ingredients', 'steps', 'calories']
+    const payloadHasAcceptedInputs = arrayOfAcceptedInputs.some(
+      (key: string) => key in request.body()
+    )
+    if (false === payloadHasAcceptedInputs)
+      return response.badRequest({ message: 'Missing body parameters' })
+    const bodyRecipe = request.only(arrayOfAcceptedInputs)
+    const payload = await request.validateUsing(updateRecipeValidator)
+
     if (bodyRecipe) {
       // TODO: validate the body
-      if (bodyRecipe.title) recipe.title = bodyRecipe.title
-      if (bodyRecipe.description) recipe.description = bodyRecipe.description
-      if (bodyRecipe.image) recipe.image = bodyRecipe.image
-      if (bodyRecipe.ingredients) recipe.ingredients = JSON.stringify(bodyRecipe.ingredients)
-      if (bodyRecipe.steps) recipe.steps = JSON.stringify(bodyRecipe.steps)
+      if (bodyRecipe.title) recipe.title = payload.title as string
+      if (bodyRecipe.description) recipe.description = payload.description as string
+      if (bodyRecipe.image) recipe.image = payload.image as number
+      if (bodyRecipe.ingredients) recipe.ingredients = JSON.stringify(payload.ingredients)
+      if (bodyRecipe.steps) recipe.steps = JSON.stringify(payload.steps)
       if (bodyRecipe.calories) recipe.calories = bodyRecipe.calories
       await recipe.save()
       return response.ok({ message: 'Recipe successfully updated' })

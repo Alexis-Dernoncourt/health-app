@@ -31,10 +31,10 @@ export const storeRecipeValidator = vine.compile(
 
 export const updateRecipeValidator = vine.compile(
   vine.object({
-    title: vine.string().minLength(3).maxLength(254),
-    description: vine.string().minLength(3),
+    title: vine.string().minLength(3).maxLength(254).optional(),
+    description: vine.string().minLength(3).optional(),
     image: vine.number().positive().optional(),
-    ingredients: vine.array(ingredientsSchema),
+    ingredients: vine.array(ingredientsSchema).optional(),
     steps: vine.array(stepsSchema).optional(),
     calories: vine
       .object({

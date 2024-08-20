@@ -38,7 +38,7 @@ export default class Recipe extends BaseModel {
     for100gr: number
     total: number
     totalWeight: number
-    caloriesUnit: string | null
+    caloriesUnit: string | undefined
   }
 
   @column.dateTime({ autoCreate: true })
