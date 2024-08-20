@@ -25,5 +25,12 @@ router
     router.post('logout', [AuthController, 'logout']).use(middleware.auth())
     router.resource('users', UsersController).apiOnly().use('*', middleware.auth())
     router.resource('recipes', RecipesController).apiOnly().use('*', middleware.auth())
+    router
+      .group(() => {
+        router.post('like/:id', [RecipesController, 'addFavorites'])
+        router.post('unlike/:id', [RecipesController, 'removeFavorites'])
+      })
+      .use(middleware.auth())
+      .prefix('recipes')
   })
   .prefix('api/v1/')

@@ -70,6 +70,45 @@ export default class RecipesController {
     }
   }
 
+  async addFavorites({ params, response, auth }: HttpContext) {
+    const currentUser = auth.getUserOrFail()
+    const recipe = await Recipe.find(params.id)
+    if (!recipe) return response.notFound({ message: 'Recipe not found' })
+    if (auth.user?.id !== currentUser.id)
+      return response.forbidden({ message: "You don't have permission to perform this action" })
+    let currentUserFavorites = currentUser.favorites as number[]
+
+    if (currentUserFavorites.includes(recipe.id)) {
+      return response.badRequest({ message: 'Recipe already added to favorites' })
+    }
+    const recipeId = recipe.id
+    currentUserFavorites.push(recipeId)
+    currentUser.favorites = JSON.stringify(currentUserFavorites)
+    await currentUser.save()
+    return response.ok({ message: 'Recipe successfully added to favorites' })
+  }
+
+  async removeFavorites({ params, response, auth }: HttpContext) {
+    const currentUser = auth.getUserOrFail()
+    const recipe = await Recipe.find(params.id)
+    if (!recipe) return response.notFound({ message: 'Recipe not found' })
+    if (auth.user?.id !== currentUser.id)
+      return response.forbidden({ message: "You don't have permission to perform this action" })
+
+    let currentUserFavorites = currentUser.favorites
+      ? (currentUser.favorites as number[])
+      : ([] as number[])
+
+    if (!currentUserFavorites || !(currentUserFavorites as number[]).includes(recipe.id)) {
+      return response.notFound({ message: 'Recipe not found in favorites' })
+    }
+    const recipeId = recipe.id
+    currentUserFavorites.splice((currentUserFavorites as number[]).indexOf(recipeId), 1)
+    currentUser.favorites = JSON.stringify(currentUserFavorites)
+    await currentUser.save()
+    return response.ok({ message: 'Recipe successfully removed from favorites' })
+  }
+
   async destroy({ params, response }: HttpContext) {
     const recipe = await Recipe.find(params.id)
     if (!recipe) return response.notFound({ message: 'Invalid request' })
