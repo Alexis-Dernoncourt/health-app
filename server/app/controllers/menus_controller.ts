@@ -1,5 +1,5 @@
 import Menu from '#models/menu'
-import { storeMenuValidator } from '#validators/menu'
+import { storeMenuValidator, updateMenuValidator } from '#validators/menu'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class MenusController {
@@ -36,8 +36,17 @@ export default class MenusController {
   /**
    * Handle form submission for the edit action
    */
-  // TODO: add this update method
-  //   async update({ params, request }: HttpContext) {}
+  async update({ params, auth, request, response }: HttpContext) {
+    const user = auth.getUserOrFail().id
+    const menu = await Menu.query().where({ user, id: params.id }).first()
+    if (!menu || menu.user !== user) return response.notFound({ message: 'Menu not found' })
+    const requestPayload = await request.validateUsing(updateMenuValidator)
+    if (!Object.keys(requestPayload).length)
+      return response.badRequest({ message: 'No data to update or bad payload' })
+    menu.merge(requestPayload, false)
+    await menu.save()
+    return response.ok({ message: 'Menu updated !', requestPayload: requestPayload })
+  }
 
   /**
    * Delete record
