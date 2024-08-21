@@ -8,33 +8,38 @@ export default class Recipe extends BaseModel {
   @column()
   declare title: string
 
-  @column()
-  declare image: string
+  @column({})
+  // image_id from table images
+  declare image: number
 
   @column()
   declare description: string
 
   @column()
-  declare ingredients: {
-    name: string
-    quantity: string
-    unit: string | null
-  }[]
+  declare ingredients: string
+  // MUST BE :
+  // {
+  //   name: string
+  //   quantity: number
+  //   unit: string | null
+  // }[]
 
   @column()
-  declare steps: {
-    id: string | number | null
-    text: string
-    warning: string | null
-  }[]
+  declare steps: string
+  // MUST BE :
+  // {
+  //   number: number | null
+  //   text: string
+  //   warning: string | null
+  // }[]
 
   @column()
   declare calories: {
     for100gr: number
     total: number
     totalWeight: number
-    caloriesUnit: string | null
-  }[]
+    caloriesUnit: string | undefined
+  }
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

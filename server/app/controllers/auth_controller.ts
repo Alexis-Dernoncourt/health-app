@@ -13,9 +13,9 @@ export default class AuthController {
     const { email, password } = await request.validateUsing(loginValidator)
 
     const user = await User.verifyCredentials(email, password)
-    const token = await User.accessTokens.create(user, ['*'], {
+    const token = await User.accessTokens.create(user, ['user:normal'], {
       name: 'access-token',
-      expiresIn: '3 days',
+      expiresIn: '7 days',
     })
 
     return response.ok({
