@@ -6,6 +6,9 @@ export class Users {
   id!: number;
 
   @Property({ nullable: true })
+  image?: string;
+
+  @Property({ nullable: true })
   firstname!: string;
 
   @Property({ nullable: true })
@@ -22,4 +25,7 @@ export class Users {
 
   @Property({ onUpdate: () => new Date() })
   updatedAt = new Date();
+
+  @Property()
+  favorites?: string;
 }

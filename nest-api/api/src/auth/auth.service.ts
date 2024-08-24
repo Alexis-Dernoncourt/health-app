@@ -23,6 +23,7 @@ export class AuthService {
     }
     return null;
   }
+
   async signin(payload: SigninDto): Promise<SigninDto> {
     return this.usersService.create(payload);
   }
@@ -30,8 +31,10 @@ export class AuthService {
   async login(payload: LoginDto): Promise<{
     accessToken: string;
   }> {
-    const user = await this.usersService.findByEmail(payload.email);
-    const validateUser = await this.validateUser(user!.email, payload.password);
+    const validateUser = await this.validateUser(
+      payload.email,
+      payload.password,
+    );
     if (!validateUser) {
       throw new UnauthorizedException();
     }
