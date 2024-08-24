@@ -16,7 +16,6 @@ import { ZodValidationPipe } from 'src/zod-pipe/zod-pipe';
 import { SigninDto, SigninSchema } from './dto/auth-signin.dto';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from './jwt-auth.guard';
-
 @Controller('/api/v1/')
 export class AuthController {
   constructor(private AuthService: AuthService) {}
@@ -34,7 +33,7 @@ export class AuthController {
   @UsePipes(new ZodValidationPipe(LoginSchema))
   async login(
     @Body() loginDto: LoginDto,
-  ): Promise<{ message: string; access_token: any }> {
+  ): Promise<{ message: string; access_token: string }> {
     const { accessToken } = await this.AuthService.login(loginDto);
     return {
       message: 'Logged in successfully',
@@ -48,24 +47,16 @@ export class AuthController {
     @Req() req: Request,
     @Res() response: Response,
   ): Promise<typeof response> {
-    const authHeader = req?.headers?.authorization;
+    const user = req.user as {
+      email: string;
+      sub: number;
+      iat: number;
+      exp: number;
+      aud: string;
+      token: string;
+    };
 
-    if (!authHeader) {
-      throw new HttpException(
-        'Authorization header is missing',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-
-    const token = authHeader.split(' ')[1];
-    if (!token) {
-      throw new HttpException(
-        'Invalid authorization header',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-
-    const result = await this.AuthService.logout(token);
+    const result = await this.AuthService.logout(user.token);
     if (!result) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }

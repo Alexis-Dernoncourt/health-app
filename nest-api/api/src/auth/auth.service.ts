@@ -1,11 +1,10 @@
-import { Injectable, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from './dto/auth-login.dto';
 import { UsersService } from 'src/users/users.service';
 import { SigninDto } from './dto/auth-signin.dto';
 import * as bcrypt from 'bcryptjs';
 import { Users } from 'src/users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { LocalAuthGuard } from './local-auth.guard';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { AuthAccessTokens } from './entities/access-token.entity';
 
@@ -28,7 +27,6 @@ export class AuthService {
     return this.usersService.create(payload);
   }
 
-  @UseGuards(LocalAuthGuard)
   async login(payload: LoginDto): Promise<{
     accessToken: string;
   }> {
