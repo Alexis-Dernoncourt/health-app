@@ -6,10 +6,13 @@ import * as bcrypt from 'bcryptjs';
 import { Users } from 'src/users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { LocalAuthGuard } from './local-auth.guard';
+import { EntityManager } from '@mikro-orm/postgresql';
+import { AuthAccessTokens } from './entities/access-token.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly em: EntityManager,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
@@ -27,8 +30,7 @@ export class AuthService {
 
   @UseGuards(LocalAuthGuard)
   async login(payload: LoginDto): Promise<{
-    message: string;
-    access_token: string;
+    accessToken: string;
   }> {
     const user = await this.usersService.findByEmail(payload.email);
     const validateUser = await this.validateUser(user!.email, payload.password);
@@ -42,14 +44,27 @@ export class AuthService {
       audience: 'users',
       header: { alg: 'HS256' },
     });
-    // TODO: register the token in database
-    return {
-      message: 'Logged in successfully',
-      access_token: accessToken,
-    };
+    const decodedToken = this.jwtService.decode(accessToken);
+    // persist token in database
+    const saveAccessToken = this.em.create(AuthAccessTokens, {
+      hash: accessToken,
+      tokenable: validateUser,
+      expiresAt: decodedToken.exp,
+      lastUsedAt: new Date(Date.now()),
+    });
+    // TODO: check if token already exists ?
+    await this.em.persistAndFlush(saveAccessToken);
+    return { accessToken };
   }
 
-  logout(): string {
-    return 'logout';
+  async logout(token: string): Promise<boolean> {
+    const accessToken = await this.em.findOne(AuthAccessTokens, {
+      hash: token,
+    });
+    if (!accessToken) {
+      return false;
+    }
+    await this.em.removeAndFlush(accessToken);
+    return true;
   }
 }
