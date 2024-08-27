@@ -18,6 +18,7 @@ export const fetchHomepage = async () => {
     return req.data;
   } catch (error) {
     console.log('🚀 ~ fetchHomepage ~ error:', error);
+    return Promise.reject(error);
   }
 };
 
@@ -42,6 +43,7 @@ export const register = async (credentials: RegisterCredentials) => {
     return handleApiResponse(req);
   } catch (error) {
     console.log('🚀 ~ register ~ error:', error);
+    return Promise.reject(error);
   }
 };
 
@@ -58,6 +60,7 @@ export const login = async (credentials: LoginCredentials) => {
     return handleApiResponse(req);
   } catch (error) {
     console.log('🚀 ~ login ~ error:', error);
+    return Promise.reject(error);
   }
 };
 

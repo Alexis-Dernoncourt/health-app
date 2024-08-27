@@ -13,6 +13,7 @@ import RegisterIcon from './icons/RegisterIcon';
 import ProfileIcon from './icons/ProfileIcon';
 import MenusIcon from './icons/MenusIcon';
 import RecipesIcon from './icons/RecipesIcon';
+import SigninScreen from '../screens/public/Sign/SigninScreen';
 
 const Tab = createBottomTabNavigator<HomeTabParamList>();
 
@@ -24,10 +25,34 @@ export default function TabNavigator() {
 
   return (
     <Tab.Navigator
-      screenOptions={{headerShown: false, tabBarStyle: {height: 60}}}
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {height: 60},
+        tabBarHideOnKeyboard: true,
+      }}
       initialRouteName="Home">
       {user ? (
         <Tab.Group>
+          <Tab.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{
+              tabBarIcon: ({focused}) => (
+                <HomeIcon focused={focused} size={30} />
+              ),
+              tabBarLabel(props) {
+                return (
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      color: setFocusedColor(props),
+                    }}>
+                    {props.children}
+                  </Text>
+                );
+              },
+            }}
+          />
           <Tab.Screen
             name="Recipes"
             component={TestScreen}
@@ -61,26 +86,6 @@ export default function TabNavigator() {
                       color: setFocusedColor(props),
                     }}>
                     Mes Menus
-                  </Text>
-                );
-              },
-            }}
-          />
-          <Tab.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{
-              tabBarIcon: ({focused}) => (
-                <HomeIcon focused={focused} size={30} />
-              ),
-              tabBarLabel(props) {
-                return (
-                  <Text
-                    style={{
-                      fontSize: 10,
-                      color: setFocusedColor(props),
-                    }}>
-                    {props.children}
                   </Text>
                 );
               },
@@ -149,7 +154,7 @@ export default function TabNavigator() {
           />
           <Tab.Screen
             name="SignIn"
-            component={TestScreen}
+            component={SigninScreen}
             options={{
               tabBarIcon: ({focused}) => (
                 <SignIcon focused={focused} size={30} />

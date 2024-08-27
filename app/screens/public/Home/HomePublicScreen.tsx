@@ -31,7 +31,10 @@ const HomePublic = ({navigation}: HomeTabScreenProps<'Home'>) => {
           onPress={() => navigation.navigate('SignIn')}>
           Go to TOTO page
         </Button>
-        <Button style={{marginTop: 30}} onPress={() => loginTest()}>
+        <Button
+          style={{marginTop: 30}}
+          onPress={() => loginTest()}
+          disabled={login.isLoading}>
           Test login
         </Button>
       </View>

@@ -38,10 +38,13 @@ const Home = ({navigation}: HomeTabScreenProps<'Home'>) => {
             {user?.lastname || 'no user'}
           </Text>
         </View>
-        <Button onPress={() => navigation.navigate('Details')}>
+        <Button onPress={() => navigation.navigate('Profile')}>
           Go to Details
         </Button>
-        <Button style={styles.elementMargin} onPress={() => logoutTest()}>
+        <Button
+          style={styles.elementMargin}
+          onPress={() => logoutTest()}
+          disabled={logout.isLoading}>
           Test logout
         </Button>
       </View>
