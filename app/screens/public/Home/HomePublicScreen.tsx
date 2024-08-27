@@ -7,7 +7,7 @@ import {HomeTabScreenProps} from '../../../navigation/types';
 import Config from 'react-native-config';
 import useDarkMode from '../../../hooks/useDarkMode';
 
-const HomePublic = ({navigation}: HomeTabScreenProps<'HomePublic'>) => {
+const HomePublic = ({navigation}: HomeTabScreenProps<'Home'>) => {
   const {isDarkMode, backgroundStyle} = useDarkMode();
   const login = useLogin();
 
@@ -28,7 +28,7 @@ const HomePublic = ({navigation}: HomeTabScreenProps<'HomePublic'>) => {
         <Text>You are not logged in</Text>
         <Button
           style={{marginTop: 30}}
-          onPress={() => navigation.navigate('Toto')}>
+          onPress={() => navigation.navigate('SignIn')}>
           Go to TOTO page
         </Button>
         <Button style={{marginTop: 30}} onPress={() => loginTest()}>

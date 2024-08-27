@@ -20,11 +20,13 @@ export type RootStackScreenProps<T extends keyof RootParamsGlobal> =
 
 export type HomeTabBaseParamList = {
   Home: undefined;
-  Details: undefined;
+  Profile: undefined;
+  Recipes: undefined;
+  Menus: undefined;
 };
 
 export type HomeTabUnloggedParamList = {
-  HomePublic: undefined;
+  Home: undefined;
   SignIn: undefined;
   Register: undefined;
 };

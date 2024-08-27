@@ -10,6 +10,9 @@ import HomeIcon from '../navigation/icons/HomeIcon';
 import {Text} from 'react-native-paper';
 import SignIcon from './icons/SignIcon';
 import RegisterIcon from './icons/RegisterIcon';
+import ProfileIcon from './icons/ProfileIcon';
+import MenusIcon from './icons/MenusIcon';
+import RecipesIcon from './icons/RecipesIcon';
 
 const Tab = createBottomTabNavigator<HomeTabParamList>();
 
@@ -25,6 +28,44 @@ export default function TabNavigator() {
       initialRouteName="Home">
       {user ? (
         <Tab.Group>
+          <Tab.Screen
+            name="Recipes"
+            component={TestScreen}
+            options={{
+              tabBarIcon: ({focused}) => <RecipesIcon focused={focused} />,
+              tabBarLabel(props) {
+                return (
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      color: setFocusedColor(props),
+                    }}>
+                    Les Recettes
+                  </Text>
+                );
+              },
+            }}
+          />
+          <Tab.Screen
+            name="Menus"
+            component={TestScreen}
+            options={{
+              tabBarIcon: ({focused}) => (
+                <MenusIcon focused={focused} size={30} />
+              ),
+              tabBarLabel(props) {
+                return (
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      color: setFocusedColor(props),
+                    }}>
+                    Mes Menus
+                  </Text>
+                );
+              },
+            }}
+          />
           <Tab.Screen
             name="Home"
             component={HomeScreen}
@@ -45,7 +86,24 @@ export default function TabNavigator() {
               },
             }}
           />
-          <Tab.Screen name="Details" component={TestScreen} />
+          <Tab.Screen
+            name="Profile"
+            component={TestScreen}
+            options={{
+              tabBarIcon: ({focused}) => <ProfileIcon focused={focused} />,
+              tabBarLabel(props) {
+                return (
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      color: setFocusedColor(props),
+                    }}>
+                    Mon Compte
+                  </Text>
+                );
+              },
+            }}
+          />
         </Tab.Group>
       ) : (
         <Tab.Group>
@@ -70,7 +128,7 @@ export default function TabNavigator() {
             }}
           />
           <Tab.Screen
-            name="HomePublic"
+            name="Home"
             component={HomePublic}
             options={{
               tabBarIcon: ({focused}) => (
