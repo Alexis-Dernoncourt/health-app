@@ -1,10 +1,11 @@
 import React, {useEffect} from 'react';
 import {useLogin} from '../../../lib/react-query/auth';
-import {Button, Text} from 'react-native-paper';
+import {Button, Text, TextInput} from 'react-native-paper';
 import {SafeAreaView, StatusBar, ToastAndroid, View} from 'react-native';
 import useDarkMode from '../../../hooks/useDarkMode';
 import Input from '../../../components/Form/Input';
 import {styles} from './styles';
+import {EyeIconOpen, EyeIconClosed} from '../../../navigation/icons/EyeIcon';
 
 const SigninScreen = () => {
   const {isDarkMode, backgroundStyle} = useDarkMode();
@@ -12,6 +13,7 @@ const SigninScreen = () => {
   const [email, setEmail] = React.useState('');
   const [emailErrorText, setEmailErrorText] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [passwordVisible, setPasswordVisible] = React.useState(false);
   const [emailPasswordErrorText, setPasswordErrorText] = React.useState('');
 
   const loginUser = async () => {
@@ -73,12 +75,17 @@ const SigninScreen = () => {
             <Input
               label="Password"
               placeholder="Password"
-              secureTextEntry={true}
+              secureTextEntry={passwordVisible ? false : true}
               value={password}
               error={login.isError}
               style={styles.inputStyle}
               onChangeText={(val: string) => setPassword(val)}
-              // rightIcon={<EyeIcon />}
+              rightIcon={
+                <TextInput.Icon
+                  icon={passwordVisible ? EyeIconClosed : EyeIconOpen}
+                  onPress={() => setPasswordVisible(prev => !prev)}
+                />
+              }
             />
             {login.error && (
               <Text style={styles.errorText}>{emailPasswordErrorText}</Text>
