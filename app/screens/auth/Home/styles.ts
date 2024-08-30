@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {COLORS} from '../../../lib/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -14,7 +15,7 @@ export const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: -15,
     marginLeft: 10,
-    color: '#000',
+    color: COLORS.black,
   },
   sectionInfos: {
     width: '100%',
@@ -23,6 +24,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 20,
     marginHorizontal: 0,
-    backgroundColor: '#FEE7C1',
+    backgroundColor: COLORS.quaternary,
   },
 });

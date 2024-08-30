@@ -1,7 +1,7 @@
 import {api} from './api';
 import {Recipe} from './types';
 
-export const fetchRecipes = async (): Promise<{recipes: Recipe[]} | any> => {
+export const fetchRecipes = async (): Promise<{recipes: Recipe[]}> => {
   try {
     const req = await api.request({
       url: '/recipes',
@@ -14,9 +14,7 @@ export const fetchRecipes = async (): Promise<{recipes: Recipe[]} | any> => {
   }
 };
 
-export const fetchRecipe = async (
-  id: string,
-): Promise<{recipe: Recipe} | PromiseRejectedResult> => {
+export const fetchRecipe = async (id: string): Promise<{recipe: Recipe}> => {
   try {
     const req = await api.request({
       url: `/recipes/${id}`,
@@ -31,7 +29,7 @@ export const fetchRecipe = async (
 
 export const createRecipe = async (
   payload: Recipe,
-): Promise<{message: string; recipe: Recipe} | PromiseRejectedResult> => {
+): Promise<{message: string; recipe: Recipe}> => {
   try {
     const req = await api.request({
       url: '/recipes',
@@ -47,7 +45,7 @@ export const createRecipe = async (
 
 export const updateRecipe = async (
   payload: Partial<Recipe>,
-): Promise<{message: string} | PromiseRejectedResult> => {
+): Promise<{message: string}> => {
   try {
     const req = await api.request({
       url: '/recipes',
@@ -61,9 +59,7 @@ export const updateRecipe = async (
   }
 };
 
-export const deleteRecipe = async (
-  id: string,
-): Promise<{message: string} | PromiseRejectedResult> => {
+export const deleteRecipe = async (id: string): Promise<{message: string}> => {
   try {
     const req = await api.request({
       url: `/recipes/${id}`,

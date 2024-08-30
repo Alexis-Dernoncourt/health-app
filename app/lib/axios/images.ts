@@ -1,7 +1,7 @@
 import {api} from './api';
-import {Recipe} from './types';
+import {Image, Recipe} from './types';
 
-export const fetchImages = async (): Promise<{recipes: any[]} | any> => {
+export const fetchImages = async (): Promise<{images: Image[]}> => {
   try {
     const req = await api.request({
       url: '/images',
@@ -14,7 +14,7 @@ export const fetchImages = async (): Promise<{recipes: any[]} | any> => {
   }
 };
 
-export const fetchImage = async (id: number) => {
+export const fetchImage = async (id: number): Promise<{image: Image}> => {
   try {
     const req = await api.request({
       url: `/images/${id}`,

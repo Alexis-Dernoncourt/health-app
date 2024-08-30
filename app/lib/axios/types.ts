@@ -35,7 +35,7 @@ export type AuthResponse = {
 };
 
 export type Recipe = {
-  id?: number;
+  id: number;
   title: string;
   image: number;
   description: string;
@@ -55,4 +55,13 @@ export type Recipe = {
     totalWeight: number;
     caloriesUnit: string;
   };
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type Image = {
+  id: number;
+  url: string;
+  createdAt: Date;
+  updatedAt: Date;
 };

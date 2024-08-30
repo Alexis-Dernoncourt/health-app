@@ -12,6 +12,7 @@ import {ActivityIndicator, Text} from 'react-native-paper';
 import {useRecipes} from '../../hooks/react-query/recipes';
 import {Recipe} from '../../lib/axios/types';
 import {useImage} from '../../hooks/react-query/images';
+import {COLORS} from '../../lib/constants';
 
 export const ISBImageItem = memo(({recipe}: {recipe: Recipe}) => {
   const {data: imageData, isLoading, error} = useImage(recipe.image);
@@ -19,13 +20,14 @@ export const ISBImageItem = memo(({recipe}: {recipe: Recipe}) => {
   if (error) {
     return null;
   }
+
   return (
     <View style={styles.imageContainer}>
       {isLoading && <ActivityIndicator size="small" />}
       <Image
         style={styles.image}
         source={{
-          uri: imageData.image.url,
+          uri: imageData?.image.url,
         }}
       />
       <Text style={styles.imageTitle}>{recipe.title}</Text>
@@ -95,7 +97,7 @@ const Slider = ({
   const PAGE_WIDTH = window.width;
   const progressValue = useSharedValue(0);
   const {data: recipesData, isLoading, error, isRefetching} = useRecipes();
-  const CAROUSEL_ITEMS: Recipe[] | undefined = recipesData?.recipes;
+  const CAROUSEL_ITEMS = recipesData?.recipes;
 
   const baseOptions = {
     width: PAGE_WIDTH,
@@ -114,7 +116,7 @@ const Slider = ({
   if (isLoading || isRefetching) {
     return (
       <View style={styles.EorLcontainer}>
-        <ActivityIndicator size="large" color="#a0c3fa" />
+        <ActivityIndicator size="large" color={COLORS.light_blue} />
       </View>
     );
   }
@@ -124,6 +126,7 @@ const Slider = ({
       {CAROUSEL_ITEMS && (
         <Carousel
           {...baseOptions}
+          snapEnabled={true}
           panGestureHandlerProps={{activeOffsetX: [-10, 10]}}
           loop={false}
           vertical={false}
@@ -148,7 +151,7 @@ const Slider = ({
           {CAROUSEL_ITEMS?.map((recipe, index) => {
             return (
               <PaginationItem
-                backgroundColor="#156EFF"
+                backgroundColor={COLORS.primary_accent}
                 animValue={progressValue}
                 index={index}
                 key={recipe.id}
@@ -181,7 +184,7 @@ const styles = StyleSheet.create({
     left: -35,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     borderRadius: 16,
   },
   image: {
@@ -198,7 +201,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: 20,
-    color: '#fff',
+    color: COLORS.white,
     fontWeight: 'bold',
     fontSize: 20,
   },
@@ -209,7 +212,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   paginationItem: {
-    backgroundColor: '#D9D9D9',
+    backgroundColor: COLORS.gray,
     borderRadius: 50,
     overflow: 'hidden',
   },

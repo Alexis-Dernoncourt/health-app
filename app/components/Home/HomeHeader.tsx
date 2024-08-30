@@ -1,5 +1,6 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
+import {COLORS} from '../../lib/constants';
 
 const HomeHeader = () => {
   return (
@@ -18,9 +19,9 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     borderRadius: 16,
-    shadowColor: '#000',
+    shadowColor: COLORS.black,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -32,5 +33,6 @@ const styles = StyleSheet.create({
   headerText: {
     fontWeight: 'bold',
     fontSize: 20,
+    color: COLORS.black,
   },
 });

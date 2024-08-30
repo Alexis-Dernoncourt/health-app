@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {COLORS} from '../../../lib/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -29,7 +30,7 @@ export const styles = StyleSheet.create({
     marginTop: 20,
   },
   errorText: {
-    color: 'darkred',
+    color: COLORS.dark_red,
   },
   signButton: {
     marginTop: 20,

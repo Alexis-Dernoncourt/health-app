@@ -1,6 +1,7 @@
 import {KeyboardTypeOptions, StyleSheet} from 'react-native';
 import React from 'react';
 import {TextInput} from 'react-native-paper';
+import {COLORS} from '../../lib/constants';
 
 type InputProps = {
   label: string;
@@ -49,7 +50,7 @@ export default Input;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.white,
     width: '100%',
     marginVertical: 10,
   },
