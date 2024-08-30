@@ -1,78 +1,69 @@
 import {api} from './api';
+import {Recipe} from './types';
 
-export const fetchUsers = async () => {
+export const fetchImages = async (): Promise<{recipes: any[]} | any> => {
   try {
     const req = await api.request({
-      url: '/users',
+      url: '/images',
       method: 'GET',
     });
     return req.data;
   } catch (error) {
-    console.log('🚀 ~ fetchUsers ~ error:', error);
+    console.log('🚀 ~ fetchImages ~ error:', error);
     return Promise.reject(error);
   }
 };
 
-export const fetchUser = async (id: string) => {
+export const fetchImage = async (id: number) => {
   try {
     const req = await api.request({
-      url: `/users/${id}`,
+      url: `/images/${id}`,
       method: 'GET',
     });
     return req.data;
   } catch (error) {
-    console.log('🚀 ~ fetchUser ~ error:', error);
+    console.log('🚀 ~ fetchImage ~ error:', error);
     return Promise.reject(error);
   }
 };
 
-export const createUser = async (payload: {
-  firstname: string;
-  lastname: string;
-  email: string;
-  password: string;
-}) => {
+export const createImage = async (payload: Recipe): Promise<any> => {
   try {
     const req = await api.request({
-      url: '/users',
+      url: '/images',
       method: 'POST',
       data: payload,
     });
     return req.data;
   } catch (error) {
-    console.log('🚀 ~ createUser ~ error:', error);
+    console.log('🚀 ~ createImage ~ error:', error);
     return Promise.reject(error);
   }
 };
 
-export const updateUser = async (payload: {
-  firstname?: string;
-  lastname?: string;
-  email?: string;
-  password?: string;
-}) => {
+export const updateImage = async (payload: Partial<Recipe>) => {
   try {
     const req = await api.request({
-      url: '/users',
+      url: '/images',
       method: 'PATCH',
       data: payload,
     });
     return req.data;
   } catch (error) {
-    console.log('🚀 ~ updateUser ~ error:', error);
+    console.log('🚀 ~ updateImage ~ error:', error);
     return Promise.reject(error);
   }
 };
 
-export const deleteUser = async (id: string) => {
+export const deleteImage = async (id: string) => {
   try {
     const req = await api.request({
-      url: `/users/${id}`,
+      url: `/images/${id}`,
       method: 'DELETE',
     });
     return req.data;
   } catch (error) {
-    console.log('🚀 ~ deleteUser ~ error:', error);
+    console.log('🚀 ~ deleteImage ~ error:', error);
     return Promise.reject(error);
   }
 };

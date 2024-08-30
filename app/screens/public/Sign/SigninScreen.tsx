@@ -1,14 +1,13 @@
 import React, {useEffect} from 'react';
 import {useLogin} from '../../../lib/react-query/auth';
 import {Button, Text, TextInput} from 'react-native-paper';
-import {SafeAreaView, StatusBar, ToastAndroid, View} from 'react-native';
-import useDarkMode from '../../../hooks/useDarkMode';
+import {ToastAndroid, View} from 'react-native';
 import Input from '../../../components/Form/Input';
 import {styles} from './styles';
 import {EyeIconOpen, EyeIconClosed} from '../../../navigation/icons/EyeIcon';
+import Layout from '../../Layout';
 
 const SigninScreen = () => {
-  const {isDarkMode, backgroundStyle} = useDarkMode();
   const login = useLogin();
   const [email, setEmail] = React.useState('');
   const [emailErrorText, setEmailErrorText] = React.useState('');
@@ -50,11 +49,7 @@ const SigninScreen = () => {
   }, [login.error]);
 
   return (
-    <SafeAreaView style={{...backgroundStyle, ...styles.mainWrapper}}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
+    <Layout>
       <View style={styles.container}>
         <Text style={styles.welcomeText}>Welcome !</Text>
         <View style={styles.formContainer}>
@@ -100,7 +95,7 @@ const SigninScreen = () => {
           Me connecter
         </Button>
       </View>
-    </SafeAreaView>
+    </Layout>
   );
 };
 

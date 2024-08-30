@@ -33,3 +33,26 @@ export type AuthResponse = {
   token: Token;
   user: User;
 };
+
+export type Recipe = {
+  id?: number;
+  title: string;
+  image: number;
+  description: string;
+  ingredients: {
+    name: string;
+    quantity: string;
+    unit: string;
+  }[];
+  steps: {
+    number: number;
+    text: string;
+    warning?: string;
+  }[];
+  calories: {
+    for100gr: number;
+    total: number;
+    totalWeight: number;
+    caloriesUnit: string;
+  };
+};

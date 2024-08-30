@@ -64,7 +64,9 @@ export const login = async (credentials: LoginCredentials) => {
   }
 };
 
-export const logout = async (token: string): Promise<any> => {
+export const logout = async (
+  token: string,
+): Promise<void | PromiseRejectedResult> => {
   try {
     const req = await api.request({
       url: '/logout',
@@ -76,5 +78,6 @@ export const logout = async (token: string): Promise<any> => {
     return handleApiResponse(req);
   } catch (error) {
     console.log('🚀 ~ logout ~ error:', error);
+    return Promise.reject(error);
   }
 };

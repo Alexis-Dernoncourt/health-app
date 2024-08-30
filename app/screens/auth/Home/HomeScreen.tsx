@@ -1,37 +1,35 @@
 import React from 'react';
-import {SafeAreaView, StatusBar, View} from 'react-native';
+import {ScrollView, View} from 'react-native';
 import {Button, Text} from 'react-native-paper';
-import useDarkMode from '../../../hooks/useDarkMode';
 import {HomeTabScreenProps} from '../../../navigation/types';
 import {styles} from './styles';
 import {useLogout} from '../../../lib/react-query/auth';
 import {useCurrentUser} from '../../../hooks/index';
+import Layout from '../../Layout';
+import HomeHeader from '../../../components/Home/HomeHeader';
+import Slider from '../../../components/Home/Slider';
 
 const Home = ({navigation}: HomeTabScreenProps<'Home'>) => {
-  const {isDarkMode, backgroundStyle} = useDarkMode();
   const logout = useLogout();
   const {user} = useCurrentUser();
+  const [scrollEnabled, setScrollEnabled] = React.useState(true);
 
   const logoutTest = () => {
     return logout.mutate();
   };
 
   return (
-    <SafeAreaView style={{...backgroundStyle, ...styles.mainWrapper}}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <View style={styles.container}>
-        <Text>Welcome Home</Text>
-        <View style={styles.elementMargin}>
-          <Text>Section header</Text>
-        </View>
-        <View style={styles.elementMargin}>
+    <Layout>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        scrollEnabled={scrollEnabled}>
+        <HomeHeader />
+        <View style={[styles.sectionInfos, styles.elementMargin]}>
           <Text>Section infos</Text>
         </View>
         <View style={styles.elementMargin}>
-          <Text>Section recettes favorites (slider)</Text>
+          <Text style={styles.titleSection}>Mes recettes favorites</Text>
+          <Slider setScrollEnabled={setScrollEnabled} />
         </View>
         <View style={{margin: 20}}>
           <Text style={{fontWeight: 'bold', fontSize: 20}}>
@@ -47,8 +45,8 @@ const Home = ({navigation}: HomeTabScreenProps<'Home'>) => {
           disabled={logout.isLoading}>
           Test logout
         </Button>
-      </View>
-    </SafeAreaView>
+      </ScrollView>
+    </Layout>
   );
 };
 
