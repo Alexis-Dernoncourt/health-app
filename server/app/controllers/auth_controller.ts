@@ -20,7 +20,7 @@ export default class AuthController {
 
     return response.ok({
       token: token,
-      ...user.serialize(),
+      user: user.serialize(),
     })
   }
   async logout({ auth, response }: HttpContext) {
