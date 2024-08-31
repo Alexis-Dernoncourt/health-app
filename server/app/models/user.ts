@@ -1,9 +1,12 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasOne, manyToMany } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
+import Recipe from './recipe.js'
+import type { HasOne, ManyToMany } from '@adonisjs/lucid/types/relations'
+import Image from './image.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -27,7 +30,15 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare password: string
 
   @column()
-  declare favorites: string | number[] | []
+  declare imageId: number | null
+
+  @hasOne(() => Image)
+  declare image: HasOne<typeof Image>
+
+  @manyToMany(() => Recipe, {
+    pivotTable: 'user_favorites',
+  })
+  declare favoriteRecipes: ManyToMany<typeof Recipe>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

@@ -5,9 +5,7 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id')
-      table.integer('recipe').notNullable().references('id').inTable('recipes').onDelete('CASCADE')
-      table.integer('user').notNullable().references('id').inTable('users').onDelete('CASCADE')
+      table.increments('id').primary()
       table.enum('meal', ['breakfast', 'lunch', 'dinner', 'snack', 'dessert']).notNullable()
       table.date('date').notNullable()
       table.timestamp('created_at')

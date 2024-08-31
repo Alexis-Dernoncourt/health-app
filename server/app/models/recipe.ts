@@ -1,5 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasOne, manyToMany } from '@adonisjs/lucid/orm'
+import Image from './image.js'
+import type { HasOne, ManyToMany } from '@adonisjs/lucid/types/relations'
+import User from './user.js'
 
 export default class Recipe extends BaseModel {
   @column({ isPrimary: true })
@@ -8,9 +11,11 @@ export default class Recipe extends BaseModel {
   @column()
   declare title: string
 
-  @column({})
-  // image_id from table images
-  declare image: number
+  @column()
+  declare imageId: number
+
+  @hasOne(() => Image)
+  declare image: HasOne<typeof Image>
 
   @column()
   declare description: string
@@ -40,6 +45,11 @@ export default class Recipe extends BaseModel {
     totalWeight: number
     caloriesUnit: string | undefined
   }
+
+  @manyToMany(() => User, {
+    pivotTable: 'user_favorites',
+  })
+  declare usersWhoFavorited: ManyToMany<typeof User>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

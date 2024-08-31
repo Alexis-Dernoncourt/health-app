@@ -1,19 +1,20 @@
 import { RecipeImageFactory } from '#database/factories/image_factory'
+import Image from '#models/image'
 import Recipe from '#models/recipe'
 import { storeRecipeValidator, updateRecipeValidator } from '#validators/recipe'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class RecipesController {
   async index({ response }: HttpContext) {
-    const recipes = await Recipe.all()
+    const recipes = await Recipe.query().preload('image')
     if (!recipes) return response.notFound({ message: 'Recipes not found' })
-    return response.ok({ recipes: recipes.sort((a: Recipe, b: Recipe) => a.id - b.id) })
+    return response.ok({ recipes: recipes })
   }
 
   async show({ params, response }: HttpContext) {
-    const recipe = await Recipe.find(params.id)
+    const recipe = await Recipe.query().preload('image').where('id', params.id).first()
     if (!recipe) return response.notFound({ message: 'Recipe not found' })
-    return response.ok({ recipe: recipe.toJSON() })
+    return response.ok({ recipe: recipe })
   }
 
   async store({ request, response, auth }: HttpContext) {
@@ -25,14 +26,14 @@ export default class RecipesController {
     // const bodyRecipe = request.body()
     const newIngredients = JSON.stringify(request.input('ingredients'))
     const newSteps = JSON.stringify(request.input('steps'))
-    const image = await RecipeImageFactory.create()
     const newRecipe = {
       ...bodyRecipe,
-      image: image.id,
       ingredients: newIngredients,
       steps: newSteps,
-    } as Recipe
+    }
     const recipe = await Recipe.create(newRecipe)
+    const image = await RecipeImageFactory.create()
+    await recipe.related('image').create({ url: image.url, recipeId: recipe.id })
     return response.ok({ message: 'Recipe created !', recipe: recipe.toJSON() })
   }
 
@@ -59,7 +60,10 @@ export default class RecipesController {
       // TODO: validate the body
       if (bodyRecipe.title) recipe.title = payload.title as string
       if (bodyRecipe.description) recipe.description = payload.description as string
-      if (bodyRecipe.image) recipe.image = payload.image as number
+      if (bodyRecipe.image) {
+        await Image.create({ url: payload.image })
+        recipe.related('image')
+      }
       if (bodyRecipe.ingredients) recipe.ingredients = JSON.stringify(payload.ingredients)
       if (bodyRecipe.steps) recipe.steps = JSON.stringify(payload.steps)
       if (bodyRecipe.calories) recipe.calories = bodyRecipe.calories
@@ -76,15 +80,17 @@ export default class RecipesController {
     if (!recipe) return response.notFound({ message: 'Recipe not found' })
     if (auth.user?.id !== currentUser.id)
       return response.forbidden({ message: "You don't have permission to perform this action" })
-    let currentUserFavorites = currentUser.favorites as number[]
 
-    if (currentUserFavorites.includes(recipe.id)) {
-      return response.badRequest({ message: 'Recipe already added to favorites' })
-    }
-    const recipeId = recipe.id
-    currentUserFavorites.push(recipeId)
-    currentUser.favorites = JSON.stringify(currentUserFavorites)
-    await currentUser.save()
+    const favExist = await currentUser
+      .related('favoriteRecipes')
+      .query()
+      .where('recipe_id', params.id)
+      .where('user_id', currentUser.id)
+      .first()
+    if (favExist) return response.badRequest({ message: 'Recipe already in favorites' })
+
+    // Add the recipe to the user's favorites
+    await currentUser.related('favoriteRecipes').attach([recipe.id])
     return response.ok({ message: 'Recipe successfully added to favorites' })
   }
 
@@ -95,17 +101,16 @@ export default class RecipesController {
     if (auth.user?.id !== currentUser.id)
       return response.forbidden({ message: "You don't have permission to perform this action" })
 
-    let currentUserFavorites = currentUser.favorites
-      ? (currentUser.favorites as number[])
-      : ([] as number[])
+    const favExist = await currentUser
+      .related('favoriteRecipes')
+      .query()
+      .where('recipe_id', params.id)
+      .where('user_id', currentUser.id)
+      .first()
+    if (!favExist) return response.notFound({ message: 'Recipe not found in favorites' })
 
-    if (!currentUserFavorites || !(currentUserFavorites as number[]).includes(recipe.id)) {
-      return response.notFound({ message: 'Recipe not found in favorites' })
-    }
-    const recipeId = recipe.id
-    currentUserFavorites.splice((currentUserFavorites as number[]).indexOf(recipeId), 1)
-    currentUser.favorites = JSON.stringify(currentUserFavorites)
-    await currentUser.save()
+    // Remove the recipe from the user's favorites
+    await currentUser.related('favoriteRecipes').detach([recipe.id])
     return response.ok({ message: 'Recipe successfully removed from favorites' })
   }
 
