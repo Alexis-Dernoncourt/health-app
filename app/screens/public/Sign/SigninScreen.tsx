@@ -13,7 +13,7 @@ const SigninScreen = () => {
   const [emailErrorText, setEmailErrorText] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [passwordVisible, setPasswordVisible] = React.useState(false);
-  const [emailPasswordErrorText, setPasswordErrorText] = React.useState('');
+  const [passwordErrorText, setPasswordErrorText] = React.useState('');
 
   const loginUser = async () => {
     await login.mutate({
@@ -39,7 +39,7 @@ const SigninScreen = () => {
 
     if (errorResponse?.status === 400) {
       emailErrorText && setEmailErrorText('');
-      emailPasswordErrorText && setPasswordErrorText('');
+      passwordErrorText && setPasswordErrorText('');
       ToastAndroid.show(
         errorResponse?.data?.errors[0]?.message,
         ToastAndroid.LONG,
@@ -60,7 +60,7 @@ const SigninScreen = () => {
               placeholder="Email"
               keyboardType="email-address"
               value={email}
-              error={login.isError}
+              error={emailErrorText.length > 0}
               style={styles.inputStyle}
               onChangeText={(val: string) => setEmail(val)}
             />
@@ -72,7 +72,7 @@ const SigninScreen = () => {
               placeholder="Password"
               secureTextEntry={passwordVisible ? false : true}
               value={password}
-              error={login.isError}
+              error={passwordErrorText.length > 0}
               style={styles.inputStyle}
               onChangeText={(val: string) => setPassword(val)}
               rightIcon={
@@ -83,7 +83,7 @@ const SigninScreen = () => {
               }
             />
             {login.error && (
-              <Text style={styles.errorText}>{emailPasswordErrorText}</Text>
+              <Text style={styles.errorText}>{passwordErrorText}</Text>
             )}
           </View>
         </View>
