@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Svg, {SvgProps, Path} from 'react-native-svg';
+import {COLORS} from '../../lib/constants';
 
 type HomeIconProps = SvgProps & {
   focused?: boolean;
@@ -15,7 +16,7 @@ const HomeIcon = (props: HomeIconProps) => (
     fill="none"
     {...props}>
     <Path
-      stroke={props.focused ? '#156EFF' : '#1E1E1E'}
+      stroke={props.focused ? COLORS.primary_accent : COLORS.black}
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={props.strokeWidth ?? 2}

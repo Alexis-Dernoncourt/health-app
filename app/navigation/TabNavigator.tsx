@@ -14,13 +14,14 @@ import ProfileIcon from './icons/ProfileIcon';
 import MenusIcon from './icons/MenusIcon';
 import RecipesIcon from './icons/RecipesIcon';
 import SigninScreen from '../screens/public/Sign/SigninScreen';
+import {COLORS} from '../lib/constants';
 
 const Tab = createBottomTabNavigator<HomeTabParamList>();
 
 export default function TabNavigator() {
   const {user} = useCurrentUser();
   const setFocusedColor = ({focused}: {focused: boolean}) => {
-    return focused ? '#156EFF' : '#1E1E1E';
+    return focused ? COLORS.primary_accent : COLORS.black;
   };
 
   return (
