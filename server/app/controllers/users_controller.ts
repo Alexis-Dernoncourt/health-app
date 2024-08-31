@@ -4,15 +4,15 @@ import type { HttpContext } from '@adonisjs/core/http'
 
 export default class UsersController {
   async index({ response }: HttpContext) {
-    const users = await User.all()
+    const users = await User.query().preload('favoriteRecipes')
     if (!users) return response.notFound({ message: 'Users not found' })
     return response.ok({ users: users.sort((a: User, b: User) => a.id - b.id) })
   }
 
   async show({ response, params }: HttpContext) {
-    const user = await User.find(params.id)
+    const user = await User.query().preload('favoriteRecipes').where('id', params.id)
     if (!user) return response.notFound({ message: 'User not found' })
-    return response.ok({ user: user.toJSON() })
+    return response.ok({ user: user })
   }
 
   async store({ response }: HttpContext) {
