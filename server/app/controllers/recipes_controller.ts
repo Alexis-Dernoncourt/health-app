@@ -23,7 +23,6 @@ export default class RecipesController {
       return response.forbidden({ message: "You don't have permission to perform this action" })
 
     const bodyRecipe = await request.validateUsing(storeRecipeValidator)
-    // const bodyRecipe = request.body()
     const newIngredients = JSON.stringify(request.input('ingredients'))
     const newSteps = JSON.stringify(request.input('steps'))
     const newRecipe = {
@@ -31,9 +30,10 @@ export default class RecipesController {
       ingredients: newIngredients,
       steps: newSteps,
     }
-    const recipe = await Recipe.create(newRecipe)
-    const image = await RecipeImageFactory.create()
-    await recipe.related('image').create({ url: image.url, recipeId: recipe.id })
+    const recipe = new Recipe().fill(newRecipe)
+    const image = await RecipeImageFactory.make()
+    await recipe.related('image').create({ url: image.url })
+    await recipe.save()
     return response.ok({ message: 'Recipe created !', recipe: recipe.toJSON() })
   }
 
