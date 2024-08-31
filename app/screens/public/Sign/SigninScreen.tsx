@@ -6,8 +6,9 @@ import Input from '../../../components/Form/Input';
 import {styles} from './styles';
 import {EyeIconOpen, EyeIconClosed} from '../../../navigation/icons/EyeIcon';
 import Layout from '../../Layout';
+import {HomeTabScreenProps} from '../../../navigation/types';
 
-const SigninScreen = () => {
+const SigninScreen = ({navigation}: HomeTabScreenProps<'SignIn'>) => {
   const login = useLogin();
   const [email, setEmail] = React.useState('');
   const [emailErrorText, setEmailErrorText] = React.useState('');
@@ -90,9 +91,17 @@ const SigninScreen = () => {
 
         <Button
           style={styles.signButton}
+          labelStyle={styles.signButtonText}
           onPress={() => loginUser()}
           disabled={login.isLoading}>
           Me connecter
+        </Button>
+        <Button
+          style={styles.registerButton}
+          labelStyle={styles.registerButtonText}
+          onPress={() => navigation.navigate('Register')}
+          disabled={login.isLoading || login.isFetching}>
+          Je veux créer un compte
         </Button>
       </View>
     </Layout>

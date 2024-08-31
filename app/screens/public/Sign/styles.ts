@@ -33,6 +33,20 @@ export const styles = StyleSheet.create({
     color: COLORS.dark_red,
   },
   signButton: {
+    width: 250,
+    height: 50,
+    justifyContent: 'center',
+    backgroundColor: COLORS.black,
+    borderRadius: 10,
     marginTop: 20,
+  },
+  signButtonText: {
+    color: COLORS.white,
+  },
+  registerButton: {
+    marginTop: 20,
+  },
+  registerButtonText: {
+    color: COLORS.black,
   },
 });
