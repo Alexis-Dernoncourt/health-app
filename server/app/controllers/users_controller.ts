@@ -8,7 +8,9 @@ export default class UsersController {
   async index({ response }: HttpContext) {
     const users = await User.query()
       .preload('image', (image) => image.select('id', 'url'))
-      .preload('favoriteRecipes')
+      .preload('favoriteRecipes', (recipeQuery) => {
+        recipeQuery.preload('image')
+      })
     if (!users) return response.notFound({ message: 'Users not found' })
     return response.ok({ users: users.sort((a: User, b: User) => a.id - b.id) })
   }
@@ -16,7 +18,9 @@ export default class UsersController {
   async show({ response, params }: HttpContext) {
     const user = await User.query()
       .preload('image', (image) => image.select('id', 'url'))
-      .preload('favoriteRecipes')
+      .preload('favoriteRecipes', (recipeQuery) => {
+        recipeQuery.preload('image')
+      })
       .where('id', params.id)
     if (!user) return response.notFound({ message: 'User not found' })
     return response.ok({ user: user })
