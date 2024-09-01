@@ -10,58 +10,66 @@ export type RegisterCredentials = {
   password: string;
 };
 
-export type User = {
+export interface User {
   id: number;
   firstname: string;
-  lastname: string | null;
+  lastname: string;
   email: string;
-  createdAt: string;
-  updatedAt: string;
-  favorites: number[];
-};
+  createdAt: Date;
+  updatedAt: Date;
+  favoriteRecipes?: Recipe[];
+}
+
+export interface Recipe {
+  id: number;
+  title: string;
+  description: string;
+  ingredients: Ingredient[];
+  steps: Step[];
+  calories: Calories;
+  createdAt: Date;
+  updatedAt: Date;
+  image: Image;
+}
+
+export interface Calories {
+  for100gr: number;
+  total: number;
+  totalWeight: number;
+  caloriesUnit: string;
+}
+
+export interface Ingredient {
+  name: string;
+  quantity: string;
+  unit: string;
+}
+
+export interface Step {
+  number: number;
+  text: string;
+  warning?: string;
+}
 
 type Token = {
   type: string;
   name: string;
   token: string;
   abilities: string[];
-  lastUsedAt: string | null;
+  lastUsedAt?: string;
   expiresAt: string;
 };
 
-export type AuthResponse = {
+export interface AuthResponse {
   token: Token;
   user: User;
-};
+}
 
-export type Recipe = {
-  id: number;
-  title: string;
-  image: number;
-  description: string;
-  ingredients: {
-    name: string;
-    quantity: string;
-    unit: string;
-  }[];
-  steps: {
-    number: number;
-    text: string;
-    warning?: string;
-  }[];
-  calories: {
-    for100gr: number;
-    total: number;
-    totalWeight: number;
-    caloriesUnit: string;
-  };
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-export type Image = {
+export interface Image {
   id: number;
   url: string;
   createdAt: Date;
   updatedAt: Date;
-};
+  userId?: number;
+  recipeId?: number;
+}

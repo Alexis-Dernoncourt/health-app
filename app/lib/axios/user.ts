@@ -19,7 +19,7 @@ export const fetchUser = async (id: string) => {
       url: `/users/${id}`,
       method: 'GET',
     });
-    return req.data;
+    return req.data.user[0];
   } catch (error) {
     console.log('🚀 ~ fetchUser ~ error:', error);
     return Promise.reject(error);

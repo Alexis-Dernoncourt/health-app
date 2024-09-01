@@ -11,23 +11,21 @@ import Carousel from 'react-native-reanimated-carousel';
 import {ActivityIndicator, Text} from 'react-native-paper';
 import {useRecipes} from '../../hooks/react-query/recipes';
 import {Recipe} from '../../lib/axios/types';
-import {useImage} from '../../hooks/react-query/images';
 import {COLORS} from '../../lib/constants';
+import {useCurrentUser} from '../../hooks';
 
 export const ISBImageItem = memo(({recipe}: {recipe: Recipe}) => {
-  const {data: imageData, isLoading, error} = useImage(recipe.image);
-
-  if (error) {
+  if (!recipe.image) {
     return null;
   }
 
   return (
     <View style={styles.imageContainer}>
-      {isLoading && <ActivityIndicator size="small" />}
+      <ActivityIndicator size="small" />
       <Image
         style={styles.image}
         source={{
-          uri: imageData?.image.url,
+          uri: recipe.image?.url,
         }}
       />
       <Text style={styles.imageTitle}>{recipe.title}</Text>
@@ -95,9 +93,12 @@ const Slider = ({
 }) => {
   const window = Dimensions.get('window');
   const PAGE_WIDTH = window.width;
+  const {user} = useCurrentUser();
   const progressValue = useSharedValue(0);
   const {data: recipesData, isLoading, error, isRefetching} = useRecipes();
-  const CAROUSEL_ITEMS = recipesData?.recipes;
+  const CAROUSEL_ITEMS = user?.favoriteRecipes
+    ? user.favoriteRecipes
+    : recipesData?.recipes;
 
   const baseOptions = {
     width: PAGE_WIDTH,

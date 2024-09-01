@@ -71,3 +71,33 @@ export const deleteRecipe = async (id: string): Promise<{message: string}> => {
     return Promise.reject(error);
   }
 };
+
+export const addFavoriteRecipe = async (
+  id: string,
+): Promise<{message: string}> => {
+  try {
+    const req = await api.request({
+      url: `/recipes/like/${id}`,
+      method: 'POST',
+    });
+    return req.data;
+  } catch (error) {
+    console.log('🚀 ~ deleteRecipe ~ error:', error);
+    return Promise.reject(error);
+  }
+};
+
+export const removeFavoriteRecipe = async (
+  id: string,
+): Promise<{message: string}> => {
+  try {
+    const req = await api.request({
+      url: `/recipes/unlike/${id}`,
+      method: 'POST',
+    });
+    return req.data;
+  } catch (error) {
+    console.log('🚀 ~ deleteRecipe ~ error:', error);
+    return Promise.reject(error);
+  }
+};

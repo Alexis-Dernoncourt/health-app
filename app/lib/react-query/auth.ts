@@ -12,7 +12,7 @@ import {User} from '../axios/types';
 async function userFn(): Promise<User | null> {
   const storedUser = await storage.getToken('user');
   const {id} = storedUser ? JSON.parse(storedUser) : null;
-  const {user} = await fetchUser(id);
+  const user = await fetchUser(id);
   return user ?? null;
 }
 
