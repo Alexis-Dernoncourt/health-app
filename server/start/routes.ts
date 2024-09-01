@@ -36,6 +36,11 @@ router
       .use(['store', 'update', 'destroy'], middleware.auth())
     router.resource('menus', MenusController).apiOnly().use('*', middleware.auth())
     router
+      .post('image/:id', [UsersController, 'imageUpload'])
+      .use(middleware.auth())
+      .prefix('users')
+
+    router
       .group(() => {
         router.post('like/:id', [RecipesController, 'addFavorites'])
         router.post('unlike/:id', [RecipesController, 'removeFavorites'])
