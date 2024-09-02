@@ -108,7 +108,7 @@ jobs:
             # Lancer un nouveau conteneur à partir de l'image construite
             docker run -d --name app -p 8080:8080 \
               --env-file .env \
-              adonisjs-app:latest
+              app:latest
 
             # Vérifier l'état du conteneur
             docker ps -a | grep app
