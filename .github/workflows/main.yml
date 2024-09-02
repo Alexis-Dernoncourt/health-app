@@ -117,4 +117,4 @@ jobs:
             docker logs app || true
 
             # run migrations
-            docker exec adonisjs_app node ace migration:run --force
+            docker exec app node ace migration:run --force
