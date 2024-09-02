@@ -1,0 +1,59 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Déclenchement lors du push d'un tag correspondant à un format de version
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.16.0'
+
+    - name: Build and Test
+      run: |
+        npm ci
+        npm run build
+        npm test
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: SSH into Server and Deploy
+      uses: appleboy/ssh-action@v0.1.3
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          # Se connecter au serveur
+          cd /home/ubuntu/adonis-app
+
+          # Arrêter et supprimer tout conteneur existant
+          docker stop adonisjs_app || true
+          docker rm adonisjs_app || true
+
+          # Supprimer l'ancienne image si elle existe
+          docker rmi adonisjs-app:latest || true
+
+          # Copier le code depuis le dépôt GitHub
+          git pull origin main
+
+          # Construire l'image Docker sur le serveur
+          docker build -t adonisjs-app:latest .
+
+          # Lancer un nouveau conteneur à partir de l'image construite
+          docker run -d --name adonisjs_app -p 8080:8080 adonisjs-app:latest
