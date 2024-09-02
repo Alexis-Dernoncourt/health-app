@@ -83,8 +83,8 @@ jobs:
           if [ ! -d "/home/ec2-user/adonis-app/.git" ]; then
             git clone https://github.com/Alexis-Dernoncourt/health-app.git /home/ubuntu/adonis-app
           fi
-          cd /server
           git pull origin master
+          cd server/
 
           # Construire l'image Docker sur le serveur
           docker build -t adonisjs-app:latest .
