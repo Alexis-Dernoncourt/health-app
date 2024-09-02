@@ -57,3 +57,4 @@ jobs:
 
           # Lancer un nouveau conteneur à partir de l'image construite
           docker run -d --name adonisjs_app -p 8080:8080 adonisjs-app:latest
+          docker exec adonisjs_app node ace migration:run --force
