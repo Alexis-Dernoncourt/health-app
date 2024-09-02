@@ -1,20 +1,20 @@
 # Étape de base
-FROM node:20.16.0-alpine3.20 as base
+FROM node:20.16.0-alpine3.20 AS base
 
 # Étape pour installer toutes les dépendances (y compris les devDependencies)
-FROM base as deps
+FROM base AS deps
 WORKDIR /
 ADD package.json package-lock.json ./
 RUN npm ci
 
 # Étape pour installer uniquement les dépendances de production
-FROM base as production-deps
+FROM base AS production-deps
 WORKDIR /
 ADD package.json package-lock.json ./
 RUN npm ci --omit=dev
 
 # Étape de construction
-FROM base as build
+FROM base AS build
 WORKDIR /
 COPY --from=deps /node_modules /node_modules
 ADD . .
