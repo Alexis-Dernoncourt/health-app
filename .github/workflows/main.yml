@@ -38,7 +38,7 @@ jobs:
 
     - name: Build and Test
       run: |
-        npm ci
+        npm i
         npm run build
         npm test
 
