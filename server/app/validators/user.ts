@@ -15,3 +15,12 @@ export const userPayloadValidator = vine.compile(
     password: vine.string().minLength(12).maxLength(128).optional(),
   })
 )
+
+export const uploadImageValidator = vine.compile(
+  vine.object({
+    image: vine.file({
+      size: '5mb',
+      extnames: ['jpg', 'png', 'jpeg'],
+    }),
+  })
+)

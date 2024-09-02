@@ -12,6 +12,7 @@ import { middleware } from './kernel.js'
 const AuthController = () => import('#controllers/auth_controller')
 const UsersController = () => import('#controllers/users_controller')
 const RecipesController = () => import('#controllers/recipes_controller')
+const ImagesController = () => import('#controllers/images_controller')
 const MenusController = () => import('#controllers/menus_controller')
 
 router
@@ -25,8 +26,20 @@ router
     router.post('login', [AuthController, 'login'])
     router.post('logout', [AuthController, 'logout']).use(middleware.auth())
     router.resource('users', UsersController).apiOnly().use('*', middleware.auth())
-    router.resource('recipes', RecipesController).apiOnly().use('*', middleware.auth())
+    router
+      .resource('recipes', RecipesController)
+      .apiOnly()
+      .use(['store', 'update', 'destroy'], middleware.auth())
+    router
+      .resource('images', ImagesController)
+      .apiOnly()
+      .use(['store', 'update', 'destroy'], middleware.auth())
     router.resource('menus', MenusController).apiOnly().use('*', middleware.auth())
+    router
+      .post('image/:id', [UsersController, 'imageUpload'])
+      .use(middleware.auth())
+      .prefix('users')
+
     router
       .group(() => {
         router.post('like/:id', [RecipesController, 'addFavorites'])
