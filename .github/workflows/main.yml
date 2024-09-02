@@ -81,7 +81,7 @@ jobs:
 
           # Copier le code depuis le dépôt GitHub
           if [ ! -d "/home/ec2-user/adonis-app/.git" ]; then
-            git clone https://github.com/Alexis-Dernoncourt/health-app.git /home/${SERVER_USERNAME}/adonis-app
+            git clone https://github.com/Alexis-Dernoncourt/health-app.git /home/ubuntu/adonis-app
           fi
           cd /server
           git pull origin master
