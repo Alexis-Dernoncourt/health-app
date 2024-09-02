@@ -26,6 +26,7 @@ jobs:
 
     - name: Set environment variables
       run: |
+        touch .env
         echo "TZ=${{ secrets.TZ }}" >> .env
         echo "PORT=${{ secrets.PORT }}" >> .env
         echo "HOST=${{ secrets.HOST }}" >> .env
@@ -38,6 +39,7 @@ jobs:
         echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
         echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
         echo "DRIVE_DISK=${{ secrets.DRIVE_DISK }}" >> .env
+        cat .env
 
     - name: Set up Node.js
       uses: actions/setup-node@v3
