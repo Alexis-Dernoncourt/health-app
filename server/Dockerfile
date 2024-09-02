@@ -1,5 +1,5 @@
 # Étape de base
-FROM node:20.16.0-alpine3.18 as base
+FROM node:20.16.0-alpine3.20 as base
 
 # Étape pour installer toutes les dépendances (y compris les devDependencies)
 FROM base as deps
