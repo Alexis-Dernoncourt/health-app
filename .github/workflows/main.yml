@@ -87,6 +87,7 @@ jobs:
             cd server/
 
             # Set environment variables
+            if [ ! -d "/home/ubuntu/adonis-app/server/.env" ]; then
             touch .env
             echo "TZ=${{ secrets.TZ }}" >> .env
             echo "PORT=${{ secrets.PORT }}" >> .env
@@ -101,14 +102,16 @@ jobs:
             echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
             echo "DRIVE_DISK=${{ secrets.DRIVE_DISK }}" >> .env
             cat .env
+            fi
 
             # Construire l'image Docker sur le serveur
             docker build -t app:latest .
 
             # Lancer un nouveau conteneur à partir de l'image construite
-            docker run -d --name app -p 8080:8080 \
-              --env-file .env \
-              app:latest
+            # docker run -d --name app -p 8080:8080 \
+            #  --env-file .env \
+            #  app:latest
+            docker-compose up -d
 
             # Vérifier l'état du conteneur
             docker ps -a | grep app
