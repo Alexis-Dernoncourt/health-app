@@ -39,7 +39,7 @@ export default class MenusController {
   async update({ params, auth, request, response }: HttpContext) {
     const user = auth.getUserOrFail().id
     const menu = await Menu.query().where({ user, id: params.id }).first()
-    if (!menu || menu.user !== user) return response.notFound({ message: 'Menu not found' })
+    if (!menu || menu.user.id !== user) return response.notFound({ message: 'Menu not found' })
     const requestPayload = await request.validateUsing(updateMenuValidator)
     if (!Object.keys(requestPayload).length)
       return response.badRequest({ message: 'No data to update or bad payload' })
