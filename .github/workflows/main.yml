@@ -21,7 +21,6 @@ jobs:
         echo "LOG_LEVEL=${{ secrets.LOG_LEVEL }}" >> .env
         echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
         echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
-        echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
         echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
         echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
         echo "DB_USER=${{ secrets.DB_USER }}" >> .env
