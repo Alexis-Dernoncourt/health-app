@@ -80,6 +80,10 @@ jobs:
           # docker rmi adonisjs-app:latest || true
 
           # Copier le code depuis le dépôt GitHub
+          if [ ! -d "/home/ec2-user/adonis-app/.git" ]; then
+            git clone https://github.com/Alexis-Dernoncourt/health-app.git /home/ec2-user/adonis-app
+          fi
+          cd /server
           git pull origin master
 
           # Construire l'image Docker sur le serveur
