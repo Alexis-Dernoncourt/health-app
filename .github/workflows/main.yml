@@ -73,32 +73,32 @@ jobs:
             cd /home/ubuntu/adonis-app
 
             # Arrêter et supprimer tout conteneur existant
-            docker stop adonisjs_app || true
-            docker rm adonisjs_app || true
+            docker stop app || true
+            docker rm app || true
 
             # Supprimer l'ancienne image si elle existe
-            docker rmi adonisjs-app:latest || true
+            docker rmi app:latest || true
 
             # Copier le code depuis le dépôt GitHub
             if [ ! -d "/home/ubuntu/adonis-app/.git" ]; then
               git clone https://github.com/Alexis-Dernoncourt/health-app.git /home/ubuntu/adonis-app
             fi
             git pull origin master
-            # cd server/
+            cd server/
 
             # Construire l'image Docker sur le serveur
-            docker build -t adonisjs-app:latest .
+            docker build -t app:latest .
 
             # Lancer un nouveau conteneur à partir de l'image construite
-            docker run -d --name adonisjs_app -p 8080:8080 \
+            docker run -d --name app -p 8080:8080 \
               --env-file .env \
               adonisjs-app:latest
 
             # Vérifier l'état du conteneur
-            docker ps -a | grep adonisjs_app
+            docker ps -a | grep app
 
             # Afficher les logs du conteneur en cas de problème
-            docker logs adonisjs_app || true
+            docker logs app || true
 
             # run migrations
             docker exec adonisjs_app node ace migration:run --force
