@@ -80,7 +80,7 @@ jobs:
           docker rmi adonisjs-app:latest || true
 
           # Copier le code depuis le dépôt GitHub
-          git pull origin main
+          git pull origin master
 
           # Construire l'image Docker sur le serveur
           docker build -t adonisjs-app:latest .
