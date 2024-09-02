@@ -16,6 +16,14 @@ jobs:
           sparse-checkout: 'server'
           sparse-checkout-cone-mode: false
 
+    - name: Move app files to root
+      run: |
+        ls -lah
+        shopt -s dotglob
+        mv server/* .
+        rm -rf server
+        ls -lah
+
     - name: Set environment variables
       run: |
         echo "TZ=${{ secrets.TZ }}" >> .env
