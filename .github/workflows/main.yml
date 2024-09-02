@@ -73,11 +73,11 @@ jobs:
           cd /home/ubuntu/adonis-app
 
           # Arrêter et supprimer tout conteneur existant
-          docker stop adonisjs_app || true
-          docker rm adonisjs_app || true
+          # docker stop adonisjs_app || true
+          # docker rm adonisjs_app || true
 
           # Supprimer l'ancienne image si elle existe
-          docker rmi adonisjs-app:latest || true
+          # docker rmi adonisjs-app:latest || true
 
           # Copier le code depuis le dépôt GitHub
           git pull origin master
