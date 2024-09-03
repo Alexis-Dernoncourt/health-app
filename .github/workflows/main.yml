@@ -106,19 +106,19 @@ jobs:
             fi
 
             # Construire l'image Docker sur le serveur
-            docker build -t app:latest .
+            # docker build -t app:latest .
 
             # Lancer un nouveau conteneur à partir de l'image construite
             # docker run -d --name app -p 8080:8080 \
             #  --env-file .env \
             #  app:latest
-            docker-compose up
+            docker-compose up -d
 
             # Vérifier l'état du conteneur
             docker ps -a | grep app
 
             # Afficher les logs du conteneur en cas de problème
-            docker logs app || true
+            docker logs || true
 
             # run migrations
-            docker exec app node ace migration:run --force
+            # docker exec app node ace migration:run --force
