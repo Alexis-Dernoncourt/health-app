@@ -77,18 +77,18 @@ jobs:
             # docker rm app || true
 
             # Supprimer l'ancienne image si elle existe
-            docker rmi app:latest || true
-            docker-compose down
+            # docker rmi app:latest || true
 
             # Copier le code depuis le dépôt GitHub
             if [ ! -d "/home/ubuntu/adonis-app/.git" ]; then
               git clone https://github.com/Alexis-Dernoncourt/health-app.git /home/ubuntu/adonis-app
             fi
+            
             git pull origin master
             cd server/
+            docker-compose down
 
             # Set environment variables
-                        
             if [ -f "/home/ubuntu/adonis-app/server/.env" ]; then
               rm .env
             fi
@@ -117,13 +117,13 @@ jobs:
             #  --env-file .env \
             #  app:latest
             docker-compose up -d
-              --env-file .env
 
             # Vérifier l'état du conteneur
             docker ps -a | grep app
 
             # Afficher les logs du conteneur en cas de problème
-            docker logs || true
+            docker-compose logs || true
 
             # run migrations
             # docker exec app node ace migration:run --force
+            node ace migration:run --force
