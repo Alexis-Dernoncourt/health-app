@@ -87,7 +87,7 @@ jobs:
             cd server/
 
             # Set environment variables
-            ls
+            ls -a
             if [ ! -f "/home/ubuntu/adonis-app/server/.env" ]; then
             touch .env
             echo "TZ=${{ secrets.TZ }}" >> .env
@@ -109,9 +109,10 @@ jobs:
             docker build -t app:latest .
 
             # Lancer un nouveau conteneur à partir de l'image construite
-            docker run -d --name app -p 8080:8080 \
-              --env-file .env \
-              app:latest
+            # docker run -d --name app -p 8080:8080 \
+            #  --env-file .env \
+            #  app:latest
+            docker-compose up
 
             # Vérifier l'état du conteneur
             docker ps -a | grep app
