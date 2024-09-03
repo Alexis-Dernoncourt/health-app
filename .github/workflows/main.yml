@@ -73,8 +73,8 @@ jobs:
             cd /home/ubuntu/adonis-app
 
             # Arrêter et supprimer tout conteneur existant
-            docker stop app || true
-            docker rm app || true
+            # docker stop app || true
+            # docker rm app || true
 
             # Supprimer l'ancienne image si elle existe
             docker rmi app:latest || true
@@ -87,8 +87,11 @@ jobs:
             cd server/
 
             # Set environment variables
-            ls -a
-            if [ ! -f "/home/ubuntu/adonis-app/server/.env" ]; then
+                        
+            if [ -f "/home/ubuntu/adonis-app/server/.env" ]; then
+            rm .env
+            fi
+            
             touch .env
             echo "TZ=${{ secrets.TZ }}" >> .env
             echo "PORT=${{ secrets.PORT }}" >> .env
@@ -103,7 +106,7 @@ jobs:
             echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
             echo "DRIVE_DISK=${{ secrets.DRIVE_DISK }}" >> .env
             cat .env
-            fi
+            ls -a
 
             # Construire l'image Docker sur le serveur
             # docker build -t app:latest .
@@ -113,6 +116,7 @@ jobs:
             #  --env-file .env \
             #  app:latest
             docker-compose up -d
+              --env-file .env
 
             # Vérifier l'état du conteneur
             docker ps -a | grep app
