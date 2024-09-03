@@ -78,6 +78,7 @@ jobs:
 
             # Supprimer l'ancienne image si elle existe
             docker rmi app:latest || true
+            docker-compose down
 
             # Copier le code depuis le dépôt GitHub
             if [ ! -d "/home/ubuntu/adonis-app/.git" ]; then
