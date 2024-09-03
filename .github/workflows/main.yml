@@ -126,4 +126,3 @@ jobs:
 
             # run migrations
             # docker exec app node ace migration:run --force
-            node ace migration:run --force
