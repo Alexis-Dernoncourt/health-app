@@ -15,10 +15,7 @@ const dbConfig = defineConfig({
         password: env.get('DB_PASSWORD'),
         database: env.get('DB_DATABASE'),
         ssl: {
-          ca: fs
-            // eslint-disable-next-line unicorn/prefer-module
-            .readFileSync(join(__dirname, '..', 'database/ssl/', 'eu-north-1-bundle.pem'))
-            .toString(),
+          ca: fs.readFileSync('/database/ssl/eu-north-1-bundle.pem').toString(),
           rejectUnauthorized: false,
         },
       },
