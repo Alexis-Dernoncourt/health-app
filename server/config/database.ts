@@ -1,9 +1,6 @@
 import env from '#start/env'
 import { defineConfig } from '@adonisjs/lucid'
 import * as fs from 'node:fs'
-import app from '@adonisjs/core/services/app'
-
-const sslCertPath = app.makePath('database/ssl/eu-north-1-bundle.pem')
 
 const dbConfig = defineConfig({
   connection: 'postgres',
@@ -17,7 +14,7 @@ const dbConfig = defineConfig({
         password: env.get('DB_PASSWORD'),
         database: env.get('DB_DATABASE'),
         ssl: {
-          ca: fs.readFileSync(sslCertPath),
+          ca: fs.readFileSync('database/ssl/eu-north-1-bundle.pem').toString(),
           rejectUnauthorized: false,
         },
       },
