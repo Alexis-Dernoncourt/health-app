@@ -89,9 +89,9 @@ jobs:
             # Set environment variables
                         
             if [ -f "/home/ubuntu/adonis-app/server/.env" ]; then
-            rm .env
+              rm .env
             fi
-            
+
             touch .env
             echo "TZ=${{ secrets.TZ }}" >> .env
             echo "PORT=${{ secrets.PORT }}" >> .env
