@@ -1,6 +1,6 @@
 import env from '#start/env'
 import { defineConfig } from '@adonisjs/lucid'
-import * as fs from 'node:fs'
+import fs from 'node:fs'
 
 const dbConfig = defineConfig({
   connection: 'postgres',
