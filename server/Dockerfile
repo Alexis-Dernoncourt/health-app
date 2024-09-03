@@ -5,7 +5,7 @@ FROM node:20.16.0-alpine3.20 AS base
 FROM base AS deps
 WORKDIR /
 # Copier le certificat SSL dans le conteneur
-COPY /database/ssl/eu-north-1-bundle.pem /etc/ssl/certs/eu-north-1-bundle.pem
+COPY /database/ssl/eu-north-1-bundle.pem /database/ssl/eu-north-1-bundle.pem
 ADD package.json package-lock.json ./
 RUN npm ci
 
