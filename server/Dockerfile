@@ -18,8 +18,6 @@ FROM base AS build
 WORKDIR /
 COPY --from=deps /node_modules /node_modules
 ADD . .
-# Copier le certificat SSL dans le conteneur
-COPY --from=deps /database/ssl ./database/ssl
 RUN node ace build
 
 # Étape finale de production
