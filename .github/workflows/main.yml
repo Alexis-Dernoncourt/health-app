@@ -76,7 +76,6 @@ jobs:
             # Arrêter et supprimer tout conteneur existant
             docker stop app || true
             docker rm app || true
-            docker-compose down
 
             # Supprimer l'ancienne image si elle existe
             docker rmi app:latest || true
