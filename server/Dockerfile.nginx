@@ -1,0 +1,12 @@
+# Utiliser une image Nginx officielle comme base
+FROM nginx:alpine
+
+# Copier la configuration Nginx dans le conteneur
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copier les certificats SSL dans le conteneur
+COPY ssl/cert.pem /etc/nginx/ssl/cert.pem
+COPY ssl/key.pem /etc/nginx/ssl/key.pem
+
+# Exposer les ports 80 et 443
+EXPOSE 80 443

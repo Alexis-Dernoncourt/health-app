@@ -74,8 +74,9 @@ jobs:
             cd /home/ubuntu/adonis-app
 
             # Arrêter et supprimer tout conteneur existant
-            docker stop app || true
-            docker rm app || true
+            # docker stop app || true
+            # docker rm app || true
+            docker-compose down
 
             # Supprimer l'ancienne image si elle existe
             docker rmi app:latest || true
@@ -112,17 +113,18 @@ jobs:
             ls -a
 
             # Construire l'image Docker sur le serveur
-            docker build -t app:latest .
+            # docker build -t app:latest .
+            docker-compose build
 
             # Lancer un nouveau conteneur à partir de l'image construite
-            docker run -d --name app -p 3333:3333 --env-file .env app:latest
-            # docker-compose up -d
+            # docker run -d --name app -p 3333:3333 --env-file .env app:latest
+            docker-compose up -d
 
             # Vérifier l'état du conteneur
             docker ps -a | grep app
 
             # Afficher les logs du conteneur en cas de problème
-            docker logs || true
+            # docker logs || true
 
             # run migrations
-            docker exec app node ace migration:run --force
+            # docker exec adonis_app node ace migration:run --force
