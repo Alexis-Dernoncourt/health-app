@@ -72,61 +72,61 @@ jobs:
           key: ${{secrets.SSH_PRIVATE_KEY}}
           script: |
             # Se connecter au serveur
-            # echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-            # ssh -o StrictHostKeyChecking=no -i private_key ${SERVER_USERNAME}@${SERVER_HOST}
-            # Copier le code depuis le dépôt GitHub
-            if [ ! -d "/home/ubuntu/adonis-app/.git" ]; then
+            cd /home/ubuntu/adonis-app || {
+              echo "Dossier inexistant, clonage du dépôt"
               git clone https://github.com/Alexis-Dernoncourt/health-app.git /home/ubuntu/adonis-app
-            fi
+            }
 
             cd /home/ubuntu/adonis-app
-            git pull origin master
+            git pull origin master || {
+              echo "Impossible de pull le code, tentative de reconnexion"
+              exit 1
+            }
 
-            # Arrêter et supprimer tout conteneur existant
-            # docker stop app || true
-            # docker rm app || true
-
-            # Supprimer l'ancienne image si elle existe
-            # docker rmi app:latest || true
-
+            # Arrêter et supprimer les anciens conteneurs Docker
             cd server/
             docker-compose down || true
 
-            # Set environment variables
-            if [ -f "/home/ubuntu/adonis-app/server/.env" ]; then
-              rm .env
+            # Recréer le fichier .env seulement si nécessaire
+            if [ ! -f "/home/ubuntu/adonis-app/server/.env" ]; then
+              echo "Création du fichier .env"
+              touch .env
+              echo "TZ=${{ secrets.TZ }}" >> .env
+              echo "PORT=${{ secrets.PORT }}" >> .env
+              echo "HOST=${{ secrets.HOST }}" >> .env
+              echo "LOG_LEVEL=${{ secrets.LOG_LEVEL }}" >> .env
+              echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
+              echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
+              echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+              echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+              echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+              echo "DB_SSL=${{ secrets.DB_SSL }}" >> .env
+              echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+              echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
+              echo "DRIVE_DISK=${{ secrets.DRIVE_DISK }}" >> .env
             fi
 
-            touch .env
-            echo "TZ=${{ secrets.TZ }}" >> .env
-            echo "PORT=${{ secrets.PORT }}" >> .env
-            echo "HOST=${{ secrets.HOST }}" >> .env
-            echo "LOG_LEVEL=${{ secrets.LOG_LEVEL }}" >> .env
-            echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
-            echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
-            echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-            echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-            echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-            echo "DB_SSL=${{ secrets.DB_SSL }}" >> .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-            echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
-            echo "DRIVE_DISK=${{ secrets.DRIVE_DISK }}" >> .env
+            # Vérification du contenu de .env
             cat .env
-            ls -a
 
-            # Construire l'image Docker sur le serveur
-            # docker build -t app:latest .
-            docker-compose build
+            # Construire et lancer les services via Docker Compose
+            docker-compose build || {
+              echo "La construction Docker a échoué"
+              exit 1
+            }
+            docker-compose up -d || {
+              echo "Le démarrage des services Docker a échoué"
+              exit 1
+            }
 
-            # Lancer un nouveau conteneur à partir de l'image construite
-            # docker run -d --name app -p 3333:3333 --env-file .env app:latest
-            docker-compose up -d
+            # Vérification de l'état des conteneurs Docker
+            docker ps -a | grep app || {
+              echo "Aucun conteneur app en cours d'exécution"
+              exit 1
+            }
 
-            # Vérifier l'état du conteneur
-            docker ps -a | grep app
-
-            # Afficher les logs du conteneur en cas de problème
-            # docker logs || true
-
-            # run migrations
-            # docker exec adonis_app node ace migration:run --force
+            # Exécuter les migrations Adonis.js
+            docker exec adonis_app node ace migration:run --force || {
+              echo "Échec des migrations"
+              exit 1
+            }
