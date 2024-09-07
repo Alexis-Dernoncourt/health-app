@@ -8,7 +8,6 @@ tmp
 .env.local
 .env.production.local
 .env.development.local
-ssl
 database/ssl
 
 # Frontend assets compiled code
