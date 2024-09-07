@@ -56,12 +56,13 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          repository: 'votre-utilisateur/votre-depot'
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: SSH into Server and Deploy
         uses: appleboy/ssh-action@master
