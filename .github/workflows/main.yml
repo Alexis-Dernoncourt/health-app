@@ -63,7 +63,7 @@ jobs:
 
       - name: SSH into Server and Deploy
         uses: appleboy/ssh-action@master
-        env:
+        envs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           host: ${{ secrets.SERVER_HOST }}
