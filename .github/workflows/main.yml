@@ -63,13 +63,13 @@ jobs:
 
       - name: SSH into Server and Deploy
         uses: appleboy/ssh-action@master
-      - env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{secrets.SERVER_USERNAME}}
           key: ${{secrets.SSH_PRIVATE_KEY}}
-          run: |
+          - env:
+              GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          script: |
             # Se connecter au serveur
             # echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
             # ssh -o StrictHostKeyChecking=no -i private_key ${SERVER_USERNAME}@${SERVER_HOST}
