@@ -73,21 +73,21 @@ jobs:
             # Se connecter au serveur
             # echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
             # ssh -o StrictHostKeyChecking=no -i private_key ${SERVER_USERNAME}@${SERVER_HOST}
-            cd /home/ubuntu/adonis-app
-
-            # Arrêter et supprimer tout conteneur existant
-            docker stop app || true
-            docker rm app || true
-
-            # Supprimer l'ancienne image si elle existe
-            docker rmi app:latest || true
-
             # Copier le code depuis le dépôt GitHub
             if [ ! -d "/home/ubuntu/adonis-app/.git" ]; then
               git clone https://github.com/Alexis-Dernoncourt/health-app.git /home/ubuntu/adonis-app
             fi
 
+            cd /home/ubuntu/adonis-app
             git pull origin master
+
+            # Arrêter et supprimer tout conteneur existant
+            # docker stop app || true
+            # docker rm app || true
+
+            # Supprimer l'ancienne image si elle existe
+            # docker rmi app:latest || true
+
             cd server/
             docker-compose down || true
 
