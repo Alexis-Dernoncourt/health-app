@@ -61,7 +61,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          repository: 'votre-utilisateur/votre-depot'
+          repository: 'Alexis-Dernoncourt/health-app'
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: SSH into Server and Deploy
