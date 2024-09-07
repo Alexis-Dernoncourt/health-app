@@ -11,6 +11,19 @@ services:
     ports:
       - '3333:3333'
     environment:
+      - TZ=${TZ}
+      - PORT=${PORT}
+      - HOST=${HOST}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - APP_KEY=${APP_KEY}
+      - NODE_ENV=${NODE_ENV}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_SSL=${DB_SSL}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+      - DRIVE_DISK=${DRIVE_DISK}
       # Autres variables d'environnement nécessaires
     networks:
       - app-network
