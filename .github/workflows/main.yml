@@ -12,10 +12,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          sparse-checkout: 'server'
+          sparse-checkout-cone-mode: false
+
+      - name: Move app files to root
+        run: |
+          ls -lah
+          echo "Moving app files to root"
+          shopt -s dotglob
+          mv server/* .
+          rm -rf server
+          ls -a
 
       - name: Set environment variables
         run: |
-          cd server
           touch .env
           echo "TZ=${{ secrets.TZ }}" >> .env
           echo "PORT=${{ secrets.PORT }}" >> .env
@@ -52,6 +63,8 @@ jobs:
     steps:
       - name: Verify the project
         run: |
+          ls -a
+          cd ./
           ls -a
 
       - name: Deploy via FTP to O2Switch
