@@ -54,6 +54,7 @@ jobs:
           npm ci
           npm run build
           npm test
+          ls -a
 
   deploy:
     needs: build
@@ -66,7 +67,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./build/ # Dossier de build du projet
+          local-dir: /build/ # Dossier de build du projet
           server-dir: /www/health-app/ # Chemin distant sur le serveur O2Switch
 
       - name: SSH into Server and Run Migrations
