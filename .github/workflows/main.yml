@@ -16,15 +16,6 @@ jobs:
           sparse-checkout: 'server'
           sparse-checkout-cone-mode: false
 
-      - name: Move app files to root
-        run: |
-          ls -lah
-          echo "Moving app files to root"
-          shopt -s dotglob
-          mv server/* .
-          rm -rf server
-          ls -a
-
       - name: Set environment variables
         run: |
           touch .env
