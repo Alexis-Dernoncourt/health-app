@@ -96,4 +96,3 @@ jobs:
           script: |
             cd /www/health-app
             node ace migration:run --force
-          ssh-options: '-o PubkeyAuthentication=yes'
