@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Verify the project
+      - name: Verify the project
         run: |
           ls -a
 
