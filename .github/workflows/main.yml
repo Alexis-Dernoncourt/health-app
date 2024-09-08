@@ -88,11 +88,11 @@ jobs:
 
       # Ajouter un agent SSH pour gérer la clé protégée par passphrase
       - name: Start SSH agent and load key
-        uses: webfactory/ssh-agent@v0.5.3
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          ssh-passphrase: ${{ secrets.SSH_PASSPHRASE }}
 
+      # SSH into server and run migrations
       - name: SSH into Server and Run Migrations
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} <<EOF
