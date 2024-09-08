@@ -55,12 +55,22 @@ jobs:
           npm run build
           npm test
           ls -a
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-files
+          path: ./build
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-files
+
       - name: Verify the project
         run: |
           ls -a
