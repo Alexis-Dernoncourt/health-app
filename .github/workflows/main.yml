@@ -61,13 +61,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Verify the project
+        run: |
+          ls -a
+
       - name: Deploy via FTP to O2Switch
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./server/build/ # Dossier de build du projet
+          local-dir: /build/ # Dossier de build du projet
           server-dir: /www/health-app/ # Chemin distant sur le serveur O2Switch
 
       - name: SSH into Server and Run Migrations
