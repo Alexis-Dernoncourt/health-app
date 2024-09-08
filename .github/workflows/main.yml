@@ -63,9 +63,9 @@ jobs:
       - name: Deploy via FTP to O2Switch
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
-          ftp-server: ${{ secrets.FTP_SERVER }}
-          ftp-username: ${{ secrets.FTP_USERNAME }}
-          ftp-password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist # Dossier de build du projet
           server-dir: /www/health-app/ # Chemin distant sur le serveur O2Switch
 
