@@ -88,7 +88,7 @@ jobs:
 
       # Ajouter un agent SSH pour gérer la clé protégée par passphrase
       - name: Start SSH agent and load key
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
