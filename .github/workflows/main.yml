@@ -131,3 +131,9 @@ jobs:
               echo "Échec des migrations"
               exit 1
             }
+
+            # Redémarrer Certbot pour obtenir un certificat SSL à jour
+            docker-compose run certbot renew --dry-run || {
+              echo "Certbot SSL renouvelé"
+              exit 1
+            }
