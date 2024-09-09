@@ -87,7 +87,7 @@ jobs:
       #     server-dir: /www/health-app/ # Chemin distant sur le serveur O2Switch
 
       - name: SSH into Server and Run Migrations
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
