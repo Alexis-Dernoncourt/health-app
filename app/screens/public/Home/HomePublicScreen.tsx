@@ -3,13 +3,14 @@ import {useLogin} from '../../../lib/react-query/auth';
 import {Button, Text} from 'react-native-paper';
 import {ScrollView, View} from 'react-native';
 import {styles} from '../../auth/Home/styles';
-import {HomeTabScreenProps} from '../../../navigation/types';
+// import {HomeTabScreenProps} from '../../../navigation/types';
 import Config from 'react-native-config';
 import Layout from '../../Layout';
 import HomeHeader from '../../../components/Home/HomeHeader';
 import Slider from '../../../components/Home/Slider';
 
-const HomePublic = ({navigation}: HomeTabScreenProps<'Home'>) => {
+// const HomePublic = ({navigation}: HomeTabScreenProps<'Home'>) => {
+const HomePublic = () => {
   const [scrollEnabled, setScrollEnabled] = React.useState(true);
   const login = useLogin();
 
@@ -34,14 +35,10 @@ const HomePublic = ({navigation}: HomeTabScreenProps<'Home'>) => {
           <Text style={styles.titleSection}>Les dernières recettes</Text>
           <Slider setScrollEnabled={setScrollEnabled} />
         </View>
-        <View style={styles.container}>
+        <View style={styles.buttonContainer}>
           <Button
-            style={{marginTop: 30}}
-            onPress={() => navigation.navigate('SignIn')}>
-            Go to TOTO page
-          </Button>
-          <Button
-            style={{marginTop: 30}}
+            style={styles.buttonStyles}
+            labelStyle={styles.buttonContentStyle}
             onPress={() => loginTest()}
             disabled={login.isLoading}>
             Test login

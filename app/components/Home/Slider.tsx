@@ -96,7 +96,7 @@ const Slider = ({
   const {user} = useCurrentUser();
   const progressValue = useSharedValue(0);
   const {data: recipesData, isLoading, error, isRefetching} = useRecipes();
-  const CAROUSEL_ITEMS = user?.favoriteRecipes
+  const CAROUSEL_ITEMS = user?.favoriteRecipes?.length
     ? user.favoriteRecipes
     : recipesData?.recipes;
 
