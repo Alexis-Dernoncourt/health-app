@@ -40,8 +40,8 @@ const Home = ({navigation}: HomeTabScreenProps<'Home'>) => {
             {user?.lastname || 'no user'}
           </Text>
         </View>
-        <Button onPress={() => navigation.navigate('Profile')}>
-          Go to Details
+        <Button onPress={() => navigation.navigate('Recipes')}>
+          Go to Recipes
         </Button>
         <Button
           style={styles.elementMargin}

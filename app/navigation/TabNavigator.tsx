@@ -8,6 +8,7 @@ import {
   SigninScreen,
   RegisterScreen,
   RecipesScreen,
+  AddRecipeScreen,
 } from '../screens';
 import {HomeTabParamList} from './types';
 import {useCurrentUser} from '../hooks';
@@ -114,6 +115,11 @@ export default function TabNavigator() {
                 );
               },
             }}
+          />
+          <Tab.Screen
+            name="AddRecipe"
+            component={AddRecipeScreen}
+            options={{tabBarItemStyle: {display: 'none'}}}
           />
         </Tab.Group>
       ) : (

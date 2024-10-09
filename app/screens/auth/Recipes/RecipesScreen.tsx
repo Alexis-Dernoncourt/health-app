@@ -1,9 +1,10 @@
 import {
   FlatList,
+  Image,
   ListRenderItem,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import React from 'react';
@@ -11,8 +12,9 @@ import Layout from '../../Layout';
 import {useRecipes} from '../../../hooks/react-query/recipes';
 import {Recipe} from '../../../lib/axios/types';
 import {COLORS} from '../../../lib/constants';
+import {HomeTabScreenProps} from '../../../navigation/types';
 
-const RecipesScreen = () => {
+const RecipesScreen = ({navigation}: HomeTabScreenProps<'Recipes'>) => {
   const {
     data: recipesData,
     // isLoading,
@@ -38,6 +40,7 @@ const RecipesScreen = () => {
       <View style={styles.container}>
         <Text>Les recettes</Text>
         <FlatList
+          //   ListHeaderComponent={ListHeaderComponent}
           //   ListFooterComponent={ListFooterComponent}
           contentContainerStyle={styles.flatListWrapper}
           style={styles.flatListStyles}
@@ -51,21 +54,42 @@ const RecipesScreen = () => {
           renderItem={renderItem}
         />
       </View>
-      <TouchableOpacity style={styles.buttonAddContainer} activeOpacity={0.7}>
-        <Text style={styles.buttonAddPlus}>+</Text>
-        <Text>Ajouter une recette</Text>
-      </TouchableOpacity>
+      <Pressable
+        style={styles.buttonAddContainer}
+        android_ripple={{
+          color: COLORS.primary,
+          borderless: true,
+          radius: 60,
+          foreground: true,
+        }}
+        onPress={() => navigation.navigate('AddRecipe')}>
+        <View style={styles.buttonAddPlus}>
+          <Text style={styles.buttonAddPlusText}>+</Text>
+        </View>
+        <View style={styles.buttonAddTextContainer}>
+          <Text style={styles.buttonAddText}>Ajouter une recette</Text>
+        </View>
+      </Pressable>
     </Layout>
   );
 };
 
+// const ListHeaderComponent = () => <Text>ListHeaderComponent</Text>;
 // const ListFooterComponent = () => <Text>ListFooterComponent</Text>;
 
 const renderEmptyItem = () => <Text>Il n'y a pas de recettes</Text>;
 
 const renderItem: ListRenderItem<Recipe> | undefined = ({item}) => (
   <View style={styles.flatListItemWrapper}>
-    <Text>{item.title}</Text>
+    <Image
+      style={styles.image}
+      source={{
+        uri: item.image?.url,
+      }}
+    />
+    <View style={styles.flatListItemContent}>
+      <Text>{item.title}</Text>
+    </View>
   </View>
 );
 export default RecipesScreen;
@@ -77,19 +101,33 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   flatListWrapper: {
-    alignItems: 'center',
+    width: '100%',
+    alignItems: 'stretch',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
   },
   flatListStyles: {
     width: '100%',
   },
   flatListItemWrapper: {
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
+    borderRadius: 4,
     backgroundColor: 'red',
-    width: 250,
+    width: '100%',
+    height: 200,
     marginVertical: 10,
+    overflow: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
+  flatListItemContent: {
+    padding: 20,
   },
   errorText: {
     marginTop: 20,
@@ -111,13 +149,26 @@ const styles = StyleSheet.create({
   buttonAddPlus: {
     width: 50,
     height: 50,
-    fontSize: 20,
-    fontWeight: 'bold',
-    borderRadius: 50,
-    padding: 10,
-    textAlign: 'center',
-    color: COLORS.white,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: COLORS.primary,
     borderColor: COLORS.primary_accent,
+  },
+  buttonAddPlusText: {
+    fontSize: 32,
+    lineHeight: 35,
+    fontWeight: 'thin',
+    color: COLORS.black,
+  },
+  buttonAddTextContainer: {
+    backgroundColor: COLORS.white,
+    borderRadius: 2,
+    marginTop: 5,
+    padding: 5,
+  },
+  buttonAddText: {
+    color: COLORS.black,
+    fontSize: 12,
   },
 });
