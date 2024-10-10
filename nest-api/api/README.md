@@ -1,4 +1,6 @@
-## Please run `docker-compse up -d` from `server` folder before start this api.
+## Please run `docker-compose up -d` from `server` folder before start this api.
+
+# Don't forget to add a `.env` file with a value of `JWT_SECRET`.
 
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>

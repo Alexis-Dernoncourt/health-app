@@ -1,20 +1,32 @@
 import {
-  CanActivate,
+  // CanActivate,
   ExecutionContext,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { AuthAccessTokens } from './entities/access-token.entity';
+import { EntityManager } from '@mikro-orm/postgresql';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+export class AuthGuard extends JwtAuthGuard {
+  constructor(
+    private jwtService: JwtService,
+    private readonly em: EntityManager,
+  ) {
+    super();
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
-    if (!token) {
+    const accessToken = await this.em.findOne(AuthAccessTokens, {
+      hash: token,
+    });
+    console.log('🚀 ~ AuthGuard ~ canActivate ~ accessToken:', accessToken);
+    if (!token || !accessToken) {
       throw new UnauthorizedException();
     }
     try {

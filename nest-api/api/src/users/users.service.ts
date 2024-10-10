@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Users } from './entities/user.entity';
 import { EntityManager } from '@mikro-orm/postgresql';
 import * as bcrypt from 'bcryptjs';
+import { AuthAccessTokens } from 'src/auth/entities/access-token.entity';
 
 @Injectable()
 export class UsersService {
@@ -39,7 +40,7 @@ export class UsersService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       return await this.em.findOneOrFail(Users, { id });
     } catch (error) {
@@ -53,7 +54,18 @@ export class UsersService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    try {
+      const user = await this.em.findOneOrFail(Users, { id });
+      const userToken = await this.em.findOneOrFail(AuthAccessTokens, {
+        tokenable: user.id,
+      });
+      this.em.removeAndFlush(user);
+      this.em.removeAndFlush(userToken);
+      return `The #${id} user was deleted`;
+    } catch (error) {
+      console.log('🚀 ~ UsersService ~ findOne ~ error:', error);
+      throw new HttpException("Can't found this user", 400);
+    }
   }
 }

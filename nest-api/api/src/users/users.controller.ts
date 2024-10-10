@@ -13,9 +13,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Users } from './entities/user.entity';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard)
 @Controller('/api/v1/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -32,7 +32,7 @@ export class UsersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')
@@ -42,6 +42,6 @@ export class UsersController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    return this.usersService.remove(id);
   }
 }
