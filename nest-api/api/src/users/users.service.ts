@@ -49,9 +49,16 @@ export class UsersService {
     }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    console.log('🚀 ~ UsersService ~ update ~ updateUserDto:', updateUserDto);
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    try {
+      await this.em.findOneOrFail(Users, { id });
+      const updatedUser = updateUserDto;
+      await this.em.nativeUpdate(Users, id, { ...updatedUser });
+    } catch (error) {
+      console.log('🚀 ~ UsersService ~ findOne ~ error:', error);
+      throw new HttpException("Can't found this user", 400);
+    }
+    return `The #${id} user was updated`;
   }
 
   async remove(id: string) {
