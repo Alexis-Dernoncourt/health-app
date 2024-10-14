@@ -53,10 +53,15 @@ export class UsersService {
     try {
       await this.em.findOneOrFail(Users, { id });
       const updatedUser = updateUserDto;
-      await this.em.nativeUpdate(Users, id, { ...updatedUser });
+      try {
+        await this.em.nativeUpdate(Users, id, { ...updatedUser });
+      } catch (error) {
+        console.log('🚀 ~ UsersService ~ update ~ error:', error);
+        throw new Error("Can't update user");
+      }
     } catch (error) {
       console.log('🚀 ~ UsersService ~ findOne ~ error:', error);
-      throw new HttpException("Can't found this user", 400);
+      throw new HttpException(error.message ?? "Can't found this user", 400);
     }
     return `The #${id} user was updated`;
   }
