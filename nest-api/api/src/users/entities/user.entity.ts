@@ -5,7 +5,7 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { FavoritedRecipe } from 'src/recipes/entities/FavoritedRecipe.entity';
+import { UserFavorites } from 'src/recipes/entities/FavoritedRecipe.entity';
 import { Recipes } from 'src/recipes/entities/recipe.entity';
 
 @Entity()
@@ -37,7 +37,7 @@ export class Users {
   @ManyToMany(() => Recipes, (recipe) => recipe.usersWhoFavorited, {
     owner: true,
     nullable: true,
-    pivotEntity: () => FavoritedRecipe,
+    pivotEntity: () => UserFavorites,
   })
   favorites = new Collection<Recipes>(this);
 }

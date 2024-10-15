@@ -3,6 +3,8 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { Recipes } from './entities/recipe.entity';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { Users } from 'src/users/entities/user.entity';
+import { UserFavorites } from './entities/FavoritedRecipe.entity';
 
 @Injectable()
 export class RecipesService {
@@ -77,6 +79,36 @@ export class RecipesService {
     } catch (error) {
       console.log('🚀 ~ RecipeService ~ findOne ~ error:', error);
       throw new HttpException("Can't found this recipe", 400);
+    }
+  }
+
+  async addFavoriteRecipe(recipeId: string, userId: string): Promise<void> {
+    const user = await this.em.findOneOrFail(Users, { id: userId });
+    const recipe = await this.em.findOneOrFail(Recipes, recipeId);
+
+    try {
+      user.favorites.add(recipe);
+      await this.em.persistAndFlush(user);
+    } catch (error) {
+      console.log('🚀 ~ RecipesService ~ addFavoriteRecipe ~ error:', error);
+      throw new HttpException("Can't add this recipe to favorites", 400);
+    }
+  }
+
+  async removeFavoriteRecipe(recipeId: string, userId: string): Promise<void> {
+    try {
+      const favoriteRecipe = await this.em.findOneOrFail(UserFavorites, {
+        user: { id: userId },
+        recipe: { id: recipeId },
+      });
+      await this.em.nativeDelete(UserFavorites, {
+        id: favoriteRecipe.id,
+        user: { id: userId },
+        recipe: { id: recipeId },
+      });
+    } catch (error) {
+      console.log('🚀 ~ RecipesService ~ removeFavoriteRecipe ~ error:', error);
+      throw new HttpException("Can't remove this recipe from favorites", 400);
     }
   }
 }

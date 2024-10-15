@@ -8,16 +8,13 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { AuthAccessTokens } from './entities/access-token.entity';
 import { EntityManager } from '@mikro-orm/postgresql';
-import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Injectable()
-export class AuthGuard extends JwtAuthGuard {
+export class AuthGuard {
   constructor(
     private jwtService: JwtService,
     private readonly em: EntityManager,
-  ) {
-    super();
-  }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();

@@ -15,7 +15,7 @@ import { LoginDto, LoginSchema } from './dto/auth-login.dto';
 import { ZodValidationPipe } from 'src/zod-pipe/zod-pipe';
 import { SigninDto, SigninSchema } from './dto/auth-signin.dto';
 import { Request, Response } from 'express';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { AuthGuard } from './auth.guard';
 @Controller('/api/v1/')
 export class AuthController {
   constructor(private AuthService: AuthService) {}
@@ -41,7 +41,7 @@ export class AuthController {
     };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Post('logout')
   async logout(
     @Req() req: Request,
