@@ -1,9 +1,17 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  ManyToMany,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
+import { FavoritedRecipe } from 'src/recipes/entities/FavoritedRecipe.entity';
+import { Recipes } from 'src/recipes/entities/recipe.entity';
 
 @Entity()
 export class Users {
-  @PrimaryKey()
-  id!: number;
+  @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
+  id!: string;
 
   @Property({ nullable: true })
   image?: string;
@@ -26,6 +34,10 @@ export class Users {
   @Property({ onUpdate: () => new Date() })
   updatedAt = new Date();
 
-  @Property()
-  favorites?: string;
+  @ManyToMany(() => Recipes, (recipe) => recipe.usersWhoFavorited, {
+    owner: true,
+    nullable: true,
+    pivotEntity: () => FavoritedRecipe,
+  })
+  favorites = new Collection<Recipes>(this);
 }

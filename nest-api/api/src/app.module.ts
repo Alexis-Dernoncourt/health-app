@@ -8,6 +8,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import config from './database/mikro-orm.config';
 import { ConfigModule } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { RecipesModule } from './recipes/recipes.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { JwtService } from '@nestjs/jwt';
     MikroOrmModule.forRoot(config),
     AuthModule,
     UsersModule,
+    RecipesModule,
   ],
   controllers: [AppController],
   providers: [AppService, AuthService, JwtService],

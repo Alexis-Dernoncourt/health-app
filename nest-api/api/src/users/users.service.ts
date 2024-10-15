@@ -27,8 +27,8 @@ export class UsersService {
     }
   }
 
-  findAll(): Promise<Users[]> {
-    return this.em.findAll(Users);
+  async findAll(): Promise<Users[]> {
+    return await this.em.findAll(Users);
   }
 
   async findByEmail(email: string): Promise<Users | null> {
