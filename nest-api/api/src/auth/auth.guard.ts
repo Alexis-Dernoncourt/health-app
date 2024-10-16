@@ -8,13 +8,15 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { AuthAccessTokens } from './entities/access-token.entity';
 import { EntityManager } from '@mikro-orm/postgresql';
-
+import { AuthGuard as JwtAuthGuard } from '@nestjs/passport';
 @Injectable()
-export class AuthGuard {
+export class AuthGuard extends JwtAuthGuard('jwt') {
   constructor(
     private jwtService: JwtService,
     private readonly em: EntityManager,
-  ) {}
+  ) {
+    super();
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -32,11 +34,22 @@ export class AuthGuard {
       });
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
-      request['user'] = { ...payload, token };
+      request.user = { ...payload, token };
+      return true;
     } catch {
       throw new UnauthorizedException();
     }
-    return true;
+  }
+
+  handleRequest(err, user, info) {
+    console.log('🚀 ~ ICIAuthGuard ~ handleRequest ~ err:', err);
+    console.log('🚀 ~ ICIAuthGuard ~ handleRequest ~ user:', user);
+    console.log('🚀 ~ ICIAuthGuard ~ handleRequest ~ info:', info);
+    // You can throw an exception based on either "info" or "err" arguments
+    if (err || !user) {
+      throw err || new UnauthorizedException();
+    }
+    return user;
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {

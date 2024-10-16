@@ -22,7 +22,7 @@ export class Recipes {
   description!: string;
 
   /*
-    {
+    ingredients type: {
       name: string;
       quantity: string;
       unit: string;
@@ -32,7 +32,7 @@ export class Recipes {
   ingredients?: string;
 
   /*
-    {
+    steps type: {
       number: number;
       text: string;
       warning?: string;

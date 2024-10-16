@@ -14,7 +14,8 @@ import { AuthService } from './auth.service';
 import { LoginDto, LoginSchema } from './dto/auth-login.dto';
 import { ZodValidationPipe } from 'src/zod-pipe/zod-pipe';
 import { SigninDto, SigninSchema } from './dto/auth-signin.dto';
-import { Request, Response } from 'express';
+import { RequestWithUser } from './jwt.strategy';
+import { Response } from 'express';
 import { AuthGuard } from './auth.guard';
 @Controller('/api/v1/')
 export class AuthController {
@@ -44,19 +45,10 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Post('logout')
   async logout(
-    @Req() req: Request,
+    @Req() req: RequestWithUser,
     @Res() response: Response,
   ): Promise<typeof response> {
-    const user = req.user as {
-      email: string;
-      sub: number;
-      iat: number;
-      exp: number;
-      aud: string;
-      token: string;
-    };
-
-    const result = await this.AuthService.logout(user.token);
+    const result = await this.AuthService.logout(req.user.token);
     if (!result) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }

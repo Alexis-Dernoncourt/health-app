@@ -38,8 +38,8 @@ export class AuthService {
     if (!validateUser) {
       throw new UnauthorizedException();
     }
-    const jwtPayload = { email: validateUser.email, sub: validateUser.id };
-    const accessToken = await this.jwtService.signAsync(jwtPayload, {
+    const jwtPayload = { email: validateUser.email, userId: validateUser.id };
+    const accessToken = this.jwtService.sign(jwtPayload, {
       secret: process.env.JWT_SECRET,
       expiresIn: '7d',
       audience: 'users',
@@ -53,7 +53,6 @@ export class AuthService {
       expiresAt: decodedToken.exp,
       lastUsedAt: new Date(Date.now()),
     });
-    // TODO: check if token already exists ?
     await this.em.persistAndFlush(saveAccessToken);
     return { accessToken };
   }

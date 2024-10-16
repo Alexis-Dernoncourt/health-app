@@ -14,6 +14,8 @@ import { Recipes } from './entities/recipe.entity';
 import { RecipesService } from './recipes.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { RequestWithUser } from 'src/auth/jwt.strategy';
+import { CreateRecipeDto } from './dto/create-recipe.dto';
 
 @UseGuards(AuthGuard)
 @Controller('/api/v1/recipes')
@@ -21,7 +23,7 @@ export class RecipesController {
   constructor(private readonly recipeService: RecipesService) {}
   @InjectRepository(Recipes)
   @Post()
-  protected async create(@Body() createRecipeDto: any) {
+  protected async create(@Body() createRecipeDto: CreateRecipeDto) {
     return this.recipeService.create(createRecipeDto);
   }
 
@@ -48,34 +50,18 @@ export class RecipesController {
   @Post('/like/:id')
   async addFavoriteRecipe(
     @Param('id') id: string,
-    @Req() req: Request,
+    @Req() req: RequestWithUser,
   ): Promise<void> {
-    const userReq = req['user'] as {
-      email: string;
-      sub: number;
-      iat: number;
-      exp: number;
-      aud: string;
-      token: string;
-    };
-    const userId = String(userReq.sub);
+    const userId = String(req.user.userId);
     return this.recipeService.addFavoriteRecipe(id, userId);
   }
 
   @Post('/unlike/:id')
   async removeFavoriteRecipe(
     @Param('id') id: string,
-    @Req() req: Request,
+    @Req() req: RequestWithUser,
   ): Promise<void> {
-    const userReq = req['user'] as {
-      email: string;
-      sub: number;
-      iat: number;
-      exp: number;
-      aud: string;
-      token: string;
-    };
-    const userId = String(userReq.sub);
+    const userId = String(req.user.userId);
     return this.recipeService.removeFavoriteRecipe(id, userId);
   }
 }
