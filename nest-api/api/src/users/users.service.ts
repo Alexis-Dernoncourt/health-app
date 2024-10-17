@@ -1,25 +1,24 @@
 import { Injectable, HttpException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Users } from './entities/user.entity';
-import { EntityManager } from '@mikro-orm/postgresql';
 import * as bcrypt from 'bcryptjs';
-import { AuthAccessTokens } from 'src/auth/entities/access-token.entity';
+import { users } from '@prisma/client';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly em: EntityManager) {}
-  async create(createUserDto: CreateUserDto): Promise<Users> {
+  constructor(private readonly prisma: PrismaService) {}
+  async create(createUserDto: CreateUserDto): Promise<users> {
     try {
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...userRest } = createUserDto;
-      const user = this.em.create(
-        Users,
-        { ...userRest, password: hashedPassword },
-        { partial: true },
-      );
-      await this.em.persistAndFlush(user);
+      const user = await this.prisma.users.create({
+        data: {
+          ...userRest,
+          password: hashedPassword,
+        },
+      });
       return user;
     } catch (error) {
       console.log(error);
@@ -27,13 +26,13 @@ export class UsersService {
     }
   }
 
-  async findAll(): Promise<Users[]> {
-    return await this.em.findAll(Users);
+  async findAll(): Promise<users[]> {
+    return await this.prisma.users.findMany();
   }
 
-  async findByEmail(email: string): Promise<Users | null> {
+  async findByEmail(email: string): Promise<users | null> {
     try {
-      return await this.em.findOneOrFail(Users, { email });
+      return await this.prisma.users.findUnique({ where: { email } });
     } catch (error) {
       console.log('🚀 ~ UsersService ~ findByEmail ~ error:', error);
       throw new HttpException("Can't found this user", 400);
@@ -42,7 +41,7 @@ export class UsersService {
 
   async findOne(id: string) {
     try {
-      return await this.em.findOneOrFail(Users, { id });
+      return await this.prisma.users.findFirstOrThrow({ where: { id } });
     } catch (error) {
       console.log('🚀 ~ UsersService ~ findOne ~ error:', error);
       throw new HttpException("Can't found this user", 400);
@@ -51,10 +50,13 @@ export class UsersService {
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     try {
-      await this.em.findOneOrFail(Users, { id });
+      await this.prisma.users.findFirstOrThrow({ where: { id } });
       const updatedUser = updateUserDto;
       try {
-        await this.em.nativeUpdate(Users, id, { ...updatedUser });
+        await this.prisma.users.update({
+          where: { id },
+          data: { ...updatedUser },
+        });
       } catch (error) {
         console.log('🚀 ~ UsersService ~ update ~ error:', error);
         throw new Error("Can't update user");
@@ -68,12 +70,16 @@ export class UsersService {
 
   async remove(id: string) {
     try {
-      const user = await this.em.findOneOrFail(Users, { id });
-      const userToken = await this.em.findOneOrFail(AuthAccessTokens, {
-        tokenable: user.id,
+      const user = await this.prisma.users.findFirstOrThrow({ where: { id } });
+      const userToken = await this.prisma.auth_access_token.findUnique({
+        where: {
+          id,
+        },
       });
-      this.em.removeAndFlush(user);
-      this.em.removeAndFlush(userToken);
+      await this.prisma.users.delete({ where: { id: user.id } });
+      await this.prisma.auth_access_token.delete({
+        where: { id: userToken?.id },
+      });
       return `The #${id} user was deleted`;
     } catch (error) {
       console.log('🚀 ~ UsersService ~ findOne ~ error:', error);

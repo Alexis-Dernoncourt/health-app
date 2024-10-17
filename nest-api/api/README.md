@@ -1,6 +1,10 @@
 ## Please run `docker-compose up -d` from `server` folder before start this api.
 
-# Don't forget to add a `.env` file with a value of `JWT_SECRET`.
+# Create the database with `health-app` name.
+
+# Don't forget to add a `.env` file with a values for `JWT_SECRET` and `DATABASE_URL`.
+
+#################
 
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>

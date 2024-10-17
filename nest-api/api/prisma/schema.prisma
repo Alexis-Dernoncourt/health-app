@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model auth_access_token {
+  id            String      @default(cuid()) @id
+  tokenable_id  users[]     
+  type          String?     @default("auth_token") @db.VarChar(25)
+  name          String?     @default("access-token")
+  hash          String
+  abilities     String      @default("['user:normal']")
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @default(now())
+  last_used_at  DateTime    @default(now())
+  expires_at    Int     
+}
+
+model users {
+  id          String      @default(cuid()) @id
+  email       String      @unique
+  image       String?
+  firstname   String?     @db.VarChar(255)
+  lastname    String?     @db.VarChar(255)
+  password    String
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @default(now())
+  favorites   recipes[] 
+  auth_access_token auth_access_token[]
+  user_favorites user_favorites[]
+}
+
+model recipes {
+  id          String      @default(cuid()) @id
+  image       String?
+  title       String      @db.VarChar(255)
+  description String
+  ingredients String?
+  steps       String?
+  calories    Json?
+  created_at  DateTime    @default(now())
+  updatedat   DateTime    @default(now())
+  users_who_favorited users[]
+  user_favorites user_favorites[]
+}
+
+model user_favorites {
+  id            String        @default(cuid()) @id
+  // favorites_id     users?   @relation(fields: [user_id], references: [id])
+  user_id       users[]
+  // users_who_wavorited_id  recipes?  @relation(fields: [recipe_id], references: [id]) 
+  recipe_id     recipes[]
+  created_at    DateTime?     @default(now())
+  updated_at    DateTime?     @default(now())
+
+  // @@id([user_id, recipe_id])
+}

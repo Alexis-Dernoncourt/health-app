@@ -3,20 +3,22 @@ import { LoginDto } from './dto/auth-login.dto';
 import { UsersService } from 'src/users/users.service';
 import { SigninDto } from './dto/auth-signin.dto';
 import * as bcrypt from 'bcryptjs';
-import { Users } from 'src/users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { EntityManager } from '@mikro-orm/postgresql';
-import { AuthAccessTokens } from './entities/access-token.entity';
+import { PrismaService } from 'src/prisma.service';
+import { Prisma, users } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly em: EntityManager,
+    private readonly prisma: PrismaService,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, pass: string): Promise<Users | null> {
+  async validateUser(
+    email: string,
+    pass: string,
+  ): Promise<Partial<users> | null> {
     const user = await this.usersService.findByEmail(email);
     if (user && (await bcrypt.compare(pass, user.password))) {
       return user;
@@ -24,7 +26,7 @@ export class AuthService {
     return null;
   }
 
-  async signin(payload: SigninDto): Promise<SigninDto> {
+  async signin(payload: SigninDto) {
     return this.usersService.create(payload);
   }
 
@@ -47,24 +49,34 @@ export class AuthService {
     });
     const decodedToken = this.jwtService.decode(accessToken);
     // persist token in database
-    const saveAccessToken = this.em.create(AuthAccessTokens, {
+
+    const tokenData: Prisma.auth_access_tokenCreateInput = {
       hash: accessToken,
-      tokenable: validateUser,
-      expiresAt: decodedToken.exp,
-      lastUsedAt: new Date(Date.now()),
+      tokenable_id: {
+        connect: {
+          id: validateUser.id,
+        },
+      },
+      expires_at: decodedToken.exp,
+      last_used_at: new Date(Date.now()),
+    };
+
+    await this.prisma.auth_access_token.create({
+      data: tokenData,
     });
-    await this.em.persistAndFlush(saveAccessToken);
     return { accessToken };
   }
 
   async logout(token: string): Promise<boolean> {
-    const accessToken = await this.em.findOne(AuthAccessTokens, {
-      hash: token,
+    const accessToken = await this.prisma.auth_access_token.findFirst({
+      where: { hash: token },
     });
     if (!accessToken) {
       return false;
     }
-    await this.em.removeAndFlush(accessToken);
+    await this.prisma.auth_access_token.delete({
+      where: { id: accessToken.id },
+    });
     return true;
   }
 }

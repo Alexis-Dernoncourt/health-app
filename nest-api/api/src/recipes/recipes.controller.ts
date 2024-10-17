@@ -1,4 +1,3 @@
-import { InjectRepository } from '@mikro-orm/nestjs';
 import {
   Body,
   Controller,
@@ -10,7 +9,6 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { Recipes } from './entities/recipe.entity';
 import { RecipesService } from './recipes.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
@@ -21,7 +19,6 @@ import { CreateRecipeDto } from './dto/create-recipe.dto';
 @Controller('/api/v1/recipes')
 export class RecipesController {
   constructor(private readonly recipeService: RecipesService) {}
-  @InjectRepository(Recipes)
   @Post()
   protected async create(@Body() createRecipeDto: CreateRecipeDto) {
     return this.recipeService.create(createRecipeDto);

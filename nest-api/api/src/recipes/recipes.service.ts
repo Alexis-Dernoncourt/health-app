@@ -1,15 +1,13 @@
-import { EntityManager } from '@mikro-orm/postgresql';
 import { HttpException, Injectable } from '@nestjs/common';
-import { Recipes } from './entities/recipe.entity';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
-import { Users } from 'src/users/entities/user.entity';
-import { UserFavorites } from './entities/FavoritedRecipe.entity';
+import { PrismaService } from 'src/prisma.service';
+import { recipes } from '@prisma/client';
 
 @Injectable()
 export class RecipesService {
-  constructor(private readonly em: EntityManager) {}
-  async create(createRecipeDto: CreateRecipeDto): Promise<Recipes> {
+  constructor(private readonly prisma: PrismaService) {}
+  async create(createRecipeDto: CreateRecipeDto): Promise<recipes> {
     try {
       const newIngredients = JSON.stringify(createRecipeDto.ingredients);
       const newSteps = JSON.stringify(createRecipeDto.steps);
@@ -18,12 +16,9 @@ export class RecipesService {
         ingredients: newIngredients,
         steps: newSteps,
       };
-      const recipe = this.em.create(
-        Recipes,
-        { ...newRecipe },
-        { partial: true },
-      );
-      await this.em.persistAndFlush(recipe);
+      const recipe = await this.prisma.recipes.create({
+        data: { ...newRecipe },
+      });
       return recipe;
     } catch (error) {
       console.log(error);
@@ -32,12 +27,12 @@ export class RecipesService {
   }
 
   async findAll(): Promise<any> {
-    return await this.em.findAll(Recipes);
+    return await this.prisma.recipes.findMany();
   }
 
   async findOne(id: string) {
     try {
-      return await this.em.findOneOrFail(Recipes, { id });
+      return await this.prisma.recipes.findFirstOrThrow({ where: { id } });
     } catch (error) {
       console.log('🚀 ~ RecipeService ~ findOne ~ error:', error);
       throw new HttpException("Can't found this user", 400);
@@ -46,7 +41,7 @@ export class RecipesService {
 
   async update(id: string, updateRecipeDto: UpdateRecipeDto) {
     try {
-      await this.em.findOneOrFail(Recipes, { id });
+      await this.prisma.recipes.findFirstOrThrow({ where: { id } });
       const updatedRecipe = updateRecipeDto;
       // eslint-disable-next-line prefer-const
       let formatedRecipe: any = updatedRecipe;
@@ -59,7 +54,10 @@ export class RecipesService {
         formatedRecipe.steps = newSteps;
       }
       try {
-        await this.em.nativeUpdate(Recipes, id, { ...formatedRecipe });
+        await this.prisma.recipes.update({
+          where: { id },
+          data: { ...formatedRecipe },
+        });
       } catch (error) {
         console.log('🚀 ~ RecipeService ~ update ~ error:', error);
         throw new Error("Can't update the recipe");
@@ -73,8 +71,8 @@ export class RecipesService {
 
   async remove(id: string) {
     try {
-      const recipe = await this.em.findOneOrFail(Recipes, { id });
-      this.em.removeAndFlush(recipe);
+      const recipe = await this.prisma.recipes.delete({ where: { id } });
+      console.log('🚀 ~ RecipesService ~ remove ~ recipe:', recipe);
       return `The #${id} recipe was deleted`;
     } catch (error) {
       console.log('🚀 ~ RecipeService ~ findOne ~ error:', error);
@@ -83,12 +81,26 @@ export class RecipesService {
   }
 
   async addFavoriteRecipe(recipeId: string, userId: string): Promise<void> {
-    const user = await this.em.findOneOrFail(Users, { id: userId });
-    const recipe = await this.em.findOneOrFail(Recipes, recipeId);
+    const user = await this.prisma.users.findFirstOrThrow({
+      where: { id: userId },
+    });
+    console.log('🚀 ~ RecipesService ~ addFavoriteRecipe ~ user:', user);
+    const recipe = await this.prisma.recipes.findFirstOrThrow({
+      where: { id: recipeId },
+    });
+    console.log('🚀 ~ RecipesService ~ addFavoriteRecipe ~ recipe:', recipe);
 
     try {
-      user.favorites.add(recipe);
-      await this.em.persistAndFlush(user);
+      await this.prisma.users.update({
+        where: { id: userId },
+        data: {
+          favorites: {
+            connect: {
+              id: recipeId,
+            },
+          },
+        },
+      });
     } catch (error) {
       console.log('🚀 ~ RecipesService ~ addFavoriteRecipe ~ error:', error);
       throw new HttpException("Can't add this recipe to favorites", 400);
@@ -97,14 +109,16 @@ export class RecipesService {
 
   async removeFavoriteRecipe(recipeId: string, userId: string): Promise<void> {
     try {
-      const favoriteRecipe = await this.em.findOneOrFail(UserFavorites, {
-        user: { id: userId },
-        recipe: { id: recipeId },
+      const favoriteRecipe = await this.prisma.user_favorites.findFirstOrThrow({
+        where: {
+          user_id: userId as any,
+          recipe_id: recipeId as any,
+        },
       });
-      await this.em.nativeDelete(UserFavorites, {
-        id: favoriteRecipe.id,
-        user: { id: userId },
-        recipe: { id: recipeId },
+      await this.prisma.user_favorites.delete({
+        where: {
+          id: favoriteRecipe.id,
+        },
       });
     } catch (error) {
       console.log('🚀 ~ RecipesService ~ removeFavoriteRecipe ~ error:', error);
