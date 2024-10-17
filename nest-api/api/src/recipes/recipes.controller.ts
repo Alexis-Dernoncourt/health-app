@@ -7,15 +7,12 @@ import {
   Patch,
   Post,
   Req,
-  UseGuards,
 } from '@nestjs/common';
 import { RecipesService } from './recipes.service';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { RequestWithUser } from 'src/auth/jwt.strategy';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 
-@UseGuards(AuthGuard)
 @Controller('/api/v1/recipes')
 export class RecipesController {
   constructor(private readonly recipeService: RecipesService) {}
@@ -49,7 +46,7 @@ export class RecipesController {
     @Param('id') id: string,
     @Req() req: RequestWithUser,
   ): Promise<void> {
-    const userId = String(req.user.userId);
+    const userId = req.user.sub;
     return this.recipeService.addFavoriteRecipe(id, userId);
   }
 
@@ -58,7 +55,7 @@ export class RecipesController {
     @Param('id') id: string,
     @Req() req: RequestWithUser,
   ): Promise<void> {
-    const userId = String(req.user.userId);
+    const userId = req.user.sub;
     return this.recipeService.removeFavoriteRecipe(id, userId);
   }
 }

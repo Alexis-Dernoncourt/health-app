@@ -7,20 +7,19 @@ import {
   Post,
   Req,
   Res,
-  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto, LoginSchema } from './dto/auth-login.dto';
 import { ZodValidationPipe } from 'src/zod-pipe/zod-pipe';
 import { SigninDto, SigninSchema } from './dto/auth-signin.dto';
-import { RequestWithUser } from './jwt.strategy';
-import { Response } from 'express';
-import { AuthGuard } from './auth.guard';
+import { Request, Response } from 'express';
+import { extractTokenFromHeader, Public } from 'src/utils';
 @Controller('/api/v1/')
 export class AuthController {
   constructor(private AuthService: AuthService) {}
 
+  @Public()
   @HttpCode(HttpStatus.CREATED)
   @Post('signin')
   @UsePipes(new ZodValidationPipe(SigninSchema))
@@ -29,6 +28,7 @@ export class AuthController {
     return { message: 'User created' };
   }
 
+  @Public()
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @UsePipes(new ZodValidationPipe(LoginSchema))
@@ -42,13 +42,13 @@ export class AuthController {
     };
   }
 
-  @UseGuards(AuthGuard)
   @Post('logout')
   async logout(
-    @Req() req: RequestWithUser,
+    @Req() req: Request,
     @Res() response: Response,
   ): Promise<typeof response> {
-    const result = await this.AuthService.logout(req.user.token);
+    const token = extractTokenFromHeader(req) ?? '';
+    const result = await this.AuthService.logout(token);
     if (!result) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }

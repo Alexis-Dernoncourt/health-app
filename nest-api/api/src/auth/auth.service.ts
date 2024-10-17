@@ -40,7 +40,7 @@ export class AuthService {
     if (!validateUser) {
       throw new UnauthorizedException();
     }
-    const jwtPayload = { email: validateUser.email, userId: validateUser.id };
+    const jwtPayload = { email: validateUser.email, sub: validateUser.id };
     const accessToken = this.jwtService.sign(jwtPayload, {
       secret: process.env.JWT_SECRET,
       expiresIn: '7d',

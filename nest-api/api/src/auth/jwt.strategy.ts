@@ -4,7 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 
 export type UserPayload = {
   email: string;
-  userId: number;
+  sub: string;
   iat: number;
   exp: number;
   aud: string;
@@ -22,14 +22,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate({ userId, email, iat, exp, aud }: UserPayload) {
-    console.log('🚀 ~ JwtStrategy ~ validate ~ PAYLOAD:', {
-      userId,
-      email,
-      iat,
-      exp,
-      aud,
-    });
+  async validate({ sub, email, iat, exp, aud }: UserPayload) {
+    const userId = sub;
     return { userId, email: email, tokenInfos: { aud, exp, iat } };
   }
 }
