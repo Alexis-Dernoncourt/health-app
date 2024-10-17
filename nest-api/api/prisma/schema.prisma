@@ -21,7 +21,7 @@ model auth_access_token {
   hash          String
   abilities     String      @default("['user:normal']")
   created_at    DateTime    @default(now())
-  updated_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
   last_used_at  DateTime    @default(now())
   expires_at    Int     
 }
@@ -34,7 +34,7 @@ model users {
   lastname    String?     @db.VarChar(255)
   password    String
   created_at   DateTime    @default(now())
-  updated_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
   favorites   recipes[] 
   auth_access_token auth_access_token[]
   user_favorites user_favorites[]
@@ -49,7 +49,7 @@ model recipes {
   steps       String?
   calories    Json?
   created_at  DateTime    @default(now())
-  updatedat   DateTime    @default(now())
+  updatedat   DateTime    @updatedAt
   users_who_favorited users[]
   user_favorites user_favorites[]
 }
@@ -61,7 +61,7 @@ model user_favorites {
   // users_who_wavorited_id  recipes?  @relation(fields: [recipe_id], references: [id]) 
   recipe_id     recipes[]
   created_at    DateTime?     @default(now())
-  updated_at    DateTime?     @default(now())
+  updated_at    DateTime?     @updatedAt
 
   // @@id([user_id, recipe_id])
 }
