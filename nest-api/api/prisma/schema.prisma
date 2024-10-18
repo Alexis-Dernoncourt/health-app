@@ -37,6 +37,8 @@ model users {
   updated_at   DateTime    @updatedAt
   auth_access_token auth_access_token[]
   user_favorites user_favorites[]
+
+  menus menus[]
 }
 
 model recipes {
@@ -50,6 +52,8 @@ model recipes {
   created_at  DateTime    @default(now())
   updatedat   DateTime    @updatedAt
   user_favorites user_favorites[]
+
+  menus menus[]
 }
 
 model user_favorites {
@@ -62,4 +66,24 @@ model user_favorites {
   updated_at    DateTime?     @updatedAt
 
   // @@id([user_id, recipe_id])
+}
+
+enum mealType {
+  breakfast
+  lunch
+  dinner
+  snack
+  dessert
+}
+
+model menus {
+  id            String        @default(cuid()) @id
+  user          users?        @relation(fields: [user_id], references: [id])
+  user_id       String?
+  recipe        recipes?      @relation(fields: [recipe_id], references: [id])
+  recipe_id     String?
+  meal          mealType
+  date          DateTime?     @default(now())
+  created_at    DateTime?     @default(now())
+  updated_at    DateTime?     @updatedAt
 }

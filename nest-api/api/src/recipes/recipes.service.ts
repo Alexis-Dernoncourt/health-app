@@ -129,8 +129,8 @@ export class RecipesService {
     try {
       const favoriteRecipe = await this.prisma.user_favorites.findFirstOrThrow({
         where: {
-          user_id: userId as any,
-          recipe_id: recipeId as any,
+          user_id: userId,
+          recipe_id: recipeId,
         },
       });
       await this.prisma.user_favorites.delete({
