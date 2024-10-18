@@ -1,8 +1,10 @@
-## Please run `docker-compose up -d` from `server` folder before start this api.
+# Don't forget to add a `.env` file with `JWT_SECRET` and `DATABASE_URL` values.
 
-# Create the database with `health-app` name.
+## Run `docker-compose up -d` from `nest-api/api` folder before start this api with `npm run start:dev`.
 
-# Don't forget to add a `.env` file with a values for `JWT_SECRET` and `DATABASE_URL`.
+## Create the database with `health-app` name.
+
+## You can run `npx prisma studio` to view db models.
 
 #################
 
