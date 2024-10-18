@@ -46,7 +46,7 @@ export class RecipesController {
     @Param('id') id: string,
     @Req() req: RequestWithUser,
   ): Promise<void> {
-    const userId = req.user.sub;
+    const { userId } = req.user;
     return this.recipeService.addFavoriteRecipe(id, userId);
   }
 
@@ -55,7 +55,7 @@ export class RecipesController {
     @Param('id') id: string,
     @Req() req: RequestWithUser,
   ): Promise<void> {
-    const userId = req.user.sub;
+    const { userId } = req.user;
     return this.recipeService.removeFavoriteRecipe(id, userId);
   }
 }

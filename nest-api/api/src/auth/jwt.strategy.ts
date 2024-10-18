@@ -8,9 +8,14 @@ export type UserPayload = {
   iat: number;
   exp: number;
   aud: string;
-  token: string;
 };
-export type RequestWithUser = Request & { user: UserPayload };
+
+export type UserRequest = {
+  userId: string;
+  email: string;
+  tokenInfos: Pick<UserPayload, 'aud' | 'exp' | 'iat'>;
+};
+export type RequestWithUser = Request & { user: UserRequest };
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

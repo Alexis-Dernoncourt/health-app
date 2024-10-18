@@ -41,7 +41,20 @@ export class UsersService {
 
   async findOne(id: string) {
     try {
-      return await this.prisma.users.findFirstOrThrow({ where: { id } });
+      return await this.prisma.users.findFirstOrThrow({
+        where: { id },
+        include: {
+          user_favorites: {
+            select: {
+              recipe: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          },
+        },
+      });
     } catch (error) {
       console.log('🚀 ~ UsersService ~ findOne ~ error:', error);
       throw new HttpException("Can't found this user", 400);

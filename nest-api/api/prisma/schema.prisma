@@ -35,7 +35,6 @@ model users {
   password    String
   created_at   DateTime    @default(now())
   updated_at   DateTime    @updatedAt
-  favorites   recipes[] 
   auth_access_token auth_access_token[]
   user_favorites user_favorites[]
 }
@@ -50,16 +49,15 @@ model recipes {
   calories    Json?
   created_at  DateTime    @default(now())
   updatedat   DateTime    @updatedAt
-  users_who_favorited users[]
   user_favorites user_favorites[]
 }
 
 model user_favorites {
   id            String        @default(cuid()) @id
-  // favorites_id     users?   @relation(fields: [user_id], references: [id])
-  user_id       users[]
-  // users_who_wavorited_id  recipes?  @relation(fields: [recipe_id], references: [id]) 
-  recipe_id     recipes[]
+  user          users?        @relation(fields: [user_id], references: [id])
+  user_id       String?
+  recipe        recipes?      @relation(fields: [recipe_id], references: [id])
+  recipe_id     String?
   created_at    DateTime?     @default(now())
   updated_at    DateTime?     @updatedAt
 

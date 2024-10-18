@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { PrismaService } from 'src/prisma.service';
@@ -91,19 +91,37 @@ export class RecipesService {
     console.log('🚀 ~ RecipesService ~ addFavoriteRecipe ~ recipe:', recipe);
 
     try {
-      await this.prisma.users.update({
-        where: { id: userId },
+      const existingFavoriteRecipe = await this.prisma.user_favorites.findFirst(
+        {
+          where: {
+            user_id: user.id,
+            recipe_id: recipeId,
+          },
+        },
+      );
+      if (existingFavoriteRecipe) {
+        throw new BadRequestException('Recipe already added to favorites');
+      }
+
+      await this.prisma.user_favorites.create({
         data: {
-          favorites: {
+          user: {
             connect: {
-              id: recipeId,
+              id: user.id,
+            },
+          },
+          recipe: {
+            connect: {
+              id: recipe.id,
             },
           },
         },
       });
     } catch (error) {
       console.log('🚀 ~ RecipesService ~ addFavoriteRecipe ~ error:', error);
-      throw new HttpException("Can't add this recipe to favorites", 400);
+      throw (
+        error || new HttpException("Can't add this recipe to favorites", 400)
+      );
     }
   }
 
