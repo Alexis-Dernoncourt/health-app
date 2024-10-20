@@ -9,9 +9,16 @@ import { JwtService } from '@nestjs/jwt';
 import { RecipesModule } from './recipes/recipes.module';
 import { PrismaService } from './prisma.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { MenusModule } from './menus/menus.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), AuthModule, UsersModule, RecipesModule],
+  imports: [
+    ConfigModule.forRoot(),
+    AuthModule,
+    UsersModule,
+    RecipesModule,
+    MenusModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
