@@ -20,7 +20,6 @@ export class MenusController {
 
   @Get()
   findAll(@Req() req: RequestWithUser) {
-    console.log('🚀 ~ MenusController ~ findAll ~ userId:', req.user.userId);
     return this.menusService.findAll(req.user.userId);
   }
 
@@ -44,7 +43,6 @@ export class MenusController {
     @Body() updateMenuDto: UpdateMenuDto,
     @Param('recipeId') recipeId: string,
   ) {
-    console.log('🚀 ~ MenusController ~ recipeId:', recipeId);
     return this.menusService.update(req.user.userId, updateMenuDto, recipeId);
   }
 
