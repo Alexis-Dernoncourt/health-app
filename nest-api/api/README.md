@@ -1,4 +1,4 @@
-# Don't forget to add a `.env` file with `JWT_SECRET` and `DATABASE_URL` values.
+# Don't forget to add a `.env` file with `JWT_SECRET`, `DATABASE_URL` and `CLOUDINARY` values. See `.env.exemple` file.
 
 ## Run `docker-compose up -d` from `nest-api/api` folder before start this api with `npm run start:dev`.
 

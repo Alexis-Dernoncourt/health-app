@@ -30,3 +30,5 @@ export const createRecipeSchema = z
   .required();
 
 export type CreateRecipeDto = z.infer<typeof createRecipeSchema>;
+
+export type UpdateRecipeDto = Partial<CreateRecipeDto>;
