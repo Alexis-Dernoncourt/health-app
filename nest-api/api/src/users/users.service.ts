@@ -1,13 +1,17 @@
-import { Injectable, HttpException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Injectable, HttpException, BadRequestException } from '@nestjs/common';
+import { CreateUserDto } from './dto/user.dto';
+import { UpdateUserDto } from './dto/user.dto';
 import * as bcrypt from 'bcryptjs';
 import { users } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cloudinary: CloudinaryService,
+  ) {}
   async create(createUserDto: CreateUserDto): Promise<users> {
     try {
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
@@ -61,10 +65,49 @@ export class UsersService {
     }
   }
 
+  async uploadImage(id: string, image: Express.Multer.File) {
+    try {
+      const uploadResult = await this.cloudinary.uploadFile(image, `users`, id);
+      const updatedUser = await this.prisma.users.update({
+        where: { id },
+        data: {
+          image: uploadResult?.secure_url ?? null,
+        },
+      });
+      return updatedUser;
+    } catch (error) {
+      console.log('🚀 ~ UsersService ~ addImage ~ error:', error);
+      throw new BadRequestException("Can't update user image");
+    }
+  }
+
+  async deleteImage(id: string, prefix: string) {
+    try {
+      await this.cloudinary.deleteImage(prefix + id);
+      const updatedUser = await this.prisma.users.update({
+        where: { id },
+        data: {
+          image: null,
+        },
+      });
+      return updatedUser;
+    } catch (error) {
+      console.log('🚀 ~ UsersService ~ addImage ~ error:', error);
+    }
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
+    console.log('🚀 ~ UsersService ~ update ~ updateUserDto:', updateUserDto);
     try {
       await this.prisma.users.findFirstOrThrow({ where: { id } });
       const updatedUser = updateUserDto;
+      // const image = updateUserDto.image;
+      // console.log('🚀 ~ UsersService ~ update ~ image:', file);
+      // const uploadResult = await this.cloudinary.uploadFile(file, `users`);
+      // updatedUser.image = uploadResult ?? null;
+      // if (image) {
+      // }
+      console.log('🚀 ~ UsersService ~ update ~ updatedUser:', updatedUser);
       try {
         await this.prisma.users.update({
           where: { id },

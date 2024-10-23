@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateMenuDto, UpdateMenuDto } from './dto/create-menu.dto';
+import { CreateMenuDto, UpdateMenuDto } from './dto/menu.dto';
 import { PrismaService } from 'src/prisma.service';
 import { Response } from 'express';
 

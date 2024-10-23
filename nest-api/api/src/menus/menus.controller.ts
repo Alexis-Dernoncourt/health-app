@@ -12,7 +12,7 @@ import {
 import { Response } from 'express';
 import { MenusService } from './menus.service';
 import { RequestWithUser } from 'src/auth/jwt.strategy';
-import { CreateMenuDto, UpdateMenuDto } from './dto/create-menu.dto';
+import { CreateMenuDto, UpdateMenuDto } from './dto/menu.dto';
 
 @Controller('/api/v1/menus')
 export class MenusController {

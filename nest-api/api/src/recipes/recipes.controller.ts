@@ -9,9 +9,9 @@ import {
   Req,
 } from '@nestjs/common';
 import { RecipesService } from './recipes.service';
-import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { UpdateRecipeDto } from './dto/recipe.dto';
 import { RequestWithUser } from 'src/auth/jwt.strategy';
-import { CreateRecipeDto } from './dto/create-recipe.dto';
+import { CreateRecipeDto } from './dto/recipe.dto';
 
 @Controller('/api/v1/recipes')
 export class RecipesController {
