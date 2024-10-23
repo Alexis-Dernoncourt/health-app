@@ -3,10 +3,14 @@ import { CreateRecipeDto } from './dto/recipe.dto';
 import { UpdateRecipeDto } from './dto/recipe.dto';
 import { PrismaService } from 'src/prisma.service';
 import { recipes } from '@prisma/client';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class RecipesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cloudinary: CloudinaryService,
+  ) {}
   async create(createRecipeDto: CreateRecipeDto): Promise<recipes> {
     try {
       const newIngredients = JSON.stringify(createRecipeDto.ingredients);
@@ -39,12 +43,24 @@ export class RecipesService {
     }
   }
 
-  async update(id: string, updateRecipeDto: UpdateRecipeDto) {
+  async update(
+    id: string,
+    image: Express.Multer.File,
+    updateRecipeDto: UpdateRecipeDto,
+  ) {
     try {
       await this.prisma.recipes.findFirstOrThrow({ where: { id } });
       const updatedRecipe = updateRecipeDto;
       // eslint-disable-next-line prefer-const
       let formatedRecipe: any = updatedRecipe;
+      if (image) {
+        const uploadResult = await this.cloudinary.uploadFile(
+          image,
+          `recipes`,
+          id,
+        );
+        formatedRecipe.image = uploadResult?.secure_url ?? null;
+      }
       if (updateRecipeDto.ingredients) {
         const newIngredients = JSON.stringify(updateRecipeDto.ingredients);
         formatedRecipe.ingredients = newIngredients;
@@ -67,6 +83,22 @@ export class RecipesService {
       throw new HttpException(error.message ?? "Can't found this recipe", 400);
     }
     return `The #${id} recipe was updated`;
+  }
+
+  async deleteImage(id: string, prefix: string) {
+    try {
+      await this.cloudinary.deleteImage(prefix + id);
+      const updatedUser = await this.prisma.recipes.update({
+        where: { id },
+        data: {
+          image: null,
+        },
+      });
+      return updatedUser;
+    } catch (error) {
+      console.log('🚀 ~ UsersService ~ addImage ~ error:', error);
+      throw new BadRequestException("Can't remove recipe image");
+    }
   }
 
   async remove(id: string) {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   v2 as cloudinary,
   UploadApiErrorResponse,
@@ -65,6 +65,7 @@ export class CloudinaryService {
       return uploadResult;
     } catch (error) {
       console.log(error);
+      throw new BadRequestException("Can't upload image");
     }
   }
 
