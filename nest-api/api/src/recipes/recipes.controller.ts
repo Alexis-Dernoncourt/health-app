@@ -16,6 +16,7 @@ import { UpdateRecipeDto } from './dto/recipe.dto';
 import { RequestWithUser } from 'src/auth/jwt.strategy';
 import { CreateRecipeDto } from './dto/recipe.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import type { Express } from 'express';
 
 @Controller('/api/v1/recipes')
 export class RecipesController {

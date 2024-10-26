@@ -4,6 +4,7 @@ import { UpdateRecipeDto } from './dto/recipe.dto';
 import { PrismaService } from 'src/prisma.service';
 import { recipes } from '@prisma/client';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import type { Express } from 'express';
 
 @Injectable()
 export class RecipesService {
@@ -78,7 +79,7 @@ export class RecipesService {
         console.log('🚀 ~ RecipeService ~ update ~ error:', error);
         throw new Error("Can't update the recipe");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log('🚀 ~ RecipeService ~ findOne ~ error:', error);
       throw new HttpException(error.message ?? "Can't found this recipe", 400);
     }

@@ -5,6 +5,7 @@ import * as bcrypt from 'bcryptjs';
 import { users } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { Express } from 'express';
 
 @Injectable()
 export class UsersService {
@@ -117,7 +118,7 @@ export class UsersService {
         console.log('🚀 ~ UsersService ~ update ~ error:', error);
         throw new Error("Can't update user");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log('🚀 ~ UsersService ~ findOne ~ error:', error);
       throw new HttpException(error.message ?? "Can't found this user", 400);
     }

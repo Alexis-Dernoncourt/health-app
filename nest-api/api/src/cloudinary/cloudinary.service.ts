@@ -4,6 +4,7 @@ import {
   UploadApiErrorResponse,
   UploadApiResponse,
 } from 'cloudinary';
+import type { Express } from 'express';
 
 @Injectable()
 export class CloudinaryService {

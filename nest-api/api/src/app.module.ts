@@ -13,7 +13,9 @@ import { MenusModule } from './menus/menus.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     AuthModule,
     UsersModule,
     RecipesModule,
