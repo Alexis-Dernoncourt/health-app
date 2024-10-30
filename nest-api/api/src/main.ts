@@ -1,6 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ZodExceptionFilter } from './customExceptions/ZodErrorHandler';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
@@ -12,7 +11,6 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-  app.useGlobalFilters(new ZodExceptionFilter());
   const config = new DocumentBuilder()
     .setTitle('HEALTH-APP Api Documentation')
     .setDescription('The api Swagger endpoints documentation')
