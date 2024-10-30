@@ -10,11 +10,12 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto, LoginSchema } from './dto/auth-login.dto';
-import { ZodValidationPipe } from 'src/zod-pipe/zod-pipe';
-import { SigninDto, SigninSchema } from './dto/auth-signin.dto';
+import { LoginDto } from './dto/auth-login.dto';
+import { SigninDto } from './dto/auth-signin.dto';
 import { Request, Response } from 'express';
 import { extractTokenFromHeader, Public } from 'src/utils';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+
 @Controller('/api/v1/')
 export class AuthController {
   constructor(private AuthService: AuthService) {}
@@ -22,7 +23,7 @@ export class AuthController {
   @Public()
   @HttpCode(HttpStatus.CREATED)
   @Post('signin')
-  @UsePipes(new ZodValidationPipe(SigninSchema))
+  @ApiBody({ type: SigninDto, required: true, description: 'Sign-in body' })
   async signin(@Body() payload: SigninDto): Promise<{ message: string }> {
     await this.AuthService.signin(payload);
     return { message: 'User created' };
@@ -31,7 +32,7 @@ export class AuthController {
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  @UsePipes(new ZodValidationPipe(LoginSchema))
+  @ApiBody({ type: LoginDto, required: true, description: 'Login body' })
   async login(
     @Body() loginDto: LoginDto,
   ): Promise<{ message: string; access_token: string }> {
@@ -43,6 +44,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @ApiBearerAuth()
   async logout(
     @Req() req: Request,
     @Res() response: Response,

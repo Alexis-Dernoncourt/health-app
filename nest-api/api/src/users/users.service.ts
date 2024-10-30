@@ -1,11 +1,11 @@
 import { Injectable, HttpException, BadRequestException } from '@nestjs/common';
-import { CreateUserDto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/user.dto';
 import * as bcrypt from 'bcryptjs';
 import { users } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { Express } from 'express';
+import { SigninDto } from 'src/auth/dto/auth-signin.dto';
 
 @Injectable()
 export class UsersService {
@@ -13,7 +13,7 @@ export class UsersService {
     private readonly prisma: PrismaService,
     private readonly cloudinary: CloudinaryService,
   ) {}
-  async create(createUserDto: CreateUserDto): Promise<users> {
+  async create(createUserDto: SigninDto): Promise<users> {
     try {
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

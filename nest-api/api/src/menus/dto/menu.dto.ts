@@ -1,13 +1,56 @@
-import { z } from 'zod';
+import { ApiProperty } from '@nestjs/swagger';
+import { $Enums } from '@prisma/client';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  IsDate,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 
-export const MenuSchema = z
-  .object({
-    recipe: z.string(),
-    meal: z.enum(['breakfast', 'lunch', 'dinner', 'snack', 'dessert']),
-    date: z.date(),
+export class CreateMenuDto {
+  @ApiProperty({
+    required: true,
+    example: 'a0a0a0a0-a0a0-a0a0-a0a0-a0a0a0a0a0a0',
+    description: 'Recipe ID',
   })
-  .required();
+  @IsNotEmpty()
+  @IsString()
+  @IsUUID(4)
+  recipe!: string;
 
-export type CreateMenuDto = z.infer<typeof MenuSchema>;
-export type UpdateMenuDto = Partial<Pick<CreateMenuDto, 'meal'>> &
-  Pick<CreateMenuDto, 'date'>;
+  @ApiProperty({
+    required: true,
+    enum: $Enums.mealType,
+  })
+  @IsNotEmpty()
+  @IsEnum($Enums.mealType)
+  meal!: $Enums.mealType;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsDate()
+  date!: Date;
+}
+
+export class UpdateMenuDto {
+  @ApiProperty({
+    required: false,
+    example: 'breakfast',
+    description: 'Meal type',
+    enum: $Enums.mealType,
+  })
+  @IsEnum($Enums.mealType)
+  @IsOptional()
+  meal?: $Enums.mealType;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsOptional()
+  @IsDate()
+  date?: Date;
+}

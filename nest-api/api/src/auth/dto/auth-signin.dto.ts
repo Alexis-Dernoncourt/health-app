@@ -1,12 +1,46 @@
-import { z } from 'zod';
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsStrongPassword,
+  Length,
+} from 'class-validator';
 
-export const SigninSchema = z
-  .object({
-    firstname: z.string().min(1).max(128),
-    lastname: z.string().min(1).max(128).optional(),
-    email: z.string().email(),
-    password: z.string().min(8).max(128),
+export class SigninDto {
+  @ApiProperty({ required: true })
+  @IsString({ message: 'firstname must be a string' })
+  @Length(1, 128)
+  firstname?: string;
+
+  @ApiProperty({ nullable: true, required: false })
+  @IsOptional()
+  @IsString({ message: 'lastname must be a string' })
+  @Length(1, 128)
+  lastname?: string;
+
+  @ApiProperty({
+    required: true,
+    example: 'exemple@mail.com',
+    description: 'Email address',
   })
-  .required();
+  @IsEmail()
+  email!: string;
 
-export type SigninDto = z.infer<typeof SigninSchema>;
+  @ApiProperty({
+    required: true,
+    example: 'P@ssw0rd',
+    description:
+      'Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one symbol.',
+  })
+  @IsString({ message: 'password must be a string' })
+  @Length(8, 128)
+  @IsStrongPassword({
+    minLength: 8,
+    minLowercase: 1,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 1,
+  })
+  password!: string;
+}

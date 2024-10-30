@@ -1,6 +1,6 @@
 import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
-import { CreateRecipeDto } from './dto/recipe.dto';
-import { UpdateRecipeDto } from './dto/recipe.dto';
+import { CreateRecipeDto } from './dto/createRecipe.dto';
+import { UpdateRecipeDto } from './dto/updateRecipe.dto';
 import { PrismaService } from 'src/prisma.service';
 import { recipes } from '@prisma/client';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
