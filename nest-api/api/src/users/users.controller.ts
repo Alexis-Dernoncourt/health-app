@@ -100,7 +100,7 @@ export class UsersController {
     @Req() req: RequestWithUser,
     @UploadedFile(
       new ParseFilePipe({
-        validators: [new FileTypeValidator({ fileType: /\.(jpg|jpeg|png)$/ })],
+        validators: [new FileTypeValidator({ fileType: /(jpg|jpeg|png)$/ })],
       }),
     )
     image: Express.Multer.File,

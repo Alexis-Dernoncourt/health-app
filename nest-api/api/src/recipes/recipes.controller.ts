@@ -76,7 +76,7 @@ export class RecipesController {
     @Param('id', new ParseCUIDPipe()) id: string,
     @UploadedFile(
       new ParseFilePipe({
-        validators: [new FileTypeValidator({ fileType: /\.(jpg|jpeg|png)$/ })],
+        validators: [new FileTypeValidator({ fileType: /(jpg|jpeg|png)$/ })],
       }),
     )
     image: Express.Multer.File,
