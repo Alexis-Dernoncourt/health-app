@@ -21,6 +21,8 @@ import { UpdateRecipeDto } from './dto/updateRecipe.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Express } from 'express';
 import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ParseCUIDPipe } from 'src/pipes/cuid-pipe';
+import { Public } from 'src/utils';
 
 @ApiBearerAuth()
 @Controller('/api/v1/recipes')
@@ -38,13 +40,14 @@ export class RecipesController {
     return this.recipeService.create(createRecipeDto);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.recipeService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  findOne(@Param('id', new ParseCUIDPipe()) id: string) {
     return this.recipeService.findOne(id);
   }
 
@@ -70,7 +73,7 @@ export class RecipesController {
   @ApiConsumes('multipart/form-data')
   @Patch(':id')
   update(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('id', new ParseCUIDPipe()) id: string,
     @UploadedFile(
       new ParseFilePipe({
         validators: [new FileTypeValidator({ fileType: /\.(jpg|jpeg|png)$/ })],
@@ -83,20 +86,18 @@ export class RecipesController {
   }
 
   @Delete('/image/:id')
-  async deleteImage(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ) {
+  async deleteImage(@Param('id', new ParseCUIDPipe()) id: string) {
     return this.recipeService.deleteImage(id, 'health-app/recipes/');
   }
 
   @Delete(':id')
-  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  remove(@Param('id', new ParseCUIDPipe()) id: string) {
     return this.recipeService.remove(id);
   }
 
   @Post('/like/:id')
   async addFavoriteRecipe(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('id', new ParseCUIDPipe()) id: string,
     @Req() req: RequestWithUser,
   ): Promise<void> {
     const { userId } = req.user;
@@ -105,7 +106,7 @@ export class RecipesController {
 
   @Post('/unlike/:id')
   async removeFavoriteRecipe(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('id', new ParseCUIDPipe()) id: string,
     @Req() req: RequestWithUser,
   ): Promise<void> {
     const { userId } = req.user;

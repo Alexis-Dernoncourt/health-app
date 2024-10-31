@@ -31,8 +31,29 @@ export class UsersService {
     }
   }
 
-  async findAll(): Promise<users[]> {
-    return await this.prisma.users.findMany();
+  async findAll(): Promise<
+    Omit<users, Exclude<keyof users, ['password', 'email']>>[]
+  > {
+    return await this.prisma.users.findMany({
+      select: {
+        id: true,
+        firstname: true,
+        lastname: true,
+        email: false,
+        image: true,
+        created_at: true,
+        updated_at: true,
+        user_favorites: {
+          select: {
+            recipe: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 
   async findByEmail(email: string): Promise<users | null> {
