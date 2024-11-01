@@ -38,13 +38,13 @@ const RecipesScreen = ({navigation}: HomeTabScreenProps<'Recipes'>) => {
   return (
     <Layout>
       <View style={styles.container}>
-        <Text>Les recettes</Text>
+        <Text style={styles.topTitle}>Les recettes</Text>
         <FlatList
           //   ListHeaderComponent={ListHeaderComponent}
           //   ListFooterComponent={ListFooterComponent}
           contentContainerStyle={styles.flatListWrapper}
           style={styles.flatListStyles}
-          data={recipesData?.recipes}
+          data={recipesData}
           refreshing={isRefetching}
           ListEmptyComponent={renderEmptyItem}
           onRefresh={refetch}
@@ -79,19 +79,21 @@ const RecipesScreen = ({navigation}: HomeTabScreenProps<'Recipes'>) => {
 
 const renderEmptyItem = () => <Text>Il n'y a pas de recettes</Text>;
 
-const renderItem: ListRenderItem<Recipe> | undefined = ({item}) => (
-  <View style={styles.flatListItemWrapper}>
-    <Image
-      style={styles.image}
-      source={{
-        uri: item.image?.url,
-      }}
-    />
-    <View style={styles.flatListItemContent}>
-      <Text>{item.title}</Text>
+const renderItem: ListRenderItem<Recipe> | undefined = ({item}) => {
+  return (
+    <View style={styles.flatListItemWrapper}>
+      <Image
+        style={styles.image}
+        source={{
+          uri: item.image,
+        }}
+      />
+      <View style={styles.flatListItemContent}>
+        <Text style={styles.flatListItemTitle}>{item.title}</Text>
+      </View>
     </View>
-  </View>
-);
+  );
+};
 export default RecipesScreen;
 
 const styles = StyleSheet.create({
@@ -99,6 +101,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 20,
+  },
+  topTitle: {
+    marginVertical: 10,
+    fontSize: 20,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    color: COLORS.black,
   },
   flatListWrapper: {
     width: '100%',
@@ -114,7 +123,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     width: '100%',
     height: 200,
-    marginVertical: 10,
+    marginVertical: 15,
     overflow: 'hidden',
   },
   image: {
@@ -128,6 +137,16 @@ const styles = StyleSheet.create({
   },
   flatListItemContent: {
     padding: 20,
+  },
+  flatListItemTitle: {
+    color: COLORS.white,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 40,
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   errorText: {
     marginTop: 20,

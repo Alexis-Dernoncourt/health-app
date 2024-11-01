@@ -17,8 +17,8 @@ async function userFn(): Promise<User | null> {
 }
 
 async function handleUserResponse(data: AuthResponse) {
-  const {token, user} = data;
-  storage.setToken(token.token);
+  const {access_token, user} = data;
+  storage.setToken(access_token);
   storeData('user', JSON.stringify(user));
   return user;
 }

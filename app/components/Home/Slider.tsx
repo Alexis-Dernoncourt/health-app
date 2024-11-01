@@ -25,7 +25,7 @@ export const ISBImageItem = memo(({recipe}: {recipe: Recipe}) => {
       <Image
         style={styles.image}
         source={{
-          uri: recipe.image?.url,
+          uri: recipe.image,
         }}
       />
       <Text style={styles.imageTitle}>{recipe.title}</Text>
@@ -96,9 +96,9 @@ const Slider = ({
   const {user} = useCurrentUser();
   const progressValue = useSharedValue(0);
   const {data: recipesData, isLoading, error, isRefetching} = useRecipes();
-  const CAROUSEL_ITEMS = user?.favoriteRecipes?.length
-    ? user.favoriteRecipes
-    : recipesData?.recipes;
+  const CAROUSEL_ITEMS = user?.user_favorites?.length
+    ? recipesData // TODO: fix this
+    : recipesData;
 
   const baseOptions = {
     width: PAGE_WIDTH,
@@ -202,9 +202,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: 20,
-    color: COLORS.white,
+    width: '90%',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 4,
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 22,
+    textAlign: 'center',
+    color: COLORS.white,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   paginationContainer: {
     flexDirection: 'row',
