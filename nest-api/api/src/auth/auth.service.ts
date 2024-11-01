@@ -32,6 +32,7 @@ export class AuthService {
 
   async login(payload: LoginDto): Promise<{
     accessToken: string;
+    user: Partial<users>;
   }> {
     const validateUser = await this.validateUser(
       payload.email,
@@ -64,7 +65,8 @@ export class AuthService {
     await this.prisma.auth_access_token.create({
       data: tokenData,
     });
-    return { accessToken };
+    const { password, ...user } = validateUser;
+    return { accessToken, user: user };
   }
 
   async logout(token: string): Promise<boolean> {

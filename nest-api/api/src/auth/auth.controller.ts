@@ -15,6 +15,7 @@ import { SigninDto } from './dto/auth-signin.dto';
 import { Request, Response } from 'express';
 import { extractTokenFromHeader, Public } from 'src/utils';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { users } from '@prisma/client';
 
 @Controller('/api/v1/')
 export class AuthController {
@@ -35,11 +36,12 @@ export class AuthController {
   @ApiBody({ type: LoginDto, required: true, description: 'Login body' })
   async login(
     @Body() loginDto: LoginDto,
-  ): Promise<{ message: string; access_token: string }> {
-    const { accessToken } = await this.AuthService.login(loginDto);
+  ): Promise<{ message: string; access_token: string; user: Partial<users> }> {
+    const { accessToken, user } = await this.AuthService.login(loginDto);
     return {
       message: 'Logged in successfully',
       access_token: accessToken,
+      user: user,
     };
   }
 
