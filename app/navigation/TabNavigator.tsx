@@ -2,7 +2,14 @@
 /* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {HomeScreen, TestScreen} from '../screens';
+import {
+  HomeScreen,
+  TestScreen,
+  SigninScreen,
+  RegisterScreen,
+  RecipesScreen,
+  AddRecipeScreen,
+} from '../screens';
 import {HomeTabParamList} from './types';
 import {useCurrentUser} from '../hooks';
 import {HomePublic} from '../screens';
@@ -13,7 +20,6 @@ import RegisterIcon from './icons/RegisterIcon';
 import ProfileIcon from './icons/ProfileIcon';
 import MenusIcon from './icons/MenusIcon';
 import RecipesIcon from './icons/RecipesIcon';
-import SigninScreen from '../screens/public/Sign/SigninScreen';
 import {COLORS} from '../lib/constants';
 
 const Tab = createBottomTabNavigator<HomeTabParamList>();
@@ -56,7 +62,7 @@ export default function TabNavigator() {
           />
           <Tab.Screen
             name="Recipes"
-            component={TestScreen}
+            component={RecipesScreen}
             options={{
               tabBarIcon: ({focused}) => <RecipesIcon focused={focused} />,
               tabBarLabel(props) {
@@ -110,12 +116,17 @@ export default function TabNavigator() {
               },
             }}
           />
+          <Tab.Screen
+            name="AddRecipe"
+            component={AddRecipeScreen}
+            options={{tabBarItemStyle: {display: 'none'}}}
+          />
         </Tab.Group>
       ) : (
         <Tab.Group>
           <Tab.Screen
             name="Register"
-            component={TestScreen}
+            component={RegisterScreen}
             options={{
               tabBarIcon: ({focused}) => (
                 <RegisterIcon focused={focused} size={30} />

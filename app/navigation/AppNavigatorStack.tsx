@@ -1,28 +1,17 @@
-// import React from 'react';
+import {createStackNavigator} from '@react-navigation/stack';
+import React from 'react';
+import {RootStackParamList} from './types';
+// import {TestScreen} from '../screens';
+import TabNavigator from './TabNavigator';
 
-// const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createStackNavigator<RootStackParamList>();
 // const StackUnlogged = createStackNavigator<RootStackParamListUnlogged>();
 
-// export function RootStack() {
-//   return (
-//     <Stack.Navigator initialRouteName="Home">
-//       <Stack.Screen
-//         name="Home"
-//         component={Home}
-//         options={{
-//           headerShown: true,
-//           title: 'Home test',
-//         }}
-//       />
-//       <Stack.Screen
-//         name="Details"
-//         component={Test}
-//         options={
-//           {
-//             // header: Header,
-//           }
-//         }
-//       />
-//     </Stack.Navigator>
-//   );
-// }
+export function RootStack() {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name="Tab" component={TabNavigator} />
+      {/* <Stack.Screen name="AddRecipe" component={TestScreen} /> */}
+    </Stack.Navigator>
+  );
+}

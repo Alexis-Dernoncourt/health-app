@@ -14,10 +14,11 @@ export interface User {
   id: number;
   firstname: string;
   lastname: string;
+  image?: string;
   email: string;
-  createdAt: Date;
-  updatedAt: Date;
-  favoriteRecipes?: Recipe[];
+  created_at: Date;
+  updated_at: Date;
+  user_favorites?: Recipe[] | {recipe: {id: string}}[];
 }
 
 export interface Recipe {
@@ -27,9 +28,9 @@ export interface Recipe {
   ingredients: Ingredient[];
   steps: Step[];
   calories: Calories;
-  createdAt: Date;
-  updatedAt: Date;
-  image: Image;
+  created_at: Date;
+  updated_at: Date;
+  image?: string;
 }
 
 export interface Calories {
@@ -51,25 +52,25 @@ export interface Step {
   warning?: string;
 }
 
-type Token = {
-  type: string;
-  name: string;
-  token: string;
-  abilities: string[];
-  lastUsedAt?: string;
-  expiresAt: string;
-};
+// type Token = {
+//   type: string;
+//   name: string;
+//   token: string;
+//   abilities: string[];
+//   last_used_at?: string;
+//   expires_at: string;
+// };
 
 export interface AuthResponse {
-  token: Token;
+  access_token: string;
   user: User;
 }
 
-export interface Image {
-  id: number;
-  url: string;
-  createdAt: Date;
-  updatedAt: Date;
-  userId?: number;
-  recipeId?: number;
-}
+// export interface Image {
+//   id: number;
+//   url: string;
+//   created_at: Date;
+//   updated_at: Date;
+//   user_id?: number;
+//   recipe_id?: number;
+// }

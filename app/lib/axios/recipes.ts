@@ -1,7 +1,7 @@
 import {api} from './api';
 import {Recipe} from './types';
 
-export const fetchRecipes = async (): Promise<{recipes: Recipe[]}> => {
+export const fetchRecipes = async (): Promise<Recipe[]> => {
   try {
     const req = await api.request({
       url: '/recipes',
@@ -14,7 +14,7 @@ export const fetchRecipes = async (): Promise<{recipes: Recipe[]}> => {
   }
 };
 
-export const fetchRecipe = async (id: string): Promise<{recipe: Recipe}> => {
+export const fetchRecipe = async (id: string): Promise<Recipe> => {
   try {
     const req = await api.request({
       url: `/recipes/${id}`,

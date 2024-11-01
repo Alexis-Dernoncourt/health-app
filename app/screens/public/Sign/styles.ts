@@ -23,6 +23,11 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 30,
     marginTop: '40%',
   },
+  formRegisterContainer: {
+    width: '100%',
+    paddingHorizontal: 30,
+    marginTop: '10%',
+  },
   formWrapper: {
     marginVertical: 20,
   },

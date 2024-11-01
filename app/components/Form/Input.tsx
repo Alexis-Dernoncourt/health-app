@@ -1,4 +1,11 @@
-import {KeyboardTypeOptions, StyleSheet} from 'react-native';
+import {
+  KeyboardTypeOptions,
+  NativeSyntheticEvent,
+  StyleSheet,
+  TextInputEndEditingEventData,
+  TextInputFocusEventData,
+  TextStyle,
+} from 'react-native';
 import React from 'react';
 import {TextInput} from 'react-native-paper';
 import {COLORS} from '../../lib/constants';
@@ -7,11 +14,19 @@ type InputProps = {
   label: string;
   placeholder?: string;
   keyboardType?: KeyboardTypeOptions;
-  style?: any;
+  multiline?: boolean;
+  style?: TextStyle;
   mode?: 'flat' | 'outlined';
   error?: boolean;
   value?: string;
-  onChangeText?: any;
+  id?: string;
+  onChangeText?: ((text: string) => void) & Function;
+  onBlur?:
+    | ((e: NativeSyntheticEvent<TextInputFocusEventData>) => void) &
+        ((args: any) => void);
+  onEndEditing?: (
+    e: NativeSyntheticEvent<TextInputEndEditingEventData>,
+  ) => void;
   secureTextEntry?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -20,11 +35,15 @@ const Input = ({
   label,
   placeholder,
   keyboardType,
+  multiline = false,
   style,
   mode,
   error,
   value,
+  id,
   onChangeText,
+  onBlur,
+  onEndEditing,
   secureTextEntry,
   leftIcon,
   rightIcon,
@@ -35,7 +54,11 @@ const Input = ({
       mode={mode ?? 'flat'}
       label={label}
       value={value}
+      id={id}
+      multiline={multiline}
       onChangeText={onChangeText}
+      onBlur={onBlur}
+      onEndEditing={onEndEditing}
       placeholder={placeholder}
       keyboardType={keyboardType}
       error={error}

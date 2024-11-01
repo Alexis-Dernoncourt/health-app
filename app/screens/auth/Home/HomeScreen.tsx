@@ -28,7 +28,11 @@ const Home = ({navigation}: HomeTabScreenProps<'Home'>) => {
           <Text>Section infos</Text>
         </View>
         <View style={styles.elementMargin}>
-          <Text style={styles.titleSection}>Mes recettes favorites</Text>
+          <Text style={styles.titleSection}>
+            {user?.favoriteRecipes?.length
+              ? 'Mes recettes favorites'
+              : 'Les dernières recettes'}
+          </Text>
           <Slider setScrollEnabled={setScrollEnabled} />
         </View>
         <View style={{margin: 20}}>
@@ -36,8 +40,8 @@ const Home = ({navigation}: HomeTabScreenProps<'Home'>) => {
             {user?.lastname || 'no user'}
           </Text>
         </View>
-        <Button onPress={() => navigation.navigate('Profile')}>
-          Go to Details
+        <Button onPress={() => navigation.navigate('Recipes')}>
+          Go to Recipes
         </Button>
         <Button
           style={styles.elementMargin}

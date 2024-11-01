@@ -26,4 +26,19 @@ export const styles = StyleSheet.create({
     marginHorizontal: 0,
     backgroundColor: COLORS.quaternary,
   },
+  buttonContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  buttonStyles: {
+    backgroundColor: COLORS.primary_accent,
+    borderColor: COLORS.primary_accent,
+    borderRadius: 10,
+    padding: 10,
+  },
+  buttonContentStyle: {
+    color: COLORS.white,
+    textTransform: 'uppercase',
+  },
 });
