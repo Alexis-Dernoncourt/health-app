@@ -16,6 +16,7 @@ export type HomeTabBaseParamList = {
   Home: undefined;
   Profile: undefined;
   Recipes: undefined;
+  RecipeDetails: {recipeId: string};
   Menus: undefined;
   AddRecipe: undefined;
 };

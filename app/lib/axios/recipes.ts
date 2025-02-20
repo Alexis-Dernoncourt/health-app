@@ -14,7 +14,7 @@ export const fetchRecipes = async (): Promise<Recipe[]> => {
   }
 };
 
-export const fetchRecipe = async (id: string): Promise<Recipe> => {
+export const fetchRecipeDetails = async (id: string): Promise<Recipe> => {
   try {
     const req = await api.request({
       url: `/recipes/${id}`,

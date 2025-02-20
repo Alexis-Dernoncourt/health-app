@@ -6,6 +6,8 @@ import Input from '../../../components/Form/Input';
 import IngredientsForm from '../../../components/AddRecipe/IngredientsForm';
 import Layout from '../../Layout';
 import {COLORS} from '../../../lib/constants';
+import ImagePicker from '../../../components/AddRecipe/ImagePicker';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const AddRecipeScreen = ({navigation}: HomeTabScreenProps<'AddRecipe'>) => {
   const [title, setTitle] = React.useState('');
@@ -18,81 +20,82 @@ const AddRecipeScreen = ({navigation}: HomeTabScreenProps<'AddRecipe'>) => {
 
   return (
     <Layout>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Ajoute une recette</Text>
-        <Button
-          labelStyle={styles.backButton}
-          rippleColor={COLORS.primary}
-          onPress={() => {
-            Alert.alert(
-              'Etes-vous sur de vouloir quitter cet écran ?',
-              'Vos modifications pourraient être perdues.',
-              [
-                {text: 'Annuler', style: 'cancel'},
-                {
-                  text: 'Confirmer',
-                  onPress: () => navigation.navigate('Recipes'),
-                },
-              ],
-            );
-          }}>
-          Revenir en arrière
-        </Button>
-
-        <View style={styles.formWrapper}>
-          <Input
-            label="Titre de la recette"
-            keyboardType="default"
-            value={title}
-            // error={emailErrorText.length > 0}
-            style={styles.inputStyle}
-            onChangeText={(val: string) => setTitle(val)}
-          />
-          {/* {title->error && (
-            <Text style={styles.errorText}>{titleErrorText}</Text>
-        )} */}
-
-          <Input
-            label="Description de la recette"
-            multiline={true}
-            keyboardType="default"
-            value={description}
-            // error={emailErrorText.length > 0}
-            style={styles.descriptionInput}
-            onChangeText={(val: string) => setDescription(val)}
-          />
-          {/* {title->error && (
-            <Text style={styles.errorText}>{titleErrorText}</Text>
-        )} */}
-
-          <Text style={styles.titleIngredients}>
-            Renseignez les ingrédients :
-          </Text>
-          {ingredientArray.map(item => {
-            return (
-              <IngredientsForm
-                key={item}
-                itemId={item}
-                setIngredientArray={setIngredientArray}
-                setIngredients={setIngredients}
-              />
-            );
-          })}
+      <GestureHandlerRootView>
+        <ScrollView>
+          <Text style={styles.title}>Ajoute une recette</Text>
           <Button
-            mode="contained"
-            style={styles.addIngredientButton}
+            labelStyle={styles.backButton}
+            rippleColor={COLORS.primary}
             onPress={() => {
-              setIngredientArray(prev => {
-                if (!prev.length) {
-                  return [1];
-                }
-                return [...prev, prev.at(-1)! + 1];
-              });
+              Alert.alert(
+                'Etes-vous sur de vouloir quitter cet écran ?',
+                'Vos modifications pourraient être perdues.',
+                [
+                  {text: 'Annuler', style: 'cancel'},
+                  {
+                    text: 'Confirmer',
+                    onPress: () => navigation.navigate('Recipes'),
+                  },
+                ],
+              );
             }}>
-            Ajouter un autre ingrédient
+            Revenir en arrière
           </Button>
-        </View>
-      </ScrollView>
+          <ImagePicker />
+          <View style={styles.formWrapper}>
+            <Input
+              label="Titre de la recette"
+              keyboardType="default"
+              value={title}
+              // error={emailErrorText.length > 0}
+              style={styles.inputStyle}
+              onChangeText={(val: string) => setTitle(val)}
+            />
+            {/* {title->error && (
+              <Text style={styles.errorText}>{titleErrorText}</Text>
+              )} */}
+            <Input
+              label="Description de la recette"
+              multiline={true}
+              keyboardType="default"
+              value={description}
+              // error={emailErrorText.length > 0}
+              style={styles.descriptionInput}
+              onChangeText={(val: string) => setDescription(val)}
+            />
+            {/* {title->error && (
+              <Text style={styles.errorText}>{titleErrorText}</Text>
+              )} */}
+
+            <Text style={styles.titleIngredients}>
+              Renseignez les ingrédients :
+            </Text>
+            {ingredientArray.map(item => {
+              return (
+                <IngredientsForm
+                  key={item}
+                  itemId={item}
+                  setIngredientArray={setIngredientArray}
+                  setIngredients={setIngredients}
+                />
+              );
+            })}
+            <Button
+              mode="contained"
+              style={styles.addIngredientButton}
+              onPress={() => {
+                setIngredientArray(prev => {
+                  if (!prev.length) {
+                    return [1];
+                  }
+                  return [...prev, prev.at(-1)! + 1];
+                });
+              }}>
+              Ajouter un autre ingrédient
+            </Button>
+          </View>
+        </ScrollView>
+      </GestureHandlerRootView>
     </Layout>
   );
 };
@@ -115,6 +118,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: -5,
     textTransform: 'uppercase',
+    textAlign: 'center',
   },
   titleIngredients: {
     fontSize: 16,
@@ -124,7 +128,6 @@ const styles = StyleSheet.create({
   formWrapper: {
     width: '100%',
     alignItems: 'stretch',
-    justifyContent: 'center',
     paddingHorizontal: 20,
   },
   inputStyle: {

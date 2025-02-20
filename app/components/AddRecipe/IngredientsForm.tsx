@@ -1,7 +1,6 @@
-import {StyleSheet, Text, View, ViewStyle} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import React, {useCallback, useEffect} from 'react';
 import {COLORS} from '../../lib/constants';
-import SelectDropdown from 'react-native-select-dropdown';
 import Input from '../Form/Input';
 import {Button} from 'react-native-paper';
 
@@ -23,25 +22,7 @@ const IngredientsForm = ({
   const [quantity, setQuantity] = React.useState('');
   const [quantityEdited, setQuantityEdited] = React.useState('');
   const [unite, setUnite] = React.useState('');
-  //   const [ingredients, setIngredients] = React.useReducer(
-  //     (
-  //       state: any,
-  //       action: {
-  //         type: 'add' | 'remove';
-  //         payload: {name?: string; quantity?: string; unit?: string};
-  //       },
-  //     ) => {
-  //       switch (action.type) {
-  //         case 'add':
-  //           return [...state, action.payload];
-  //         case 'remove':
-  //           return state.filter((item: any) => item !== action.payload);
-  //         default:
-  //           return state;
-  //       }
-  //     },
-  //     [],
-  //   );
+  const [uniteEdited, setUniteEdited] = React.useState('');
 
   const updateIngredients = useCallback(
     (action = '') =>
@@ -57,14 +38,14 @@ const IngredientsForm = ({
                 ...item,
                 name: ingredientEdited,
                 quantity: quantityEdited,
-                unit: unite,
+                unit: uniteEdited,
               };
             } else {
               return item;
             }
           });
         } else {
-          if (!ingredientEdited || !quantityEdited || !unite) {
+          if (!ingredientEdited || !quantityEdited || !uniteEdited) {
             return [];
           }
           return [
@@ -73,20 +54,20 @@ const IngredientsForm = ({
               id: itemId.toString(),
               name: ingredientEdited,
               quantity: quantityEdited,
-              unit: unite,
+              unit: uniteEdited,
             },
           ];
         }
       }),
-    [itemId, setIngredients, ingredientEdited, quantityEdited, unite],
+    [itemId, setIngredients, ingredientEdited, quantityEdited, uniteEdited],
   );
 
   useEffect(() => {
-    if (ingredientEdited && quantityEdited && unite) {
+    if (ingredientEdited && quantityEdited && uniteEdited) {
       updateIngredients();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ingredientEdited, quantityEdited, unite]);
+  }, [ingredientEdited, quantityEdited, uniteEdited]);
 
   return (
     <View>
@@ -119,7 +100,17 @@ const IngredientsForm = ({
         {/* {title->error && (
             <Text style={styles.errorText}>{titleErrorText}</Text>
             )} */}
-        <ListUnits style={styles.unitListInput} setUnite={setUnite} />
+        <Input
+          label="Unité"
+          keyboardType="default"
+          value={unite}
+          // error={emailErrorText.length > 0}
+          style={styles.quantityInput}
+          onChangeText={(val: string) => setUnite(val)}
+          onEndEditing={e => {
+            setUniteEdited(e.nativeEvent.text);
+          }}
+        />
         <Button
           compact={true}
           contentStyle={styles.removeButtonContent}
@@ -138,83 +129,12 @@ const IngredientsForm = ({
   );
 };
 
-const ListUnits = ({
-  style,
-  setUnite,
-}: {
-  style: ViewStyle;
-  setUnite: React.Dispatch<React.SetStateAction<string>>;
-}) => {
-  const unitsData = [
-    {
-      id: 1,
-      title: 'g.',
-    },
-    {
-      id: 2,
-      title: 'kg',
-    },
-    {
-      id: 3,
-      title: 'ml',
-    },
-    {
-      id: 4,
-      title: 'cl',
-    },
-    {
-      id: 5,
-      title: 'L.',
-    },
-    {
-      id: 6,
-      title: 'U.',
-    },
-  ];
-  return (
-    <SelectDropdown
-      data={unitsData}
-      defaultValue=""
-      onSelect={(selectedItem, index) => {
-        console.log(selectedItem, index);
-        setUnite(selectedItem.title);
-      }}
-      renderButton={(selectedItem, isOpened) => {
-        return (
-          <View style={[styles.dropdownButtonStyle, style]}>
-            <Text style={styles.dropdownButtonTxtStyle}>
-              {(selectedItem && selectedItem.title) || 'Unité'}
-            </Text>
-            <Text style={styles.dropdownButtonIconStyle}>
-              {isOpened ? '⋀' : '⋁'}
-            </Text>
-          </View>
-        );
-      }}
-      renderItem={(item, _, isSelected) => {
-        return (
-          <View
-            style={{
-              ...styles.dropdownItemStyle,
-              ...(isSelected && {backgroundColor: '#D2D9DF'}),
-            }}>
-            <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
-          </View>
-        );
-      }}
-      showsVerticalScrollIndicator={false}
-      dropdownStyle={styles.dropdownMenuStyle}
-    />
-  );
-};
-
 export default IngredientsForm;
 
 const styles = StyleSheet.create({
   groupWrapper: {
     width: '100%',
     flexDirection: 'row',
-    // flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
@@ -226,8 +146,6 @@ const styles = StyleSheet.create({
   },
   quantityInput: {
     width: '20%',
-    alignItems: 'center',
-    textAlign: 'center',
   },
   unitListInput: {
     width: '20%',
@@ -237,8 +155,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   removeButton: {
+    justifyContent: 'center',
     minWidth: 10,
     width: 25,
+    height: 25,
     backgroundColor: COLORS.red,
     borderRadius: 100,
   },
@@ -248,47 +168,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
     marginVertical: 2,
     color: COLORS.white,
-  },
-  // Dropdown
-  dropdownButtonStyle: {
-    width: 'auto',
-    height: 55,
-    backgroundColor: COLORS.white,
-    borderRadius: 4,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 8,
-  },
-  dropdownButtonTxtStyle: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#151E26',
-  },
-  dropdownItemStyle: {
-    width: '100%',
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  dropdownItemTxtStyle: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: '500',
-    color: '#151E26',
-  },
-  dropdownMenuStyle: {
-    backgroundColor: '#E9ECEF',
-    borderRadius: 8,
-  },
-  dropdownButtonIconStyle: {
-    fontSize: 12,
-    marginLeft: 'auto',
-    color: COLORS.black,
-    fontWeight: '700',
   },
 });

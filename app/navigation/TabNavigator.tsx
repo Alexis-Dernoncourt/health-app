@@ -21,6 +21,8 @@ import ProfileIcon from './icons/ProfileIcon';
 import MenusIcon from './icons/MenusIcon';
 import RecipesIcon from './icons/RecipesIcon';
 import {COLORS} from '../lib/constants';
+import Profile from '../screens/auth/Profile/ProfileScreen';
+import RecipeDetailsScreen from '../screens/auth/Recipes/RecipeDetailsScreen';
 
 const Tab = createBottomTabNavigator<HomeTabParamList>();
 
@@ -79,6 +81,11 @@ export default function TabNavigator() {
             }}
           />
           <Tab.Screen
+            name="RecipeDetails"
+            component={RecipeDetailsScreen}
+            options={{tabBarItemStyle: {display: 'none'}}}
+          />
+          <Tab.Screen
             name="Menus"
             component={TestScreen}
             options={{
@@ -100,7 +107,7 @@ export default function TabNavigator() {
           />
           <Tab.Screen
             name="Profile"
-            component={TestScreen}
+            component={Profile}
             options={{
               tabBarIcon: ({focused}) => <ProfileIcon focused={focused} />,
               tabBarLabel(props) {
@@ -125,26 +132,6 @@ export default function TabNavigator() {
       ) : (
         <Tab.Group>
           <Tab.Screen
-            name="Register"
-            component={RegisterScreen}
-            options={{
-              tabBarIcon: ({focused}) => (
-                <RegisterIcon focused={focused} size={30} />
-              ),
-              tabBarLabel(props) {
-                return (
-                  <Text
-                    style={{
-                      fontSize: 10,
-                      color: setFocusedColor(props),
-                    }}>
-                    Register
-                  </Text>
-                );
-              },
-            }}
-          />
-          <Tab.Screen
             name="Home"
             component={HomePublic}
             options={{
@@ -159,6 +146,26 @@ export default function TabNavigator() {
                       color: setFocusedColor(props),
                     }}>
                     Home
+                  </Text>
+                );
+              },
+            }}
+          />
+          <Tab.Screen
+            name="Register"
+            component={RegisterScreen}
+            options={{
+              tabBarIcon: ({focused}) => (
+                <RegisterIcon focused={focused} size={30} />
+              ),
+              tabBarLabel(props) {
+                return (
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      color: setFocusedColor(props),
+                    }}>
+                    Register
                   </Text>
                 );
               },

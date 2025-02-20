@@ -17,15 +17,6 @@ export const styles = StyleSheet.create({
     marginLeft: 10,
     color: COLORS.black,
   },
-  sectionInfos: {
-    width: '100%',
-    height: 208,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 20,
-    marginHorizontal: 0,
-    backgroundColor: COLORS.quaternary,
-  },
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',

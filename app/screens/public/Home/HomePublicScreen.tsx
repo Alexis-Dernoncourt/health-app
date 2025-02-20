@@ -8,6 +8,7 @@ import Config from 'react-native-config';
 import Layout from '../../Layout';
 import HomeHeader from '../../../components/Home/HomeHeader';
 import Slider from '../../../components/Home/Slider';
+import HomeInfos from '../../../components/Home/HomeInfos';
 
 // const HomePublic = ({navigation}: HomeTabScreenProps<'Home'>) => {
 const HomePublic = () => {
@@ -16,8 +17,8 @@ const HomePublic = () => {
 
   function loginTest() {
     return login.mutate({
-      email: Config.REACT_APP_TEST_MAIL,
-      password: Config.REACT_APP_TEST_PASS,
+      email: Config.REACT_APP_TEST_MAIL as string,
+      password: Config.REACT_APP_TEST_PASS as string,
     });
   }
 
@@ -27,10 +28,7 @@ const HomePublic = () => {
         contentContainerStyle={styles.container}
         scrollEnabled={scrollEnabled}>
         <HomeHeader />
-        <View style={[styles.sectionInfos, styles.elementMargin]}>
-          <Text>You are not logged in</Text>
-          <Text>Section infos</Text>
-        </View>
+        <HomeInfos />
         <View style={styles.elementMargin}>
           <Text style={styles.titleSection}>Les dernières recettes</Text>
           <Slider setScrollEnabled={setScrollEnabled} />
@@ -40,7 +38,7 @@ const HomePublic = () => {
             style={styles.buttonStyles}
             labelStyle={styles.buttonContentStyle}
             onPress={() => loginTest()}
-            disabled={login.isLoading}>
+            disabled={login.isPending}>
             Test login
           </Button>
         </View>

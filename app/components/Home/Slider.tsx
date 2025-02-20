@@ -13,14 +13,27 @@ import {useRecipes} from '../../hooks/react-query/recipes';
 import {Recipe} from '../../lib/axios/types';
 import {COLORS} from '../../lib/constants';
 import {useCurrentUser} from '../../hooks';
+import {Pressable} from 'react-native';
+import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
+import {HomeTabParamList} from '../../navigation/types';
+import {useNavigation} from '@react-navigation/native';
 
 export const ISBImageItem = memo(({recipe}: {recipe: Recipe}) => {
+  const navigation = useNavigation<BottomTabNavigationProp<HomeTabParamList>>();
+  const {user} = useCurrentUser();
+
   if (!recipe.image) {
     return null;
   }
 
   return (
-    <View style={styles.imageContainer}>
+    <Pressable
+      style={styles.imageContainer}
+      onPress={() => {
+        if (user) {
+          navigation.navigate('RecipeDetails', {recipeId: recipe.id});
+        }
+      }}>
       <ActivityIndicator size="small" />
       <Image
         style={styles.image}
@@ -29,7 +42,7 @@ export const ISBImageItem = memo(({recipe}: {recipe: Recipe}) => {
         }}
       />
       <Text style={styles.imageTitle}>{recipe.title}</Text>
-    </View>
+    </Pressable>
   );
 });
 

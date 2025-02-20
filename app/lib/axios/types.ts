@@ -22,11 +22,11 @@ export interface User {
 }
 
 export interface Recipe {
-  id: number;
+  id: string;
   title: string;
   description: string;
-  ingredients: Ingredient[];
-  steps: Step[];
+  ingredients: string;
+  steps: string;
   calories: Calories;
   created_at: Date;
   updated_at: Date;

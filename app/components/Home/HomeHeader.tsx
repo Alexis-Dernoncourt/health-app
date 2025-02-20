@@ -5,7 +5,7 @@ import {COLORS} from '../../lib/constants';
 const HomeHeader = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Header</Text>
+      <Text style={styles.headerText}>Bienvenue !</Text>
     </View>
   );
 };

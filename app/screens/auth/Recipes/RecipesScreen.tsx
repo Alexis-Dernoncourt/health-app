@@ -1,10 +1,11 @@
 import {
   FlatList,
   Image,
-  ListRenderItem,
-  Pressable,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import React from 'react';
@@ -12,9 +13,18 @@ import Layout from '../../Layout';
 import {useRecipes} from '../../../hooks/react-query/recipes';
 import {Recipe} from '../../../lib/axios/types';
 import {COLORS} from '../../../lib/constants';
-import {HomeTabScreenProps} from '../../../navigation/types';
+import {HomeTabParamList, HomeTabScreenProps} from '../../../navigation/types';
+import FabButton from '../../../components/Elements/FAB';
+import {Plus} from 'lucide-react-native';
+import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
 
 const RecipesScreen = ({navigation}: HomeTabScreenProps<'Recipes'>) => {
+  const [isExtended, setIsExtended] = React.useState(true);
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const currentScrollPosition =
+      Math.floor(event.nativeEvent?.contentOffset?.y) ?? 0;
+    setIsExtended(currentScrollPosition <= 10);
+  };
   const {
     data: recipesData,
     // isLoading,
@@ -51,25 +61,19 @@ const RecipesScreen = ({navigation}: HomeTabScreenProps<'Recipes'>) => {
           keyExtractor={item => {
             return item.id.toString();
           }}
-          renderItem={renderItem}
+          renderItem={({item}) => renderItem({item, navigation})}
+          onScroll={onScroll}
         />
       </View>
-      <Pressable
-        style={styles.buttonAddContainer}
-        android_ripple={{
-          color: COLORS.primary,
-          borderless: true,
-          radius: 60,
-          foreground: true,
-        }}
-        onPress={() => navigation.navigate('AddRecipe')}>
-        <View style={styles.buttonAddPlus}>
-          <Text style={styles.buttonAddPlusText}>+</Text>
-        </View>
-        <View style={styles.buttonAddTextContainer}>
-          <Text style={styles.buttonAddText}>Ajouter une recette</Text>
-        </View>
-      </Pressable>
+      <FabButton
+        visible={true}
+        extended={isExtended}
+        label="Ajouter une recette"
+        style={styles.fabStyle}
+        icon={<Plus color={COLORS.primary_accent} size={32} />}
+        iconMode="dynamic"
+        onPressEvent={() => navigation.navigate('AddRecipe')}
+      />
     </Layout>
   );
 };
@@ -79,9 +83,21 @@ const RecipesScreen = ({navigation}: HomeTabScreenProps<'Recipes'>) => {
 
 const renderEmptyItem = () => <Text>Il n'y a pas de recettes</Text>;
 
-const renderItem: ListRenderItem<Recipe> | undefined = ({item}) => {
+const renderItem = ({
+  item,
+  navigation,
+}: {
+  item: Recipe;
+  navigation: BottomTabNavigationProp<HomeTabParamList, 'Recipes', undefined>;
+}) => {
   return (
-    <View style={styles.flatListItemWrapper}>
+    <TouchableOpacity
+      style={styles.flatListItemWrapper}
+      onPress={() => {
+        navigation.navigate('RecipeDetails', {recipeId: item.id});
+      }}
+      activeOpacity={0.8}
+      key={item.id.toString()}>
       <Image
         style={styles.image}
         source={{
@@ -91,7 +107,7 @@ const renderItem: ListRenderItem<Recipe> | undefined = ({item}) => {
       <View style={styles.flatListItemContent}>
         <Text style={styles.flatListItemTitle}>{item.title}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 export default RecipesScreen;
@@ -153,41 +169,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.red,
   },
-  buttonAddContainer: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    backgroundColor: 'transparent',
-    borderColor: COLORS.primary_accent,
-    borderRadius: 10,
-    padding: 10,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonAddPlus: {
-    width: 50,
-    height: 50,
-    borderRadius: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
+  fabStyle: {
     backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary_accent,
-  },
-  buttonAddPlusText: {
-    fontSize: 32,
-    lineHeight: 35,
-    fontWeight: 'thin',
-    color: COLORS.black,
-  },
-  buttonAddTextContainer: {
-    backgroundColor: COLORS.white,
-    borderRadius: 2,
-    marginTop: 5,
-    padding: 5,
-  },
-  buttonAddText: {
-    color: COLORS.black,
-    fontSize: 12,
+    color: COLORS.dark_red,
   },
 });

@@ -1,22 +1,18 @@
 import React from 'react';
 import {ScrollView, View} from 'react-native';
-import {Button, Text} from 'react-native-paper';
+import {Text} from 'react-native-paper';
 import {HomeTabScreenProps} from '../../../navigation/types';
 import {styles} from './styles';
-import {useLogout} from '../../../lib/react-query/auth';
 import {useCurrentUser} from '../../../hooks/index';
 import Layout from '../../Layout';
 import HomeHeader from '../../../components/Home/HomeHeader';
 import Slider from '../../../components/Home/Slider';
+import HomeInfos from '../../../components/Home/HomeInfos';
 
 const Home = ({navigation}: HomeTabScreenProps<'Home'>) => {
-  const logout = useLogout();
+  console.log('🚀 ~ Home ~ navigation:', navigation.canGoBack());
   const {user} = useCurrentUser();
   const [scrollEnabled, setScrollEnabled] = React.useState(true);
-
-  const logoutTest = () => {
-    return logout.mutate();
-  };
 
   return (
     <Layout>
@@ -24,12 +20,10 @@ const Home = ({navigation}: HomeTabScreenProps<'Home'>) => {
         contentContainerStyle={styles.container}
         scrollEnabled={scrollEnabled}>
         <HomeHeader />
-        <View style={[styles.sectionInfos, styles.elementMargin]}>
-          <Text>Section infos</Text>
-        </View>
+        <HomeInfos />
         <View style={styles.elementMargin}>
           <Text style={styles.titleSection}>
-            {user?.favoriteRecipes?.length
+            {user?.user_favorites?.length
               ? 'Mes recettes favorites'
               : 'Les dernières recettes'}
           </Text>
@@ -40,15 +34,6 @@ const Home = ({navigation}: HomeTabScreenProps<'Home'>) => {
             {user?.lastname || 'no user'}
           </Text>
         </View>
-        <Button onPress={() => navigation.navigate('Recipes')}>
-          Go to Recipes
-        </Button>
-        <Button
-          style={styles.elementMargin}
-          onPress={() => logoutTest()}
-          disabled={logout.isLoading}>
-          Test logout
-        </Button>
       </ScrollView>
     </Layout>
   );

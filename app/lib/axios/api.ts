@@ -54,8 +54,8 @@ export const login = async (credentials: LoginCredentials) => {
       method: 'POST',
       data: credentials,
     });
-    if (req.data.token) {
-      api.defaults.headers.Authorization = `Bearer ${req.data.token.token}`;
+    if (req.data.access_token) {
+      api.defaults.headers.Authorization = `Bearer ${req.data.access_token}`;
     }
     return handleApiResponse(req);
   } catch (error) {
