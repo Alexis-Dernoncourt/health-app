@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Config from 'react-native-config';
-import { USER_DATA } from '../lib/utils';
+import { clientStorage } from '../lib/mmkv_store';
 
 const client = axios.create({
   baseURL: Config.BASE_API_URL,
@@ -9,10 +9,10 @@ const client = axios.create({
   },
 });
 
-console.log('🚀 ~ USER_DATA.access_token:', USER_DATA.access_token);
 client.interceptors.request.use(
   config => {
-    config.headers.Authorization = `Bearer ${USER_DATA.access_token}`;
+    const USER_TOKEN = clientStorage.getItem('usertoken');
+    config.headers.Authorization = `Bearer ${USER_TOKEN}`;
     return config;
   },
   error => Promise.reject(error),

@@ -11,11 +11,9 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import queryClient from './lib/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { clientPersister } from './lib/mmkv_store';
-import { QueryClientProvider } from '@tanstack/react-query';
 
 if (__DEV__) {
   import('./reactotron').then(() => console.log('Reactotron Configured'));
-  // require('./reactotron.ts');
 }
 
 export default function Main() {
@@ -23,16 +21,16 @@ export default function Main() {
     <PersistQueryClientProvider
       client={queryClient}
       persistOptions={{ persister: clientPersister }}
+      contextSharing={true}
+      debug={__DEV__}
     >
-      <QueryClientProvider client={queryClient}>
-        <PaperProvider>
-          <NavigationContainer>
-            <GestureHandlerRootView>
-              <App />
-            </GestureHandlerRootView>
-          </NavigationContainer>
-        </PaperProvider>
-      </QueryClientProvider>
+      <PaperProvider>
+        <NavigationContainer>
+          <GestureHandlerRootView>
+            <App />
+          </GestureHandlerRootView>
+        </NavigationContainer>
+      </PaperProvider>
     </PersistQueryClientProvider>
   );
 }

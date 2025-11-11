@@ -1,4 +1,4 @@
-import { storage } from '../lib/mmkv_store';
+import { clientStorage } from '../lib/mmkv_store';
 import { authRepository } from '../repositories/authRepository';
 
 export const authService = {
@@ -9,10 +9,8 @@ export const authService = {
       data.user,
       data.access_token,
     );
-    storage.set(
-      'user',
-      JSON.stringify({ ...data.user, access_token: data.access_token }),
-    );
+    clientStorage.setItem('usertoken', data.access_token);
+    clientStorage.setItem('userId', data.user.id);
     return data;
   },
   async register(
@@ -29,9 +27,14 @@ export const authService = {
     );
     return data;
   },
-  async logout(token: string) {
+  async logout() {
+    const token = clientStorage.getItem('usertoken');
+    if (!token) {
+      return;
+    }
     const data = await authRepository.logout(token);
-    storage.remove('user');
+    clientStorage.removeItem('usertoken');
+    clientStorage.removeItem('userId');
     return data;
   },
 };

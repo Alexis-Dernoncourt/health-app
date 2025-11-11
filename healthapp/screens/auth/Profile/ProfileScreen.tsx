@@ -6,13 +6,10 @@ import { useLogout } from '../../../lib/react-query/auth';
 import { useCurrentUser } from '../../../hooks/index';
 import Layout from '../../Layout';
 import { View } from 'react-native';
-import { USER_DATA } from '../../../lib/utils';
 
 const Profile = ({ navigation }: HomeTabScreenProps<'Profile'>) => {
   const { user } = useCurrentUser();
   const logout = useLogout();
-  console.log('🚀 ~ Profile ~ user:', user);
-  console.log('🚀 ~ Profile ~ USER_DATA:', USER_DATA);
 
   const logoutMe = () => {
     logout.mutate('');

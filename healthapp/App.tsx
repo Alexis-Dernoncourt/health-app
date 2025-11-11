@@ -2,24 +2,27 @@
  * @format
  */
 
-import { AppState, AppStateStatus, Platform } from 'react-native';
+import { AppStateStatus, Platform } from 'react-native';
 import TabNavigator from './navigation/TabNavigator';
 import { focusManager } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useOnlineManager } from './hooks/useOnlineManager';
+import { useAppState } from './hooks/useAppState';
+import { useMMKVListener } from 'react-native-mmkv';
+import { storage } from './lib/mmkv_store';
+
+function onAppStateChange(status: AppStateStatus) {
+  console.log('🚀 ~ onAppStateChange ~ Platform:', Platform);
+  if (Platform.OS !== 'web') {
+    focusManager.setFocused(status === 'active');
+  }
+}
 
 function App() {
-  function onAppStateChange(status: AppStateStatus) {
-    console.log('🚀 ~ onAppStateChange ~ Platform:', Platform);
-    if (Platform.OS !== 'web') {
-      focusManager.setFocused(status === 'active');
-    }
-  }
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', onAppStateChange);
-    return () => subscription.remove();
-  }, []);
-
+  useOnlineManager();
+  useAppState(onAppStateChange);
+  useMMKVListener(k => {
+    console.log(`${k} changed! New size: ${storage.size}`);
+  });
   // return <RootStack />;
   return <TabNavigator />;
 }
