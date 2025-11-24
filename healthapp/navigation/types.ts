@@ -1,7 +1,7 @@
 // import type {CompositeScreenProps} from '@react-navigation/native';
-import {NavigatorScreenParams} from '@react-navigation/native';
-import type {StackScreenProps} from '@react-navigation/stack';
-import type {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
+import { NavigatorScreenParams } from '@react-navigation/native';
+import type { StackScreenProps } from '@react-navigation/stack';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
 // TODO: refactor : remove RootParamsGlobal & duplication if needed
 export type RootStackParamList = {
@@ -16,7 +16,7 @@ export type HomeTabBaseParamList = {
   Home: undefined;
   Profile: undefined;
   Recipes: undefined;
-  RecipeDetails: {recipeId: string};
+  RecipeDetails: { recipeId: string };
   Menus: undefined;
   AddRecipe: undefined;
   EditProfile: undefined;

@@ -1,5 +1,5 @@
-import {StyleSheet} from 'react-native';
-import {COLORS} from '../../../lib/constants';
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../../lib/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -21,7 +21,6 @@ export const styles = StyleSheet.create({
   formContainer: {
     width: '100%',
     paddingHorizontal: 30,
-    marginTop: '40%',
   },
   formRegisterContainer: {
     width: '100%',
@@ -45,6 +44,9 @@ export const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 20,
   },
+  signButtonDisabled: {
+    backgroundColor: COLORS.gray,
+  },
   signButtonText: {
     color: COLORS.white,
   },
@@ -53,5 +55,8 @@ export const styles = StyleSheet.create({
   },
   registerButtonText: {
     color: COLORS.black,
+  },
+  error: {
+    color: COLORS.dark_red,
   },
 });

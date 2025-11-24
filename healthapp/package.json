@@ -3,12 +3,13 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
-    "android-a": "react-native run-android --active-arch-only",
+    "android:dev": "SET ENVFILE=.env.dev && react-native run-android",
+    "android-a:dev": "SET ENVFILE=.env.dev && react-native run-android --active-arch-only",
     "boot-emulator": "C:\\Users\\lxale\\AppData\\Local\\Android\\Sdk/emulator/emulator @Pixel5 -no-snapshot",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
+    "start--no-cache": "react-native start --reset-cache",
     "build:apk": "cd android && gradlew assembleDebug && cd ..",
     "test": "jest",
     "map:emulator": "adb -s emulator-5554 reverse tcp:3333 tcp:3333",
@@ -16,7 +17,9 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@google/genai": "^1.30.0",
     "@gorhom/bottom-sheet": "^5.2.6",
+    "@hookform/resolvers": "^5.2.2",
     "@react-native-community/netinfo": "^11.4.1",
     "@react-native/new-app-screen": "0.82.1",
     "@react-navigation/bottom-tabs": "^7.8.2",
@@ -30,8 +33,10 @@
     "lucide-react-native": "^0.552.0",
     "patch-package": "^8.0.1",
     "react": "19.1.1",
+    "react-hook-form": "^7.66.1",
     "react-native": "0.82.1",
     "react-native-config": "1.5.5",
+    "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.29.1",
     "react-native-image-picker": "^8.2.1",
     "react-native-mmkv": "^4.0.0",
@@ -44,8 +49,10 @@
     "react-native-select-dropdown": "^4.0.1",
     "react-native-svg": "^15.14.0",
     "react-native-vector-icons": "^10.3.0",
+    "react-native-vision-camera": "^4.7.3",
     "react-native-worklets": "^0.6.1",
-    "react-query-auth": "^2.4.3"
+    "react-query-auth": "^2.4.3",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

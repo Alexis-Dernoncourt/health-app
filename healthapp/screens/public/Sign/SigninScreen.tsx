@@ -1,52 +1,48 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useEffect} from 'react';
-import {useLogin} from '../../../lib/react-query/auth';
-import {Button, Text, TextInput} from 'react-native-paper';
-import {ToastAndroid, View} from 'react-native';
+import React, { useEffect } from 'react';
+import { useLogin } from '../../../lib/react-query/auth';
+import { Button, Text, TextInput } from 'react-native-paper';
+import { ToastAndroid, View } from 'react-native';
 import Input from '../../../components/Form/Input';
-import {styles} from './styles';
-import {EyeIconOpen, EyeIconClosed} from '../../../navigation/icons/EyeIcon';
+import { styles } from './styles';
+import { EyeIconOpen, EyeIconClosed } from '../../../navigation/icons/EyeIcon';
 import Layout from '../../Layout';
-import {HomeTabScreenProps} from '../../../navigation/types';
-import {authService} from '../../../services/authService';
+import { HomeTabScreenProps } from '../../../navigation/types';
+import { authService } from '../../../services/authService';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod';
 
-const SigninScreen = ({navigation}: HomeTabScreenProps<'SignIn'>) => {
+const SigninScreen = ({ navigation }: HomeTabScreenProps<'SignIn'>) => {
+  const LoginSchema = z.object({
+    email: z.email({ message: "L'email doit être valide" }).nonoptional({
+      message: "L'email est requis",
+    }),
+    password: z
+      .string()
+      .min(8, { message: 'Le mot de passe doit avoir au moins 8 caractères' })
+      .nonoptional({ message: 'Le mot de passe est requis' }),
+  });
+
+  type LoginFormData = z.infer<typeof LoginSchema>;
   const login = useLogin();
-  const [email, setEmail] = React.useState('');
-  const [emailErrorText, setEmailErrorText] = React.useState('');
-  const [password, setPassword] = React.useState('');
   const [passwordVisible, setPasswordVisible] = React.useState(false);
-  const [passwordErrorText, setPasswordErrorText] = React.useState('');
 
-  const loginUser = async () => {
-    await authService.login(email, password);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid, isSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(LoginSchema),
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
+    console.log(data);
+    ToastAndroid.show('Connexion en cours...', ToastAndroid.LONG);
+    // await authService.login(data.email, data.password);
   };
 
-  /* useEffect(() => {
-    const errorResponse = loginUser;
-    if (errorResponse?.status === 422) {
-      setEmailErrorText(
-        errorResponse?.data?.errors.filter(
-          (error: any) => error.field === 'email',
-        )[0]?.message ?? '',
-      );
-      setPasswordErrorText(
-        errorResponse?.data?.errors.filter(
-          (error: any) => error.field === 'password',
-        )[0]?.message ?? '',
-      );
-    }
-
-    if (errorResponse?.status === 400) {
-      emailErrorText && setEmailErrorText('');
-      passwordErrorText && setPasswordErrorText('');
-      ToastAndroid.show(
-        errorResponse?.data?.errors[0]?.message,
-        ToastAndroid.LONG,
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [login.error]); */
+  console.log('errors:', errors);
 
   return (
     <Layout>
@@ -55,38 +51,64 @@ const SigninScreen = ({navigation}: HomeTabScreenProps<'SignIn'>) => {
         <View style={styles.formContainer}>
           <Text style={styles.signinText}>Sign in</Text>
           <View style={styles.formWrapper}>
-            <Input
-              label="Email"
-              placeholder="Email"
-              keyboardType="email-address"
-              value={email}
-              error={emailErrorText.length > 0}
-              style={styles.inputStyle}
-              onChangeText={(val: string) => setEmail(val)}
-            />
-            <Input
-              label="Password"
-              placeholder="Password"
-              secureTextEntry={passwordVisible ? false : true}
-              value={password}
-              error={passwordErrorText.length > 0}
-              style={styles.inputStyle}
-              onChangeText={(val: string) => setPassword(val)}
-              rightIcon={
-                <TextInput.Icon
-                  icon={passwordVisible ? EyeIconClosed : EyeIconOpen}
-                  onPress={() => setPasswordVisible(prev => !prev)}
+            <Controller
+              name="email"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  label="Email"
+                  placeholder="Email"
+                  keyboardType="email-address"
+                  value={value}
+                  error={!!errors.email}
+                  style={styles.inputStyle}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
                 />
-              }
+              )}
             />
+            {errors.email && (
+              <Text style={styles.error}>{errors.email.message}</Text>
+            )}
+
+            <Controller
+              name="password"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  label="Password"
+                  placeholder="Password"
+                  secureTextEntry={passwordVisible ? false : true}
+                  value={value}
+                  error={!!errors.password}
+                  style={styles.inputStyle}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  rightIcon={
+                    <TextInput.Icon
+                      icon={passwordVisible ? EyeIconClosed : EyeIconOpen}
+                      onPress={() => setPasswordVisible(prev => !prev)}
+                    />
+                  }
+                />
+              )}
+            />
+            {errors.password && (
+              <Text style={styles.error}>{errors.password.message}</Text>
+            )}
           </View>
         </View>
 
         <Button
-          style={styles.signButton}
+          style={
+            !isValid
+              ? { ...styles.signButton, ...styles.signButtonDisabled }
+              : styles.signButton
+          }
           labelStyle={styles.signButtonText}
-          onPress={() => loginUser()}
-          // disabled={login.isLoading}
+          disabled={!isValid || isSubmitting || login.isPending}
+          loading={isSubmitting}
+          onPress={handleSubmit(onSubmit)}
         >
           Me connecter
         </Button>

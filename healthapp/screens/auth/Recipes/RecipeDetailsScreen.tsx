@@ -20,7 +20,6 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { Ingredient, Step } from '../../../api/types';
 import { FlatList } from 'react-native';
 import { recipeService } from '../../../services/recipeService';
-import { USER_DATA } from '../../../lib/utils';
 
 const arrowLeftIcon = () => {
   return <ArrowLeft color={COLORS.black} size={30} />;
@@ -47,10 +46,6 @@ const RecipeDetailsScreen = () => {
     isLoading,
     error,
   } = recipeService.useGetRecipe(params.recipeId);
-  console.log('🚀 ~ RecipeDetailsScreen ~ recipeData:', recipeData);
-  console.log('🚀 ~ RecipeDetailsScreen ~ params.recipeId:', params.recipeId);
-
-  console.log('🚀 ~ RecipeDetailsScreen ~ USER_DATA:', USER_DATA);
 
   if (error) {
     return (

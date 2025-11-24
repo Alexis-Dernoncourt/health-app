@@ -1,67 +1,61 @@
-import React, {useEffect} from 'react';
-import {useRegister} from '../../../lib/react-query/auth';
-import {Button, Text, TextInput} from 'react-native-paper';
-import {ToastAndroid, View} from 'react-native';
+import React from 'react';
+import { useRegister } from '../../../lib/react-query/auth';
+import { Button, Text, TextInput } from 'react-native-paper';
+import { ToastAndroid, View } from 'react-native';
 import Input from '../../../components/Form/Input';
-import {styles} from './styles';
-import {EyeIconOpen, EyeIconClosed} from '../../../navigation/icons/EyeIcon';
+import { styles } from './styles';
+import { EyeIconOpen, EyeIconClosed } from '../../../navigation/icons/EyeIcon';
 import Layout from '../../Layout';
-import {HomeTabScreenProps} from '../../../navigation/types';
+import { HomeTabScreenProps } from '../../../navigation/types';
+import { Controller, useForm } from 'react-hook-form';
+import z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-const RegisterScreen = ({navigation}: HomeTabScreenProps<'Register'>) => {
+const RegisterScreen = ({ navigation }: HomeTabScreenProps<'Register'>) => {
+  const RegisterSchema = z.object({
+    firstname: z
+      .string({ message: 'Le prénom doit avoir au moins 3 caractères' })
+      .min(3, { message: 'Le prénom doit avoir au moins 3 caractères' })
+      .nonoptional({ message: 'Le prénom est requis' }),
+    lastname: z
+      .string({ message: 'Le nom doit avoir au moins 3 caractères' })
+      .min(3, { message: 'Le nom doit avoir au moins 3 caractères' })
+      .nonoptional({ message: 'Le nom est requis' }),
+    email: z.email({ message: "L'email doit être valide" }).nonoptional({
+      message: "L'email est requis",
+    }),
+    password: z
+      .string({ message: 'Le mot de passe doit avoir au moins 8 caractères' })
+      .min(8, { message: 'Le mot de passe doit avoir au moins 8 caractères' })
+      .nonoptional({ message: 'Le mot de passe est requis' }),
+  });
+
+  type RegisterFormData = z.infer<typeof RegisterSchema>;
   const register = useRegister();
-  const [firstname, setFirstname] = React.useState('');
-  const [firstnameErrorText, setFirstnameErrorText] = React.useState('');
-  const [lastname, setLastname] = React.useState('');
-  const [lastnameErrorText, setLastnameErrorText] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [emailErrorText, setEmailErrorText] = React.useState('');
-  const [password, setPassword] = React.useState('');
   const [passwordVisible, setPasswordVisible] = React.useState(false);
-  const [passwordErrorText, setPasswordErrorText] = React.useState('');
 
-  const loginUser = async () => {
-    await register.mutate({
-      email,
-      password,
-    });
-  };
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid, isSubmitting },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(RegisterSchema),
+  });
 
-  useEffect(() => {
-    const errorResponse = register.error?.response;
-    if (errorResponse?.status === 422) {
-      setFirstnameErrorText(
-        errorResponse?.data?.errors.filter(
-          (error: any) => error.field === 'firstname',
-        )[0]?.message ?? '',
-      );
-      setLastnameErrorText(
-        errorResponse?.data?.errors.filter(
-          (error: any) => error.field === 'lastname',
-        )[0]?.message ?? '',
-      );
-      setEmailErrorText(
-        errorResponse?.data?.errors.filter(
-          (error: any) => error.field === 'email',
-        )[0]?.message ?? '',
-      );
-      setPasswordErrorText(
-        errorResponse?.data?.errors.filter(
-          (error: any) => error.field === 'password',
-        )[0]?.message ?? '',
-      );
-    }
-
-    if (errorResponse?.status === 400) {
-      emailErrorText && setEmailErrorText('');
-      passwordErrorText && setPasswordErrorText('');
+  const onSubmit = async (data: RegisterFormData) => {
+    console.log(data);
+    try {
+      register.mutate(data);
       ToastAndroid.show(
-        errorResponse?.data?.errors[0]?.message,
+        'Votre compte a bien été crée. Vous pouvez maintenant vous connecter !',
         ToastAndroid.LONG,
       );
+    } catch (error) {
+      console.log('🚀 ~ onSubmit ~ error:', error);
+      ToastAndroid.show('Une erreur est survenue', ToastAndroid.SHORT);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [register.error]);
+    // register.mutate(data);
+  };
 
   return (
     <Layout>
@@ -69,76 +63,123 @@ const RegisterScreen = ({navigation}: HomeTabScreenProps<'Register'>) => {
         <Text style={styles.welcomeText}>Welcome !</Text>
         <View style={styles.formRegisterContainer}>
           <Text style={styles.signinText}>Create an account</Text>
-          <View style={styles.formWrapper}>
-            <Input
-              label="Firstname"
-              placeholder="Firstname"
-              keyboardType="default"
-              value={firstname}
-              error={firstnameErrorText.length > 0}
-              style={styles.inputStyle}
-              onChangeText={(val: string) => setFirstname(val)}
-            />
-            {register.error && (
-              <Text style={styles.errorText}>{firstnameErrorText}</Text>
+          <Controller
+            name="firstname"
+            rules={{
+              required: true,
+            }}
+            control={control}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Votre prénom"
+                placeholder="Entrez votre prénom"
+                keyboardType="default"
+                value={value}
+                error={!!errors.firstname}
+                style={styles.inputStyle}
+                onChangeText={onChange}
+                onBlur={onBlur}
+              />
             )}
-            <Input
-              label="Lastname"
-              placeholder="Lastname"
-              keyboardType="default"
-              value={lastname}
-              error={lastnameErrorText.length > 0}
-              style={styles.inputStyle}
-              onChangeText={(val: string) => setLastname(val)}
-            />
-            {register.error && (
-              <Text style={styles.errorText}>{lastnameErrorText}</Text>
+          />
+          {errors.firstname && (
+            <Text style={styles.errorText}>{errors.firstname.message}</Text>
+          )}
+
+          <Controller
+            name="lastname"
+            control={control}
+            rules={{
+              required: false,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Votre nom"
+                placeholder="Entrez votre nom"
+                keyboardType="default"
+                value={value}
+                error={!!errors.lastname}
+                style={styles.inputStyle}
+                onChangeText={onChange}
+                onBlur={onBlur}
+              />
             )}
-            <Input
-              label="Email"
-              placeholder="Email"
-              keyboardType="email-address"
-              value={email}
-              error={emailErrorText.length > 0}
-              style={styles.inputStyle}
-              onChangeText={(val: string) => setEmail(val)}
-            />
-            {register.error && (
-              <Text style={styles.errorText}>{emailErrorText}</Text>
+          />
+          {errors.lastname && (
+            <Text style={styles.errorText}>{errors.lastname.message}</Text>
+          )}
+
+          <Controller
+            name="email"
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Email"
+                placeholder="Email"
+                keyboardType="email-address"
+                value={value}
+                error={!!errors.email}
+                style={styles.inputStyle}
+                onChangeText={onChange}
+                onBlur={onBlur}
+              />
             )}
-            <Input
-              label="Password"
-              placeholder="Password"
-              secureTextEntry={passwordVisible ? false : true}
-              value={password}
-              error={passwordErrorText.length > 0}
-              style={styles.inputStyle}
-              onChangeText={(val: string) => setPassword(val)}
-              rightIcon={
-                <TextInput.Icon
-                  icon={passwordVisible ? EyeIconClosed : EyeIconOpen}
-                  onPress={() => setPasswordVisible(prev => !prev)}
-                />
-              }
-            />
-            {register.error && (
-              <Text style={styles.errorText}>{passwordErrorText}</Text>
+          />
+          {errors.email && (
+            <Text style={styles.errorText}>{errors.email.message}</Text>
+          )}
+
+          <Controller
+            name="password"
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                label="Password"
+                placeholder="Password"
+                secureTextEntry={passwordVisible ? false : true}
+                value={value}
+                error={!!errors.password}
+                style={styles.inputStyle}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                rightIcon={
+                  <TextInput.Icon
+                    icon={passwordVisible ? EyeIconClosed : EyeIconOpen}
+                    onPress={() => setPasswordVisible(!passwordVisible)}
+                  />
+                }
+              />
             )}
-          </View>
+          />
+          {errors.password && (
+            <Text style={styles.errorText}>{errors.password.message}</Text>
+          )}
         </View>
 
         <Button
-          style={styles.signButton}
+          style={
+            !isValid
+              ? { ...styles.signButton, ...styles.signButtonDisabled }
+              : styles.signButton
+          }
           labelStyle={styles.signButtonText}
-          onPress={() => loginUser()}
-          disabled={register.isLoading}>
+          onPress={handleSubmit(onSubmit)}
+          disabled={register.isPending || !isValid || isSubmitting}
+        >
           Me connecter
         </Button>
         <Button
           style={styles.registerButton}
           labelStyle={styles.registerButtonText}
           onPress={() => navigation.navigate('SignIn')}
-          disabled={register.isLoading || register.isFetching}>
+          disabled={register.isPending || isSubmitting}
+        >
           J'ai déjà un compte
         </Button>
       </View>

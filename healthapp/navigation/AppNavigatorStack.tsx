@@ -10,7 +10,6 @@ const Stack = createStackNavigator<RootStackParamList>();
 export function RootStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* <Stack.Screen name="Tab" component={TabNavigator} /> */}
       <Stack.Screen name="Tab" component={TabNavigator} />
       {/* <Stack.Screen name="AddRecipe" component={TestScreen} /> */}
     </Stack.Navigator>
