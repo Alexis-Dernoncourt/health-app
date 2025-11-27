@@ -146,4 +146,25 @@ export class UpdateRecipeDto {
   @IsOptional()
   @ValidateNested()
   calories?: Calories;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  prep_time?: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  cook_time?: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  servings?: string;
 }
