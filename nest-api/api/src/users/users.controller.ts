@@ -13,6 +13,7 @@ import {
   ForbiddenException,
   ParseFilePipe,
   FileTypeValidator,
+  Query,
 } from '@nestjs/common';
 import { Express } from 'express';
 import { UsersService } from './users.service';
@@ -37,6 +38,7 @@ import { Public } from 'src/utils';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Post()
+  @Public()
   @ApiExcludeEndpoint(true)
   protected async create(@Body() createUserDto: SigninDto) {
     return this.usersService.create(createUserDto);
@@ -127,6 +129,24 @@ export class UsersController {
       throw new ForbiddenException('You can not do this action');
     }
     return this.usersService.update(id, updateUserDto);
+  }
+
+  @Patch('/password/:id')
+  changePassword(
+    @Param('id', new ParseCUIDPipe()) id: string,
+    @Body('newPassword') newPassword: string,
+    @Req() req: RequestWithUser,
+  ) {
+    if (req.user.userId !== id) {
+      throw new ForbiddenException('You can not do this action');
+    }
+    return this.usersService.changePassword(id, newPassword);
+  }
+
+  @Post('/verify-email')
+  @Public()
+  sendVerificationEmail(@Query('token') tokenQuery: string) {
+    return this.usersService.verifyEmail(tokenQuery);
   }
 
   @Delete(':id')
