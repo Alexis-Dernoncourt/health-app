@@ -9,13 +9,23 @@ export const userApi = {
     lastname: string;
     email: string;
     password: string;
-  }) => client.post<User>('/users', payload),
-  updateUser: (payload: {
-    firstname?: string;
-    lastname?: string;
-    email?: string;
-    password?: string;
-  }) => client.patch<{ message: string }>('/users', payload),
+  }) =>
+    client.post<{ user: { id: string }; message: string }>('/users', payload),
+  updateUser: (
+    id: string,
+    payload: {
+      firstname?: string;
+      lastname?: string;
+      email?: string;
+      password?: string;
+    },
+  ) => client.patch<{ message: string }>(`/users/${id}`, payload),
+  updateUserImage: (image: FormData) =>
+    client.post<{ message: string }>(`/users/image`, image, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
   deleteUser: (id: string) =>
     client.delete<{ message: string }>(`/users/${id}`),
 };

@@ -9,6 +9,7 @@ import {
   RegisterScreen,
   RecipesScreen,
   AddRecipeScreen,
+  // AddRecipeScreen,
 } from '../screens';
 import { HomeTabParamList } from './types';
 import { HomePublic } from '../screens';
@@ -23,12 +24,14 @@ import { COLORS } from '../lib/constants';
 import Profile from '../screens/auth/Profile/ProfileScreen';
 import RecipeDetailsScreen from '../screens/auth/Recipes/RecipeDetailsScreen';
 import { useCurrentUser } from '../hooks';
+// import AddRecipeScreen from '../screens/auth/Recipes/AI/AddRecipeScreen';
+import UpdateProfileScreen from '../screens/auth/Profile/UpdateProfileScreen';
+// import { Header } from '../components/Header/Header';
 
 const Tab = createBottomTabNavigator<HomeTabParamList>();
 
 export default function TabNavigator() {
   const currentClient = useCurrentUser();
-  console.log('🚀 ~ TabNavigator ~ currentClient:', currentClient);
   const setFocusedColor = ({ focused }: { focused: boolean }) => {
     return focused ? COLORS.primary_accent : COLORS.black;
   };
@@ -132,12 +135,21 @@ export default function TabNavigator() {
           <Tab.Screen
             name="AddRecipe"
             component={AddRecipeScreen}
-            options={{ tabBarItemStyle: { display: 'none' } }}
+            options={{
+              tabBarItemStyle: { display: 'none' },
+              headerShown: true,
+            }}
           />
           <Tab.Screen
             name="EditProfile"
-            component={TestScreen}
-            options={{ tabBarItemStyle: { display: 'none' } }}
+            component={UpdateProfileScreen}
+            options={{
+              animation: 'shift',
+              tabBarItemStyle: { display: 'none' },
+              headerShown: true,
+              // header: props =>
+              //  Header(props, 'Profile', 'Modification du profil'),
+            }}
           />
         </Tab.Group>
       ) : (

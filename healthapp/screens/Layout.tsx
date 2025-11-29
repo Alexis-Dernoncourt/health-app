@@ -22,6 +22,6 @@ export default Layout;
 const styles = StyleSheet.create({
   mainWrapper: {
     flex: 1,
-    marginTop: StatusBar.currentHeight,
+    // marginTop: StatusBar.currentHeight,
   },
 });

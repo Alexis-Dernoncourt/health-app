@@ -1,5 +1,4 @@
 import { authApi } from '../api/authApi';
-import { AuthResponse } from '../api/types';
 
 export const authRepository = {
   async register(
@@ -7,7 +6,7 @@ export const authRepository = {
     lastname: string | undefined,
     email: string,
     password: string,
-  ): Promise<{ message: string }> {
+  ) {
     const { data } = await authApi.register({
       firstname,
       lastname,
@@ -16,11 +15,11 @@ export const authRepository = {
     });
     return data;
   },
-  async login(email: string, password: string): Promise<AuthResponse> {
+  async login(email: string, password: string) {
     const { data } = await authApi.login({ email, password });
     return data;
   },
-  async logout(token: string): Promise<{ message: string }> {
+  async logout(token: string) {
     const { data } = await authApi.logout(token);
     return data;
   },

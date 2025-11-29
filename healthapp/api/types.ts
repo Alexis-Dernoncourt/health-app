@@ -26,6 +26,8 @@ export interface User {
   created_at: Date;
   updated_at: Date;
   user_favorites?: Recipe[] | { recipe: { id: string } }[];
+  isEmailVerified: boolean | undefined;
+  verificationToken: string | null | undefined;
 }
 
 export interface Recipe {

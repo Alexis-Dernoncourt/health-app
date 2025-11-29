@@ -3,12 +3,11 @@ import {
   NativeSyntheticEvent,
   StyleSheet,
   TextInputEndEditingEventData,
-  TextInputFocusEventData,
   TextStyle,
 } from 'react-native';
 import React from 'react';
-import {TextInput} from 'react-native-paper';
-import {COLORS} from '../../lib/constants';
+import { TextInput } from 'react-native-paper';
+import { COLORS } from '../../lib/constants';
 
 type InputProps = {
   label: string;
@@ -21,9 +20,9 @@ type InputProps = {
   value?: string;
   id?: string;
   onChangeText?: ((text: string) => void) & Function;
+  onPress?: () => void;
   onBlur?:
-    | ((e: NativeSyntheticEvent<TextInputFocusEventData>) => void) &
-        ((args: any) => void);
+    | ((e: NativeSyntheticEvent<FocusEvent>) => void) & ((args: any) => void);
   onEndEditing?: (
     e: NativeSyntheticEvent<TextInputEndEditingEventData>,
   ) => void;
@@ -42,21 +41,23 @@ const Input = ({
   value,
   id,
   onChangeText,
+  onPress,
   onBlur,
   onEndEditing,
   secureTextEntry,
   leftIcon,
   rightIcon,
-}: InputProps) => {
+}: Partial<typeof TextInput> & InputProps) => {
   return (
     <TextInput
-      style={{...styles.container, ...style}}
+      style={{ ...styles.container, ...style }}
       mode={mode ?? 'flat'}
       label={label}
       value={value}
       id={id}
       multiline={multiline}
       onChangeText={onChangeText}
+      onPress={onPress}
       onBlur={onBlur}
       onEndEditing={onEndEditing}
       placeholder={placeholder}
