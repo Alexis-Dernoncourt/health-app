@@ -7,7 +7,6 @@ import {
   Get,
   Param,
   ParseFilePipe,
-  ParseUUIDPipe,
   Patch,
   Post,
   Req,
@@ -19,7 +18,6 @@ import { RequestWithUser } from 'src/auth/jwt.strategy';
 import { CreateRecipeDto } from './dto/createRecipe.dto';
 import { UpdateRecipeDto } from './dto/updateRecipe.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import type { Express } from 'express';
 import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { ParseCUIDPipe } from 'src/pipes/cuid-pipe';
 import { Public } from 'src/utils';
@@ -53,7 +51,7 @@ export class RecipesController {
 
   @UseInterceptors(
     FileInterceptor('image', {
-      fileFilter: (req, file, cb) => {
+      fileFilter: (_, file, cb) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
           return cb(
             new BadRequestException('Only image files are allowed!'),

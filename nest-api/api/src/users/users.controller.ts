@@ -15,7 +15,6 @@ import {
   FileTypeValidator,
   Query,
 } from '@nestjs/common';
-import { Express } from 'express';
 import { UsersService } from './users.service';
 import { ImageUploadBody, UpdateUserDto } from './dto/user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -61,7 +60,6 @@ export class UsersController {
       image: null,
       firstname: 'Test',
       lastname: 'User',
-      password: 'pass',
       created_at: '2020-09-19T12:26:25.368Z',
       updated_at: '2022-04-18T14:43:26.520Z',
       user_favorites: [],

@@ -52,8 +52,8 @@ model recipes {
   steps       String?
   prep_time   String?
   cook_time   String?
-  servings    Int?
-  calories    Json?
+  servings    String?
+  calories    String?
   created_at  DateTime    @default(now())
   updatedat   DateTime    @updatedAt
   user_favorites user_favorites[]

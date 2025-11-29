@@ -33,91 +33,12 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  validate,
   IsString,
-  IsNumber,
   IsOptional,
-  IsArray,
   ValidateNested,
-  IsPositive,
   MinLength,
   MaxLength,
-  IsJSON,
 } from 'class-validator';
-
-export class Ingredient {
-  @ApiProperty({
-    required: true,
-  })
-  @IsString()
-  name!: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsString()
-  quantity!: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsString()
-  unit!: string;
-}
-
-export class Step {
-  @ApiProperty({
-    required: true,
-  })
-  @IsNumber()
-  number!: number;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsString()
-  text!: string;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  warning?: string;
-}
-
-export class Calories {
-  [key: string]: any;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsNumber()
-  @IsPositive()
-  for100gr?: number;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsNumber()
-  @IsPositive()
-  total?: number;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsNumber()
-  @IsPositive()
-  totalWeight?: number;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(32)
-  caloriesUnit?: string;
-}
 
 export class CreateRecipeDto {
   @ApiProperty({
@@ -144,30 +65,29 @@ export class CreateRecipeDto {
 
   @ApiProperty({
     required: false,
-    type: [Ingredient],
   })
   @IsOptional()
-  @IsArray()
+  @IsString()
   @ValidateNested()
-  ingredients?: Ingredient[];
+  ingredients?: string;
 
   @ApiProperty({
     required: false,
-    type: [Step],
   })
   @IsOptional()
-  @IsArray()
+  @IsString()
   @ValidateNested()
-  steps?: Step[];
+  steps?: string;
 
   @ApiProperty({
     required: false,
-    type: Calories,
+    description: 'Calories pour 100gr (ex: 125kcal / 100gr)',
   })
   @IsOptional()
   @ValidateNested()
-  @IsJSON()
-  calories?: Calories;
+  @IsOptional()
+  @IsString()
+  calories?: string;
 
   @ApiProperty({
     required: false,

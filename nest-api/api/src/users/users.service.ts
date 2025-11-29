@@ -1,10 +1,13 @@
-import { Injectable, HttpException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { UpdateUserDto } from './dto/user.dto';
 import * as bcrypt from 'bcryptjs';
-import { users } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import { Express } from 'express';
 import { SigninDto } from 'src/auth/dto/auth-signin.dto';
 import { randomBytes } from 'crypto';
 import { MailerService } from 'src/mailer-service/mailer-service.service';
@@ -120,7 +123,7 @@ export class UsersService {
 
   async findOne(id: string) {
     try {
-      return await this.prisma.users.findFirstOrThrow({
+      const user = await this.prisma.users.findFirstOrThrow({
         where: { id },
         include: {
           user_favorites: {
@@ -134,6 +137,8 @@ export class UsersService {
           },
         },
       });
+      const { password, ...userRest } = user;
+      return userRest;
     } catch (error) {
       console.log('🚀 ~ UsersService ~ findOne ~ error:', error);
       throw new HttpException("Can't found this user", 400);
@@ -142,6 +147,9 @@ export class UsersService {
 
   async uploadImage(id: string, image: Express.Multer.File) {
     try {
+      if (!image) {
+        throw new ForbiddenException('Image is required');
+      }
       const uploadResult = await this.cloudinary.uploadFile(image, `users`, id);
       const updatedUser = await this.prisma.users.update({
         where: { id },

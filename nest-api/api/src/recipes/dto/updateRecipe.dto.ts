@@ -1,99 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  validate,
   IsString,
-  IsNumber,
   IsOptional,
-  IsArray,
   ValidateNested,
-  IsPositive,
   MinLength,
   MaxLength,
 } from 'class-validator';
-import { ImageUploadBody } from 'src/users/dto/user.dto';
-
-export class Ingredient {
-  @ApiProperty({
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  name?: string;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  quantity?: string;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  unit?: string;
-}
-
-export class Step {
-  @ApiProperty({
-    required: false,
-  })
-  @IsNumber()
-  @IsOptional()
-  number?: number;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  text?: string;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  warning?: string;
-}
-
-export class Calories {
-  [key: string]: any;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsNumber()
-  @IsPositive()
-  @IsOptional()
-  for100gr?: number;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsNumber()
-  @IsPositive()
-  @IsOptional()
-  total?: number;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsNumber()
-  @IsPositive()
-  @IsOptional()
-  totalWeight?: number;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(32)
-  @IsOptional()
-  caloriesUnit?: string;
-}
 
 export class UpdateRecipeDto {
   @ApiProperty({
@@ -123,29 +35,26 @@ export class UpdateRecipeDto {
 
   @ApiProperty({
     required: false,
-    type: [Ingredient],
   })
   @IsOptional()
-  @IsArray()
+  @IsString()
   @ValidateNested()
-  ingredients?: Ingredient[];
+  ingredients?: string;
 
   @ApiProperty({
     required: false,
-    type: [Step],
   })
   @IsOptional()
-  @IsArray()
+  @IsString()
   @ValidateNested()
-  steps?: Step[];
+  steps?: string;
 
   @ApiProperty({
     required: false,
-    type: [Calories],
   })
   @IsOptional()
   @ValidateNested()
-  calories?: Calories;
+  calories?: string;
 
   @ApiProperty({
     required: false,
