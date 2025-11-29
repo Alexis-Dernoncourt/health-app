@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useLogin } from '../../../lib/react-query/auth';
 import { Button, Text, TextInput } from 'react-native-paper';
 import { ToastAndroid, View } from 'react-native';
@@ -8,7 +8,6 @@ import { styles } from './styles';
 import { EyeIconOpen, EyeIconClosed } from '../../../navigation/icons/EyeIcon';
 import Layout from '../../Layout';
 import { HomeTabScreenProps } from '../../../navigation/types';
-import { authService } from '../../../services/authService';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
@@ -37,12 +36,10 @@ const SigninScreen = ({ navigation }: HomeTabScreenProps<'SignIn'>) => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    console.log(data);
+    const { email, password } = data;
     ToastAndroid.show('Connexion en cours...', ToastAndroid.LONG);
-    // await authService.login(data.email, data.password);
+    login.mutate({ email: email.trim(), password: password.trim() });
   };
-
-  console.log('errors:', errors);
 
   return (
     <Layout>
@@ -116,7 +113,7 @@ const SigninScreen = ({ navigation }: HomeTabScreenProps<'SignIn'>) => {
           style={styles.registerButton}
           labelStyle={styles.registerButtonText}
           onPress={() => navigation.navigate('Register')}
-          // disabled={login.isLoading || login.isFetching}
+          disabled={login.isPending || !isValid || isSubmitting}
         >
           Je veux créer un compte
         </Button>

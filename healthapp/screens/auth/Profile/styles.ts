@@ -1,5 +1,5 @@
-import {StyleSheet} from 'react-native';
-import {COLORS} from '../../../lib/constants';
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../../lib/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -8,8 +8,20 @@ export const styles = StyleSheet.create({
     marginVertical: 5,
     paddingVertical: 10,
   },
+  containerInline: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginVertical: 5,
+    marginHorizontal: 10,
+    paddingVertical: 5,
+    justifyContent: 'space-between',
+  },
+  elementFlex: {
+    flex: 1,
+  },
   elementMargin: {
-    marginVertical: 10,
+    marginVertical: 5,
   },
   name: {
     fontWeight: 'bold',
@@ -28,13 +40,11 @@ export const styles = StyleSheet.create({
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: 10,
   },
   buttonStyles: {
     backgroundColor: COLORS.primary_accent,
     borderColor: COLORS.primary_accent,
-    borderRadius: 10,
-    padding: 10,
   },
   buttonContentStyle: {
     color: COLORS.white,

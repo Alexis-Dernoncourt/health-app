@@ -43,18 +43,22 @@ const RegisterScreen = ({ navigation }: HomeTabScreenProps<'Register'>) => {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    console.log(data);
     try {
-      register.mutate(data);
+      const { email, password, firstname, lastname } = data;
+      register.mutate({
+        firstname: firstname.trim(),
+        lastname: lastname.trim(),
+        email: email.trim(),
+        password: password.trim(),
+      });
       ToastAndroid.show(
-        'Votre compte a bien été crée. Vous pouvez maintenant vous connecter !',
+        'Votre compte a bien été crée. Vérifiez votre boite mail pour valider votre compte !',
         ToastAndroid.LONG,
       );
     } catch (error) {
       console.log('🚀 ~ onSubmit ~ error:', error);
       ToastAndroid.show('Une erreur est survenue', ToastAndroid.SHORT);
     }
-    // register.mutate(data);
   };
 
   return (

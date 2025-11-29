@@ -16,31 +16,36 @@ export const userService = {
       queryFn: () => userRepository.getUser(id),
     });
   },
-  useCreateUser(payload: createUserPayload) {
+  useCreateUser() {
     return useMutation({
-      mutationFn: () => userRepository.createUser(payload),
+      mutationFn: (payload: createUserPayload) =>
+        userRepository.createUser(payload),
       onSuccess: async () => {
         console.log('User created successfully');
         await queryClient.invalidateQueries({ queryKey: ['users'] });
       },
     });
   },
-  useUpdateUser(payload: User) {
+  useUpdateUser(id: string) {
     return useMutation({
-      mutationFn: () => userRepository.updateUser(payload),
-      onSuccess: async () => {
-        console.log('User updated successfully');
+      mutationFn: (payload: Partial<User>) =>
+        userRepository.updateUser(id, payload),
+      onSuccess: async res => {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['user_' + payload.id] }),
-          queryClient.invalidateQueries({ queryKey: ['users'] }),
+          queryClient.invalidateQueries({ queryKey: ['user_' + id] }),
+          queryClient.invalidateQueries({ queryKey: ['user'] }),
         ]);
+        return res;
+      },
+      onError: () => {
+        console.log('User update failed');
       },
     });
   },
-  useDeleteUser(id: string) {
+  useDeleteUser() {
     return useMutation({
-      mutationFn: () => userRepository.deleteUser(id),
-      onSuccess: async () => {
+      mutationFn: (id: string) => userRepository.deleteUser(id),
+      onSuccess: async id => {
         console.log('User deleted successfully');
         await Promise.all([
           queryClient.removeQueries({ queryKey: ['user_' + id] }),
