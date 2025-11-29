@@ -38,7 +38,8 @@ model users {
   updated_at   DateTime    @updatedAt
   auth_access_token auth_access_token[]
   user_favorites user_favorites[]
-
+  verificationToken   String?   @unique
+  isEmailVerified     Boolean   @default(false)
   menus menus[]
 }
 
@@ -49,7 +50,10 @@ model recipes {
   description String
   ingredients String?
   steps       String?
-  calories    Json?
+  prep_time   String?
+  cook_time   String?
+  servings    String?
+  calories    String?
   created_at  DateTime    @default(now())
   updatedat   DateTime    @updatedAt
   user_favorites user_favorites[]

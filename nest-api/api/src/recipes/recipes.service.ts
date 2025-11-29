@@ -4,7 +4,6 @@ import { UpdateRecipeDto } from './dto/updateRecipe.dto';
 import { PrismaService } from 'src/prisma.service';
 import { recipes } from '@prisma/client';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import type { Express } from 'express';
 
 @Injectable()
 export class RecipesService {
@@ -12,17 +11,10 @@ export class RecipesService {
     private readonly prisma: PrismaService,
     private readonly cloudinary: CloudinaryService,
   ) {}
-  async create(createRecipeDto: CreateRecipeDto): Promise<recipes> {
+  async create(createRecipeDto: CreateRecipeDto) {
     try {
-      const newIngredients = JSON.stringify(createRecipeDto.ingredients);
-      const newSteps = JSON.stringify(createRecipeDto.steps);
-      const newRecipe = {
-        ...createRecipeDto,
-        ingredients: newIngredients,
-        steps: newSteps,
-      };
       const recipe = await this.prisma.recipes.create({
-        data: { ...newRecipe },
+        data: createRecipeDto,
       });
       return recipe;
     } catch (error) {
@@ -31,7 +23,7 @@ export class RecipesService {
     }
   }
 
-  async findAll(): Promise<any> {
+  async findAll() {
     return await this.prisma.recipes.findMany();
   }
 
@@ -53,27 +45,25 @@ export class RecipesService {
       await this.prisma.recipes.findFirstOrThrow({ where: { id } });
       const updatedRecipe = updateRecipeDto;
       // eslint-disable-next-line prefer-const
-      let formatedRecipe: any = updatedRecipe;
+      let filteredRecipe: Partial<recipes> = updatedRecipe;
       if (image) {
         const uploadResult = await this.cloudinary.uploadFile(
           image,
           `recipes`,
           id,
         );
-        formatedRecipe.image = uploadResult?.secure_url ?? null;
+        filteredRecipe.image = uploadResult?.secure_url ?? null;
       }
       if (updateRecipeDto.ingredients) {
-        const newIngredients = JSON.stringify(updateRecipeDto.ingredients);
-        formatedRecipe.ingredients = newIngredients;
+        filteredRecipe.ingredients = updateRecipeDto.ingredients;
       }
       if (updateRecipeDto.steps) {
-        const newSteps = JSON.stringify(updateRecipeDto.steps);
-        formatedRecipe.steps = newSteps;
+        filteredRecipe.steps = updateRecipeDto.steps;
       }
       try {
         await this.prisma.recipes.update({
           where: { id },
-          data: { ...formatedRecipe },
+          data: { ...filteredRecipe },
         });
       } catch (error) {
         console.log('🚀 ~ RecipeService ~ update ~ error:', error);
