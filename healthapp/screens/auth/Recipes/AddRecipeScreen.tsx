@@ -1,5 +1,7 @@
 import {
   Image,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,14 +14,15 @@ import { Button } from 'react-native-paper';
 import Input from '../../../components/Form/Input';
 import Layout from '../../Layout';
 import { COLORS } from '../../../lib/constants';
-import queryClient from '../../../lib/react-query';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { Camera } from 'lucide-react-native';
+import { Camera, LucideCamera } from 'lucide-react-native';
 import { Header } from '../../../components/Header/Header';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { Controller, useForm } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { recipeService } from '../../../services/recipeService';
+import FabButton from '../../../components/Elements/FAB';
 
 const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
   const AddRecipeSchema = z.object({
@@ -31,8 +34,8 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
       .string({ message: 'Les ingrédients sont requis' })
       .min(5, { message: 'Les ingrédients sont requis' }),
     steps: z
-      .string({ message: 'Les ingrédients sont requis' })
-      .min(5, { message: 'Les ingrédients sont requis' }),
+      .string({ message: 'Les étapes sont requises' })
+      .min(5, { message: 'Les étapes sont requises' }),
     image: z.any().optional(),
     calories: z.string({ message: 'Le champ est invalide' }).optional(),
     prep_time: z.string({ message: 'Le champ est invalide' }).optional(),
@@ -42,13 +45,18 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
 
   type AddRecipeFormType = z.infer<typeof AddRecipeSchema>;
 
-  const [imageUri, setImageUri] = React.useState<string | null>(null);
+  const [imageFile, setImageFile] = React.useState<{
+    uri: string;
+    name: string;
+    type: string;
+  } | null>(null);
+  const [isExtended, setIsExtended] = React.useState(true);
+  const createRecipe = recipeService.useCreateRecipe();
 
   const {
     control,
     handleSubmit,
     reset,
-    setValue,
     formState: { errors, isValid, isSubmitting },
   } = useForm<AddRecipeFormType>({
     defaultValues: {
@@ -70,7 +78,7 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
       header: (props: BottomTabHeaderProps) =>
         Header(props, 'Recipes', 'Ajouter une recette', () => {
           reset();
-          setImageUri(null);
+          setImageFile(null);
         }),
     });
   }, [navigation, reset]);
@@ -92,18 +100,9 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
       if (result.assets?.length && result.assets[0]) {
         const { fileName, type, uri } = result.assets[0];
         if (fileName && type && uri) {
-          const file = {
-            uri: uri,
-            name: fileName,
-            type: type,
-          };
-          const formData = new FormData();
-          formData.append('image', file);
+          setImageFile({ uri, name: fileName, type });
           // await recipeApi.updateRecipe(formData);
-          setValue('image', formData);
-          setImageUri(uri);
-          ToastAndroid.show("L/'image a bien été ajoutée", ToastAndroid.LONG);
-          queryClient.invalidateQueries({ queryKey: ['recipes'] });
+          ToastAndroid.show("L'image a bien été ajoutée", ToastAndroid.LONG);
         }
       }
     } catch (error) {
@@ -112,31 +111,47 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
   };
 
   const onSubmit = (data: AddRecipeFormType) => {
-    console.log('🚀 ~ AddRecipeScreen -> onSubmit ~ data:', {
-      title: data.title,
-      description: data.description,
-      ingredients: data.ingredients.split(',').map(item => item.trim()),
-      steps: data.steps,
-      image: data.image,
-      calories: data.calories ?? '',
-      prep_time: data.prep_time ?? '',
-      cook_time: data.cook_time ?? '',
-      servings: data.servings ?? '',
-    });
-    // navigation.navigate('Recipes')
+    const formData = new FormData();
+    formData.append('title', data.title);
+    formData.append('description', data.description);
+    formData.append('ingredients', data.ingredients);
+    formData.append('steps', data.steps);
+    formData.append('calories', data.calories);
+    formData.append('prep_time', data.prep_time);
+    formData.append('cook_time', data.cook_time);
+    formData.append('servings', data.servings);
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
+
+    try {
+      createRecipe.mutate(formData);
+      reset();
+      setImageFile(null);
+      ToastAndroid.show('Votre recette a bien été ajoutée', ToastAndroid.LONG);
+      navigation.navigate('Recipes');
+    } catch (error) {
+      console.log('🚀 ~ onSubmit ~ error:', error);
+    }
+  };
+
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const currentScrollPosition =
+      Math.floor(event.nativeEvent?.contentOffset?.y) ?? 0;
+    setIsExtended(currentScrollPosition <= 10);
   };
 
   return (
     <Layout>
-      <ScrollView>
-        {imageUri && (
+      <ScrollView onScroll={onScroll}>
+        {imageFile?.uri && (
           <View style={styles.imageWrapper}>
             <Image
               resizeMode="contain"
-              key={imageUri}
+              key={imageFile.uri}
               alt=""
               accessibilityLabel="image de la recette"
-              source={{ uri: imageUri }}
+              source={{ uri: imageFile.uri }}
               style={styles.image}
             />
           </View>
@@ -148,7 +163,7 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
           textColor={COLORS.black}
           icon={() => renderCameraIcon('black')}
         >
-          {imageUri ? "Modifier l'image" : 'Ajouter une image'}
+          {imageFile?.uri ? "Modifier l'image" : 'Ajouter une image'}
         </Button>
 
         <View style={styles.formWrapper}>
@@ -317,6 +332,16 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
           Enregistrer
         </Button>
       </ScrollView>
+      <FabButton
+        visible={true}
+        extended={isExtended}
+        label="Scanner une recette via l'IA"
+        textColor={COLORS.white}
+        style={styles.fabStyle}
+        icon={<LucideCamera color={COLORS.white} size={30} />}
+        iconMode="dynamic"
+        onPressEvent={() => console.log('Go to IA power !')}
+      />
     </Layout>
   );
 };
@@ -393,5 +418,10 @@ const styles = StyleSheet.create({
   },
   error: {
     color: 'red',
+  },
+  fabStyle: {
+    backgroundColor: COLORS.black,
+    textTransform: 'none',
+    bottom: 70,
   },
 });

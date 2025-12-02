@@ -20,7 +20,6 @@ import FabButton from '../../../components/Elements/FAB';
 import { Plus } from 'lucide-react-native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { recipeService } from '../../../services/recipeService';
-import { USER_DATA } from '../../../lib/utils';
 
 const RecipesScreen = ({ navigation }: HomeTabScreenProps<'Recipes'>) => {
   const [isExtended, setIsExtended] = React.useState(true);
@@ -31,14 +30,12 @@ const RecipesScreen = ({ navigation }: HomeTabScreenProps<'Recipes'>) => {
   };
   const {
     data: recipesData,
-    // isLoading,
+    isLoading,
     error,
     isRefetching,
     refetch,
   } = recipeService.useGetRecipes();
   console.log('🚀 ~ RecipesScreen ~ recipesData:', recipesData);
-
-  console.log('🚀 ~ RecipesScreen ~ USER_DATA:', USER_DATA);
 
   if (error) {
     return (
@@ -62,7 +59,7 @@ const RecipesScreen = ({ navigation }: HomeTabScreenProps<'Recipes'>) => {
           contentContainerStyle={styles.flatListWrapper}
           style={styles.flatListStyles}
           data={recipesData}
-          refreshing={isRefetching}
+          refreshing={isRefetching || isLoading}
           ListEmptyComponent={renderEmptyItem}
           onRefresh={refetch}
           keyExtractor={item => {
@@ -76,8 +73,9 @@ const RecipesScreen = ({ navigation }: HomeTabScreenProps<'Recipes'>) => {
         visible={true}
         extended={isExtended}
         label="Ajouter une recette"
+        textColor={COLORS.black}
         style={styles.fabStyle}
-        icon={<Plus color={COLORS.primary_accent} size={32} />}
+        icon={<Plus color={COLORS.black} size={30} />}
         iconMode="dynamic"
         onPressEvent={() => navigation.navigate('AddRecipe')}
       />

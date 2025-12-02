@@ -24,6 +24,7 @@ type FabButtonProps = {
   animateFrom?: AnimatedFABAnimateFrom;
   iconMode: AnimatedFABIconMode;
   style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
+  textColor: string;
 };
 
 const FabButton = ({
@@ -34,6 +35,7 @@ const FabButton = ({
   animateFrom = 'right',
   style,
   icon,
+  textColor,
   iconMode,
   onPressEvent,
 }: FabButtonProps) => {
@@ -46,6 +48,7 @@ const FabButton = ({
       <AnimatedFAB
         icon={() => icon}
         label={label}
+        color={textColor || 'black'}
         extended={extended}
         onPress={onPressEvent}
         visible={visible}
@@ -64,7 +67,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   fabStyle: {
-    bottom: 35,
+    bottom: 20,
     right: 16,
     position: 'absolute',
   },

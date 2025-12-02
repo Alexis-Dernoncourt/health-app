@@ -4,14 +4,26 @@ import { Recipe } from './types';
 export const recipeApi = {
   getRecipes: () => client.get<Recipe[]>('/recipes'),
   getRecipe: (id: string) => client.get<Recipe>(`/recipes/${id}`),
-  createRecipe: (payload: Recipe) =>
-    client.post<{ message: string; recipe: Recipe }>('/recipes', payload),
+  createRecipe: async (payload: FormData) =>
+    await client.post<{ message: string; recipe: Recipe }>(
+      '/recipes',
+      payload,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    ),
   updateRecipe: (payload: Partial<Recipe>) =>
-    client.patch<{ message: string }>('/recipes', payload),
+    client.patch<{ recipeId: string; message: string }>('/recipes', payload),
   deleteRecipe: (id: string) =>
-    client.delete<{ message: string }>('/recipes', { data: { id } }),
+    client.delete<{ recipeId: string; message: string }>('/recipes', {
+      data: { id },
+    }),
   addFavoriteRecipe: (id: string) =>
-    client.post<{ message: string }>('/recipes/like', { id }),
+    client.post<{ recipeId: string; message: string }>('/recipes/like', { id }),
   removeFavoriteRecipe: (id: string) =>
-    client.post<{ message: string }>('/recipes/unlike', { id }),
+    client.post<{ recipeId: string; message: string }>('/recipes/unlike', {
+      id,
+    }),
 };

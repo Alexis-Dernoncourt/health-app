@@ -36,29 +36,14 @@ export interface Recipe {
   description: string;
   ingredients: string;
   steps: string;
-  calories: Calories;
+  prep_time: string;
+  cook_time: string;
+  servings: string;
+  calories: string;
   created_at: Date;
   updated_at: Date;
-  image?: string;
-}
-
-export interface Calories {
-  for100gr: number;
-  total: number;
-  totalWeight: number;
-  caloriesUnit: string;
-}
-
-export interface Ingredient {
-  name: string;
-  quantity: string;
-  unit: string;
-}
-
-export interface Step {
-  number: number;
-  text: string;
-  warning?: string;
+  image?: any;
+  userId: string;
 }
 
 // type Token = {

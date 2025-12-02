@@ -23,20 +23,6 @@ const HomePublic = () => {
     });
   }
 
-  /* const loginTest = async () => {
-    console.log('🚀 ~ loginTest');
-    try {
-      const data = await authService.login(
-        Config.REACT_APP_TEST_MAIL as string,
-        Config.REACT_APP_TEST_PASS as string,
-      );
-      return data;
-    } catch (error) {
-      console.log('🚀 ~ loginTest ~ error:', error);
-      return Promise.reject(error);
-    }
-  }; */
-
   return (
     <Layout>
       <ScrollView

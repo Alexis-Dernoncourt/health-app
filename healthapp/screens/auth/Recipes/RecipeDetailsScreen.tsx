@@ -17,9 +17,9 @@ import { ActivityIndicator, Appbar, Avatar, Button } from 'react-native-paper';
 import { ArrowLeft, CookingPot, ForkKnife } from 'lucide-react-native';
 import useDarkMode from '../../../hooks/useDarkMode';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { Ingredient, Step } from '../../../api/types';
 import { FlatList } from 'react-native';
 import { recipeService } from '../../../services/recipeService';
+import { useCurrentUser } from '../../../hooks';
 
 const arrowLeftIcon = () => {
   return <ArrowLeft color={COLORS.black} size={30} />;
@@ -30,6 +30,7 @@ const RecipeDetailsScreen = () => {
   const { params } =
     useRoute<RouteProp<HomeTabBaseParamList, 'RecipeDetails'>>();
   const viewRef = React.useRef<ScrollView>(null);
+  const { user, isLoading: userIsLoading } = useCurrentUser();
 
   useFocusEffect(() => {
     if (viewRef.current) {
@@ -109,45 +110,66 @@ const RecipeDetailsScreen = () => {
         <Button
           mode="contained"
           // eslint-disable-next-line react-native/no-inline-styles
-          style={{ backgroundColor: COLORS.secondary, marginTop: 10 }}
-          // eslint-disable-next-line react-native/no-inline-styles
-          labelStyle={{ color: 'black' }}
-          onPress={() => {}}
+          style={{ backgroundColor: COLORS.secondary, marginVertical: 10 }}
+          labelStyle={{ color: COLORS.black }}
+          onPress={() => {
+            console.log('Ajouter la recette au menu de la semaine');
+          }}
         >
           Ajouter au menu
         </Button>
-        {recipeData.description && (
-          <>
-            <View style={styles.iconContainer}>
+
+        {user?.id === recipeData.userId && !userIsLoading && (
+          <Button
+            mode="contained"
+            // eslint-disable-next-line react-native/no-inline-styles
+            style={{ backgroundColor: COLORS.black, marginVertical: 10 }}
+            labelStyle={{ color: COLORS.white }}
+            onPress={() => {
+              console.log('Modifier la recette');
+            }}
+          >
+            Modifier
+          </Button>
+        )}
+
+        {recipeData.servings && recipeData.cook_time && (
+          <View style={styles.iconContainer}>
+            <View style={styles.iconContent}>
               <Avatar.Icon
                 // eslint-disable-next-line react/no-unstable-nested-components
                 icon={() => <ForkKnife />}
-                size={40}
+                size={30}
                 color={COLORS.primary_accent}
                 // eslint-disable-next-line react-native/no-inline-styles
                 style={{ backgroundColor: 'transparent' }}
               />
+              <Text style={styles.iconTextContent}>{recipeData.servings}</Text>
+            </View>
+            <View style={styles.iconContent}>
               <Avatar.Icon
                 // eslint-disable-next-line react/no-unstable-nested-components
                 icon={() => <CookingPot />}
-                size={40}
+                size={30}
                 color={COLORS.primary_accent}
                 // eslint-disable-next-line react-native/no-inline-styles
                 style={{ backgroundColor: 'transparent' }}
               />
+              <Text style={styles.iconTextContent}>{recipeData.cook_time}</Text>
             </View>
-            {recipeData.description.split('+').length === 1 ? (
-              <Text style={styles.text}>{recipeData.description}</Text>
-            ) : (
-              <>
-                <Text style={styles.text}>
-                  {recipeData.description.split('+')[0]}
-                </Text>
-                <Text style={styles.text}>
-                  {recipeData.description.split('+')[1]}
-                </Text>
-              </>
-            )}
+          </View>
+        )}
+        {recipeData.description &&
+        recipeData.description.split('+').length === 1 ? (
+          <Text style={styles.text}>{recipeData.description}</Text>
+        ) : (
+          <>
+            <Text style={styles.text}>
+              {recipeData.description.split('+')[0]}
+            </Text>
+            <Text style={styles.text}>
+              {recipeData.description.split('+')[1]}
+            </Text>
           </>
         )}
         {recipeData.ingredients && (
@@ -157,13 +179,13 @@ const RecipeDetailsScreen = () => {
               <FlatList
                 scrollEnabled={false}
                 numColumns={2}
-                data={JSON.parse(recipeData.ingredients) as Ingredient[]}
+                data={recipeData.ingredients
+                  .split(', ')
+                  .map(ingredient => ingredient.trim())}
                 renderItem={({ item }) => (
                   <View style={styles.ingredientItem}>
                     <Text>●</Text>
-                    <Text>{`${item.name.toUpperCase()} (${item.quantity}${
-                      item.unit ? ` ${item.unit}` : ''
-                    })`}</Text>
+                    <Text>{`${item.toUpperCase()}`}</Text>
                   </View>
                 )}
               />
@@ -174,11 +196,13 @@ const RecipeDetailsScreen = () => {
           <>
             <Text style={styles.textIngredientTitle}>Les étapes</Text>
             <View style={styles.stepsContainer}>
-              {(JSON.parse(recipeData.steps) as Step[]).map(step => (
-                <Text key={step.number} style={styles.textSteps}>
-                  {step.number}. {step.text}
-                </Text>
-              ))}
+              {recipeData.steps.split('\n').map((step, index) => {
+                return (
+                  <Text key={step + index} style={styles.textSteps}>
+                    <>{step}</>
+                  </Text>
+                );
+              })}
             </View>
           </>
         )}
@@ -201,8 +225,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-evenly',
-    marginTop: 10,
+    marginVertical: 15,
     width: '100%',
+  },
+  iconContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconTextContent: {
+    fontSize: 16,
+    fontWeight: '500',
   },
   errorText: {
     fontSize: 16,

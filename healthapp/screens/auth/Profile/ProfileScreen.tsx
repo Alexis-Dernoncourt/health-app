@@ -74,21 +74,22 @@ const Profile = ({ navigation }: HomeTabScreenProps<'Profile'>) => {
         {user.image ? (
           <>
             <Avatar.Image source={{ uri: user.image }} size={120} />
-            <Button
-              mode="outlined"
-              style={[styles.elementMargin]}
-              onPress={handleImage}
-            >
-              Modifier mon avatar
-            </Button>
           </>
         ) : (
-          <Avatar.Text
-            size={120}
-            label={user.firstname.charAt(0) + user.lastname.charAt(0)}
-          />
+          <>
+            <Avatar.Text size={120} label={user.firstname.charAt(0)} />
+          </>
         )}
-        <Text style={styles.name}>{`${user.firstname} ${user.lastname}`}</Text>
+        <Button
+          mode="outlined"
+          style={[styles.elementMargin]}
+          onPress={handleImage}
+        >
+          Modifier mon avatar
+        </Button>
+        <Text style={styles.name}>{`${user.firstname} ${
+          user.lastname || ''
+        }`}</Text>
       </View>
 
       <View style={styles.containerInline}>

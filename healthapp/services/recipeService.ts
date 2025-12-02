@@ -16,60 +16,68 @@ export const recipeService = {
       queryFn: () => recipeRepository.getRecipe(id),
     });
   },
-  useCreateRecipe(payload: Partial<Recipe>) {
+  useCreateRecipe() {
     return useMutation({
-      mutationFn: () => recipeRepository.updateRecipe(payload),
-      onSuccess: async () => {
-        console.log('Recipe created successfully');
+      mutationFn: (payload: FormData) => recipeRepository.createRecipe(payload),
+      onSuccess: async ({ recipe, message }) => {
         await queryClient.invalidateQueries({ queryKey: ['recipes'] });
+        return { recipe, message };
+      },
+      onError: (err: any) => {
+        console.log(JSON.stringify(err?.response?.data, null, 2));
       },
     });
   },
-  useUpdateRecipe(payload: Partial<Recipe>) {
+  useUpdateRecipe() {
     return useMutation({
-      mutationFn: () => recipeRepository.updateRecipe(payload),
-      onSuccess: async () => {
+      mutationFn: (payload: Partial<Recipe>) =>
+        recipeRepository.updateRecipe(payload),
+      onSuccess: async ({ recipeId, message }) => {
         console.log('Recipe updated successfully');
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['recipe' + payload.id] }),
+          queryClient.invalidateQueries({ queryKey: ['recipe_' + recipeId] }),
           queryClient.invalidateQueries({ queryKey: ['recipes'] }),
         ]);
+        return { recipeId, message };
       },
     });
   },
-  useDeleteRecipe(id: string) {
+  useDeleteRecipe() {
     return useMutation({
-      mutationFn: () => recipeRepository.deleteRecipe(id),
-      onSuccess: async () => {
+      mutationFn: (id: string) => recipeRepository.deleteRecipe(id),
+      onSuccess: async ({ recipeId, message }) => {
         console.log('Recipe deleted successfully');
         await Promise.all([
-          queryClient.removeQueries({ queryKey: ['recipe_' + id] }),
+          queryClient.removeQueries({ queryKey: ['recipe_' + recipeId] }),
           queryClient.invalidateQueries({ queryKey: ['recipes'] }),
         ]);
+        return { recipeId, message };
       },
     });
   },
-  useAddFavoriteRecipe(id: string) {
+  useAddFavoriteRecipe() {
     return useMutation({
-      mutationFn: () => recipeRepository.addFavoriteRecipe(id),
-      onSuccess: async () => {
+      mutationFn: (id: string) => recipeRepository.addFavoriteRecipe(id),
+      onSuccess: async ({ recipeId, message }) => {
         console.log('Favorite recipe added successfully');
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['recipe_' + id] }),
+          queryClient.invalidateQueries({ queryKey: ['recipe_' + recipeId] }),
           queryClient.invalidateQueries({ queryKey: ['recipes'] }),
         ]);
+        return { recipeId, message };
       },
     });
   },
-  useRemoveFavoriteRecipe(id: string) {
+  useRemoveFavoriteRecipe() {
     return useMutation({
-      mutationFn: () => recipeRepository.removeFavoriteRecipe(id),
-      onSuccess: async () => {
+      mutationFn: (id: string) => recipeRepository.removeFavoriteRecipe(id),
+      onSuccess: async ({ recipeId, message }) => {
         console.log('Favorite recipe removed successfully');
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['recipe_' + id] }),
+          queryClient.invalidateQueries({ queryKey: ['recipe_' + recipeId] }),
           queryClient.invalidateQueries({ queryKey: ['recipes'] }),
         ]);
+        return { recipeId, message };
       },
     });
   },
