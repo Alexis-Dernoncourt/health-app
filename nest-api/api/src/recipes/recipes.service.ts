@@ -11,12 +11,25 @@ export class RecipesService {
     private readonly prisma: PrismaService,
     private readonly cloudinary: CloudinaryService,
   ) {}
-  async create(createRecipeDto: CreateRecipeDto) {
+  async create(
+    recipe: CreateRecipeDto,
+    image: Express.Multer.File,
+    userId: string,
+  ) {
     try {
-      const recipe = await this.prisma.recipes.create({
-        data: createRecipeDto,
-      });
-      return recipe;
+      if (!image) {
+        throw new Error('No image file provided');
+      }
+      const uploadResult = await this.cloudinary.uploadFile(
+        image,
+        `recipes`,
+        recipe.title.trim(),
+      );
+      const recipeImage = uploadResult?.secure_url ?? null;
+
+      const setData = { ...recipe, image: recipeImage, userId: userId };
+      const newRecipe = await this.prisma.recipes.create({ data: setData });
+      return { recipe: newRecipe, message: `The recipe was created` };
     } catch (error) {
       console.log(error);
       throw new HttpException("Can't create the recipe", 409);
@@ -73,19 +86,19 @@ export class RecipesService {
       console.log('🚀 ~ RecipeService ~ findOne ~ error:', error);
       throw new HttpException(error.message ?? "Can't found this recipe", 400);
     }
-    return `The #${id} recipe was updated`;
+    return { recipeId: id, message: `The recipe was updated` };
   }
 
   async deleteImage(id: string, prefix: string) {
     try {
       await this.cloudinary.deleteImage(prefix + id);
-      const updatedUser = await this.prisma.recipes.update({
+      const updatedRecipe = await this.prisma.recipes.update({
         where: { id },
         data: {
           image: null,
         },
       });
-      return updatedUser;
+      return updatedRecipe;
     } catch (error) {
       console.log('🚀 ~ UsersService ~ addImage ~ error:', error);
       throw new BadRequestException("Can't remove recipe image");
@@ -96,14 +109,14 @@ export class RecipesService {
     try {
       const recipe = await this.prisma.recipes.delete({ where: { id } });
       console.log('🚀 ~ RecipesService ~ remove ~ recipe:', recipe);
-      return `The #${id} recipe was deleted`;
+      return { recipeId: id, message: `The recipe was deleted` };
     } catch (error) {
       console.log('🚀 ~ RecipeService ~ findOne ~ error:', error);
       throw new HttpException("Can't found this recipe", 400);
     }
   }
 
-  async addFavoriteRecipe(recipeId: string, userId: string): Promise<void> {
+  async addFavoriteRecipe(recipeId: string, userId: string) {
     const user = await this.prisma.users.findFirstOrThrow({
       where: { id: userId },
     });
@@ -140,6 +153,10 @@ export class RecipesService {
           },
         },
       });
+      return {
+        recipeId: recipe.id,
+        message: `The recipe was added to favorites`,
+      };
     } catch (error) {
       console.log('🚀 ~ RecipesService ~ addFavoriteRecipe ~ error:', error);
       throw (
@@ -148,7 +165,7 @@ export class RecipesService {
     }
   }
 
-  async removeFavoriteRecipe(recipeId: string, userId: string): Promise<void> {
+  async removeFavoriteRecipe(recipeId: string, userId: string) {
     try {
       const favoriteRecipe = await this.prisma.user_favorites.findFirstOrThrow({
         where: {
@@ -161,6 +178,10 @@ export class RecipesService {
           id: favoriteRecipe.id,
         },
       });
+      return {
+        recipeId: recipeId,
+        message: `The recipe was removed from favorites`,
+      };
     } catch (error) {
       console.log('🚀 ~ RecipesService ~ removeFavoriteRecipe ~ error:', error);
       throw new HttpException("Can't remove this recipe from favorites", 400);

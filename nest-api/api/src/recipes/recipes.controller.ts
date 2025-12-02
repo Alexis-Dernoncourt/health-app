@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { RecipesService } from './recipes.service';
 import { RequestWithUser } from 'src/auth/jwt.strategy';
-import { CreateRecipeDto } from './dto/createRecipe.dto';
+import { CreateRecipeDto, CreateRecipeFormDto } from './dto/createRecipe.dto';
 import { UpdateRecipeDto } from './dto/updateRecipe.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
@@ -27,15 +27,31 @@ import { Public } from 'src/utils';
 export class RecipesController {
   constructor(private readonly recipeService: RecipesService) {}
 
+  @UseInterceptors(
+    FileInterceptor('image', {
+      fileFilter: (_, file, cb) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|webp)$/)) {
+          return cb(
+            new BadRequestException('Only image files are allowed!'),
+            false,
+          );
+        }
+        cb(null, true);
+      },
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
+  @ApiBody({ type: CreateRecipeFormDto })
+  @ApiConsumes('multipart/form-data')
   @Post()
-  @ApiBody({
-    description: 'Create recipe body',
-    required: true,
-    type: CreateRecipeDto,
-  })
-  // @ApiConsumes('multipart/form-data')
-  protected async create(@Body() createRecipeDto: CreateRecipeDto) {
-    return this.recipeService.create(createRecipeDto);
+  async create(
+    @UploadedFile()
+    image: Express.Multer.File,
+    @Body()
+    recipe: CreateRecipeDto,
+    @Req() req: RequestWithUser,
+  ) {
+    return this.recipeService.create(recipe, image, req.user.userId);
   }
 
   @Public()
@@ -97,7 +113,7 @@ export class RecipesController {
   async addFavoriteRecipe(
     @Param('id', new ParseCUIDPipe()) id: string,
     @Req() req: RequestWithUser,
-  ): Promise<void> {
+  ) {
     const { userId } = req.user;
     return this.recipeService.addFavoriteRecipe(id, userId);
   }
@@ -106,7 +122,7 @@ export class RecipesController {
   async removeFavoriteRecipe(
     @Param('id', new ParseCUIDPipe()) id: string,
     @Req() req: RequestWithUser,
-  ): Promise<void> {
+  ) {
     const { userId } = req.user;
     return this.recipeService.removeFavoriteRecipe(id, userId);
   }

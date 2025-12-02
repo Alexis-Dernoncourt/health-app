@@ -44,19 +44,20 @@ model users {
 }
 
 model recipes {
-  id          String      @default(cuid()) @id
-  image       String?
-  title       String      @db.VarChar(255)
-  description String
-  ingredients String?
-  steps       String?
-  prep_time   String?
-  cook_time   String?
-  servings    String?
-  calories    String?
-  created_at  DateTime    @default(now())
-  updatedat   DateTime    @updatedAt
-  user_favorites user_favorites[]
+  id              String      @default(cuid()) @id
+  image           String?
+  title           String      @db.VarChar(255)
+  description     String
+  ingredients     String
+  steps           String
+  prep_time       String?
+  cook_time       String?
+  servings        String?
+  calories        String?
+  created_at      DateTime    @default(now())
+  updatedat       DateTime    @updatedAt
+  user_favorites  user_favorites[]
+  userId          String
 
   menus menus[]
 }

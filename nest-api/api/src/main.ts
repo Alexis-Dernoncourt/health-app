@@ -4,7 +4,9 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -19,7 +21,7 @@ async function bootstrap() {
     // .addTag('health-app')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/', app, documentFactory);
-  await app.listen(3333);
+  SwaggerModule.setup('/docs', app, documentFactory);
+  await app.listen(3333, () => console.log('Server running on port 3333'));
 }
 bootstrap();

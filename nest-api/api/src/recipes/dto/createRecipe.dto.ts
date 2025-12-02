@@ -32,13 +32,7 @@
 // export type UpdateRecipeDto = Partial<CreateRecipeDto>;
 
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsString,
-  IsOptional,
-  ValidateNested,
-  MinLength,
-  MaxLength,
-} from 'class-validator';
+import { IsString, IsOptional, MinLength, MaxLength } from 'class-validator';
 
 export class CreateRecipeDto {
   @ApiProperty({
@@ -60,31 +54,24 @@ export class CreateRecipeDto {
     required: false,
   })
   @IsOptional()
-  @IsString()
-  image?: string;
+  image?: Express.Multer.File | string | null;
 
   @ApiProperty({
-    required: false,
+    required: true,
   })
-  @IsOptional()
   @IsString()
-  @ValidateNested()
-  ingredients?: string;
+  ingredients!: string;
 
   @ApiProperty({
-    required: false,
+    required: true,
   })
-  @IsOptional()
   @IsString()
-  @ValidateNested()
-  steps?: string;
+  steps!: string;
 
   @ApiProperty({
     required: false,
     description: 'Calories pour 100gr (ex: 125kcal / 100gr)',
   })
-  @IsOptional()
-  @ValidateNested()
   @IsOptional()
   @IsString()
   calories?: string;
@@ -109,4 +96,19 @@ export class CreateRecipeDto {
   @IsOptional()
   @IsString()
   servings?: string;
+
+  @ApiProperty({
+    required: false,
+    example: 'a0a0a0a0-a0a0-a0a0-a0a0-a0a0a0a0a0a0',
+    description:
+      'User creator ID. This is automatically set by the middleware from connected user.',
+  })
+  @IsOptional()
+  @IsString()
+  userId?: string;
+}
+
+export class CreateRecipeFormDto extends CreateRecipeDto {
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  image?: Express.Multer.File;
 }
