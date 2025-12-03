@@ -16,7 +16,6 @@ import { Pressable } from 'react-native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { HomeTabParamList } from '../../navigation/types';
 import { useNavigation } from '@react-navigation/native';
-import { recipeService } from '../../services/recipeService';
 
 export const ISBImageItem = memo(({ recipe }: { recipe: Recipe }) => {
   const navigation = useNavigation<BottomTabNavigationProp<HomeTabParamList>>();
@@ -103,26 +102,28 @@ const PaginationItem: React.FC<{
 
 const Slider = ({
   setScrollEnabled,
+  recipesData,
+  isLoading,
+  error,
+  isRefetching,
+  height = 220,
+  width,
 }: {
   setScrollEnabled: React.Dispatch<React.SetStateAction<boolean>>;
+  recipesData: Recipe[] | undefined;
+  isLoading: boolean;
+  error: any;
+  isRefetching: boolean;
+  height?: number;
+  width?: number;
 }) => {
   const window = Dimensions.get('window');
   const PAGE_WIDTH = window.width;
-  const { user } = useCurrentUser();
   const progressValue = useSharedValue(0);
-  const {
-    data: recipesData,
-    isLoading,
-    error,
-    isRefetching,
-  } = recipeService.useGetRecipes();
-  const CAROUSEL_ITEMS = user?.user_favorites?.length
-    ? recipesData // TODO: fix this
-    : recipesData;
 
   const baseOptions = {
-    width: PAGE_WIDTH,
-    height: 220,
+    width: width ?? PAGE_WIDTH,
+    height: height,
     autoPlay: false,
   };
 
@@ -144,7 +145,7 @@ const Slider = ({
 
   return (
     <View style={styles.container}>
-      {CAROUSEL_ITEMS && (
+      {recipesData && (
         <Carousel
           {...baseOptions}
           snapEnabled={true}
@@ -160,7 +161,7 @@ const Slider = ({
             return (progressValue.value = absoluteProgress);
           }}
           mode="parallax"
-          data={CAROUSEL_ITEMS}
+          data={recipesData}
           renderItem={data => <ISBImageItem recipe={data.item} />}
           // customConfig={() => {
           //   return {type: 'negative', viewCount: 2};
@@ -169,14 +170,14 @@ const Slider = ({
       )}
       {!!progressValue && (
         <View style={styles.paginationContainer}>
-          {CAROUSEL_ITEMS?.map((recipe, index) => {
+          {recipesData?.map((recipe, index) => {
             return (
               <PaginationItem
                 backgroundColor={COLORS.primary_accent}
                 animValue={progressValue}
                 index={index}
                 key={recipe.id}
-                length={CAROUSEL_ITEMS.length}
+                length={recipesData.length}
               />
             );
           })}

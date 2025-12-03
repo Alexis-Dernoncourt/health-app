@@ -53,6 +53,12 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
   const [isExtended, setIsExtended] = React.useState(true);
   const createRecipe = recipeService.useCreateRecipe();
 
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const currentScrollPosition =
+      Math.floor(event.nativeEvent?.contentOffset?.y) ?? 0;
+    setIsExtended(currentScrollPosition <= 10);
+  };
+
   const {
     control,
     handleSubmit,
@@ -133,12 +139,6 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
     } catch (error) {
       console.log('🚀 ~ onSubmit ~ error:', error);
     }
-  };
-
-  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const currentScrollPosition =
-      Math.floor(event.nativeEvent?.contentOffset?.y) ?? 0;
-    setIsExtended(currentScrollPosition <= 10);
   };
 
   return (
@@ -353,6 +353,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingBottom: 20,
+    marginTop: 40,
   },
   button: {
     backgroundColor: COLORS.light_blue,

@@ -11,4 +11,5 @@ export const COLORS = {
   red: '#FF0000',
   light_blue: '#A0C3FA',
   dark_red: '#E13E3E',
+  blurred: 'rgba(255, 255, 255, 0.5)',
 };

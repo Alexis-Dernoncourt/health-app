@@ -3,6 +3,7 @@ import { Recipe } from './types';
 
 export const recipeApi = {
   getRecipes: () => client.get<Recipe[]>('/recipes'),
+  getUserRecipes: () => client.get<Recipe[]>('/recipes/user'),
   getRecipe: (id: string) => client.get<Recipe>(`/recipes/${id}`),
   createRecipe: async (payload: FormData) =>
     await client.post<{ message: string; recipe: Recipe }>(

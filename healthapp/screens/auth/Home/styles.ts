@@ -1,10 +1,11 @@
-import {StyleSheet} from 'react-native';
-import {COLORS} from '../../../lib/constants';
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../../lib/constants';
 
 export const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 40,
   },
   elementMargin: {
     marginVertical: 10,

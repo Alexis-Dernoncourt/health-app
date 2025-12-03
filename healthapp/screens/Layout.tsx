@@ -3,6 +3,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import React from 'react';
 import useDarkMode from '../hooks/useDarkMode';
 import { LayoutProps } from './types';
+import { COLORS } from '../lib/constants';
 
 const Layout = ({ children }: LayoutProps) => {
   const { isDarkMode, backgroundStyle } = useDarkMode();
@@ -10,7 +11,8 @@ const Layout = ({ children }: LayoutProps) => {
     <SafeAreaProvider style={{ ...backgroundStyle, ...styles.mainWrapper }}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+        translucent
+        backgroundColor={COLORS.blurred}
       />
       {children}
     </SafeAreaProvider>

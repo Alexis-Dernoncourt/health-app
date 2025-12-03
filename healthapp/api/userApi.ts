@@ -1,8 +1,9 @@
-import { User } from './types';
+import { Recipe, User } from './types';
 import client from './client';
 
 export const userApi = {
   fetchUsers: () => client.get<User[]>('/users'),
+  getUserRecipes: () => client.get<Recipe[]>('/users/recipes'),
   fetchUser: (id: string) => client.get<User>(`/users/${id}`),
   createUser: (payload: {
     firstname: string;

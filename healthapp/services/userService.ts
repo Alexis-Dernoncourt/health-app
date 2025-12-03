@@ -10,6 +10,12 @@ export const userService = {
       queryFn: () => userRepository.getUsers(),
     });
   },
+  useGetUserRecipes() {
+    return useQuery({
+      queryKey: ['user_recipes'],
+      queryFn: () => userRepository.getUserRecipes(),
+    });
+  },
   useGetUser(id: string) {
     return useQuery({
       queryKey: ['user_' + id],

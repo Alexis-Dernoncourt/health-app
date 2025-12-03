@@ -112,6 +112,15 @@ export class UsersService {
     });
   }
 
+  async findAllCreatedRecipes(userId: string) {
+    try {
+      return await this.prisma.recipes.findMany({ where: { userId } });
+    } catch (error) {
+      console.log('🚀 ~ RecipeService ~ findAllByUserId ~ error:', error);
+      throw new HttpException("Can't found this user", 400);
+    }
+  }
+
   async findByEmail(email: string) {
     try {
       return await this.prisma.users.findUnique({ where: { email } });

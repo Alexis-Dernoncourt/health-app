@@ -6,6 +6,10 @@ export const userRepository = {
     const { data } = await userApi.fetchUsers();
     return data;
   },
+  async getUserRecipes() {
+    const { data } = await userApi.getUserRecipes();
+    return data;
+  },
   async getUser(id: string) {
     const { data } = await userApi.fetchUser(id);
     return data;

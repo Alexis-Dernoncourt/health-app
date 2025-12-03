@@ -43,6 +43,11 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Get('/recipes')
+  findAllByUser(@Req() req: RequestWithUser) {
+    return this.usersService.findAllCreatedRecipes(req.user.userId);
+  }
+
   @Public()
   @Get()
   findAll() {
