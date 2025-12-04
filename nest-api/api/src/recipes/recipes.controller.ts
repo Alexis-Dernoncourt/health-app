@@ -7,19 +7,18 @@ import {
   Get,
   Param,
   ParseFilePipe,
-  ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   Req,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { RecipesService } from './recipes.service';
 import { RequestWithUser } from 'src/auth/jwt.strategy';
-import { CreateRecipeDto } from './dto/createRecipe.dto';
+import { CreateRecipeDto, CreateRecipeFormDto } from './dto/createRecipe.dto';
 import { UpdateRecipeDto } from './dto/updateRecipe.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import type { Express } from 'express';
 import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { ParseCUIDPipe } from 'src/pipes/cuid-pipe';
 import { Public } from 'src/utils';
@@ -29,21 +28,44 @@ import { Public } from 'src/utils';
 export class RecipesController {
   constructor(private readonly recipeService: RecipesService) {}
 
+  @UseInterceptors(
+    FileInterceptor('image', {
+      fileFilter: (_, file, cb) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|webp)$/)) {
+          return cb(
+            new BadRequestException('Only image files are allowed!'),
+            false,
+          );
+        }
+        cb(null, true);
+      },
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
+  @ApiBody({ type: CreateRecipeFormDto })
+  @ApiConsumes('multipart/form-data')
   @Post()
-  @ApiBody({
-    description: 'Create recipe body',
-    required: true,
-    type: CreateRecipeDto,
-  })
-  // @ApiConsumes('multipart/form-data')
-  protected async create(@Body() createRecipeDto: CreateRecipeDto) {
-    return this.recipeService.create(createRecipeDto);
+  async create(
+    @UploadedFile()
+    image: Express.Multer.File,
+    @Body()
+    recipe: CreateRecipeDto,
+    @Req() req: RequestWithUser,
+  ) {
+    return this.recipeService.create(recipe, image, req.user.userId);
   }
 
   @Public()
   @Get()
-  findAll() {
-    return this.recipeService.findAll();
+  findAll(
+    @Query('numberOfRecipes') numberOfRecipes?: string,
+    @Query('currentPage') currentPage?: string,
+  ) {
+    if (!numberOfRecipes || !currentPage) return this.recipeService.findAll();
+    return this.recipeService.findAll(
+      parseInt(numberOfRecipes),
+      parseInt(currentPage),
+    );
   }
 
   @Get(':id')
@@ -53,7 +75,7 @@ export class RecipesController {
 
   @UseInterceptors(
     FileInterceptor('image', {
-      fileFilter: (req, file, cb) => {
+      fileFilter: (_, file, cb) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
           return cb(
             new BadRequestException('Only image files are allowed!'),
@@ -99,7 +121,7 @@ export class RecipesController {
   async addFavoriteRecipe(
     @Param('id', new ParseCUIDPipe()) id: string,
     @Req() req: RequestWithUser,
-  ): Promise<void> {
+  ) {
     const { userId } = req.user;
     return this.recipeService.addFavoriteRecipe(id, userId);
   }
@@ -108,7 +130,7 @@ export class RecipesController {
   async removeFavoriteRecipe(
     @Param('id', new ParseCUIDPipe()) id: string,
     @Req() req: RequestWithUser,
-  ): Promise<void> {
+  ) {
     const { userId } = req.user;
     return this.recipeService.removeFavoriteRecipe(id, userId);
   }

@@ -32,92 +32,7 @@
 // export type UpdateRecipeDto = Partial<CreateRecipeDto>;
 
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  validate,
-  IsString,
-  IsNumber,
-  IsOptional,
-  IsArray,
-  ValidateNested,
-  IsPositive,
-  MinLength,
-  MaxLength,
-  IsJSON,
-} from 'class-validator';
-
-export class Ingredient {
-  @ApiProperty({
-    required: true,
-  })
-  @IsString()
-  name!: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsString()
-  quantity!: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsString()
-  unit!: string;
-}
-
-export class Step {
-  @ApiProperty({
-    required: true,
-  })
-  @IsNumber()
-  number!: number;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsString()
-  text!: string;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  warning?: string;
-}
-
-export class Calories {
-  [key: string]: any;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsNumber()
-  @IsPositive()
-  for100gr?: number;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsNumber()
-  @IsPositive()
-  total?: number;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsNumber()
-  @IsPositive()
-  totalWeight?: number;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(32)
-  caloriesUnit?: string;
-}
+import { IsString, IsOptional, MinLength, MaxLength } from 'class-validator';
 
 export class CreateRecipeDto {
   @ApiProperty({
@@ -139,33 +54,61 @@ export class CreateRecipeDto {
     required: false,
   })
   @IsOptional()
+  image?: Express.Multer.File | string | null;
+
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
-  image?: string;
+  ingredients!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsString()
+  steps!: string;
 
   @ApiProperty({
     required: false,
-    type: [Ingredient],
+    description: 'Calories pour 100gr (ex: 125kcal / 100gr)',
   })
   @IsOptional()
-  @IsArray()
-  @ValidateNested()
-  ingredients?: Ingredient[];
+  @IsString()
+  calories?: string;
 
   @ApiProperty({
     required: false,
-    type: [Step],
   })
   @IsOptional()
-  @IsArray()
-  @ValidateNested()
-  steps?: Step[];
+  @IsString()
+  prep_time?: string;
 
   @ApiProperty({
     required: false,
-    type: Calories,
   })
   @IsOptional()
-  @ValidateNested()
-  @IsJSON()
-  calories?: Calories;
+  @IsString()
+  cook_time?: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  servings?: string;
+
+  @ApiProperty({
+    required: false,
+    example: 'a0a0a0a0-a0a0-a0a0-a0a0-a0a0a0a0a0a0',
+    description:
+      'User creator ID. This is automatically set by the middleware from connected user.',
+  })
+  @IsOptional()
+  @IsString()
+  userId?: string;
+}
+
+export class CreateRecipeFormDto extends CreateRecipeDto {
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  image?: Express.Multer.File;
 }

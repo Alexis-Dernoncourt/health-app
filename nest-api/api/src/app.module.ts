@@ -10,6 +10,9 @@ import { RecipesModule } from './recipes/recipes.module';
 import { PrismaService } from './prisma.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { MenusModule } from './menus/menus.module';
+import { AiService } from './ai-service/ai.service';
+import { AiController } from './ai-service/ai.controller';
+import { AiModule } from './ai-service/ai.module';
 
 @Module({
   imports: [
@@ -20,8 +23,9 @@ import { MenusModule } from './menus/menus.module';
     UsersModule,
     RecipesModule,
     MenusModule,
+    AiModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AiController],
   providers: [
     AppService,
     AuthService,
@@ -31,6 +35,7 @@ import { MenusModule } from './menus/menus.module';
       provide: 'APP_GUARD',
       useClass: JwtAuthGuard,
     },
+    AiService,
   ],
 })
 export class AppModule {}

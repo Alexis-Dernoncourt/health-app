@@ -1,0 +1,47 @@
+import {Image, StyleSheet, View} from 'react-native';
+import React from 'react';
+import {COLORS} from '../../lib/constants';
+
+const HomeHeader = () => {
+  return (
+    <View style={styles.container}>
+      <Image
+        source={require('../../assets/images/HOME.jpg')}
+        style={styles.image}
+      />
+    </View>
+  );
+};
+
+export default HomeHeader;
+
+const styles = StyleSheet.create({
+  container: {
+    width: '95%',
+    height: 210,
+    marginVertical: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    shadowColor: COLORS.black,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 2,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 16,
+    objectFit: 'cover',
+  },
+  headerText: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    color: COLORS.black,
+  },
+});

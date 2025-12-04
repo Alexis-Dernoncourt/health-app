@@ -13,8 +13,8 @@ import {
   ForbiddenException,
   ParseFilePipe,
   FileTypeValidator,
+  Query,
 } from '@nestjs/common';
-import { Express } from 'express';
 import { UsersService } from './users.service';
 import { ImageUploadBody, UpdateUserDto } from './dto/user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -37,9 +37,15 @@ import { Public } from 'src/utils';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Post()
+  @Public()
   @ApiExcludeEndpoint(true)
   protected async create(@Body() createUserDto: SigninDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @Get('/recipes')
+  findAllByUser(@Req() req: RequestWithUser) {
+    return this.usersService.findAllCreatedRecipes(req.user.userId);
   }
 
   @Public()
@@ -59,7 +65,6 @@ export class UsersController {
       image: null,
       firstname: 'Test',
       lastname: 'User',
-      password: 'pass',
       created_at: '2020-09-19T12:26:25.368Z',
       updated_at: '2022-04-18T14:43:26.520Z',
       user_favorites: [],
@@ -127,6 +132,24 @@ export class UsersController {
       throw new ForbiddenException('You can not do this action');
     }
     return this.usersService.update(id, updateUserDto);
+  }
+
+  @Patch('/password/:id')
+  changePassword(
+    @Param('id', new ParseCUIDPipe()) id: string,
+    @Body('newPassword') newPassword: string,
+    @Req() req: RequestWithUser,
+  ) {
+    if (req.user.userId !== id) {
+      throw new ForbiddenException('You can not do this action');
+    }
+    return this.usersService.changePassword(id, newPassword);
+  }
+
+  @Post('/verify-email')
+  @Public()
+  sendVerificationEmail(@Query('token') tokenQuery: string) {
+    return this.usersService.verifyEmail(tokenQuery);
   }
 
   @Delete(':id')

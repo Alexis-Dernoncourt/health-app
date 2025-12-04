@@ -1,0 +1,6 @@
+{
+    "typescript.updateImportsOnPaste.enabled": true,
+    "editor.codeActionsOnSave": {
+        "source.removeUnusedImports": "always",
+    }
+}

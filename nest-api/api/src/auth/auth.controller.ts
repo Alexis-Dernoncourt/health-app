@@ -25,9 +25,8 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @Post('signin')
   @ApiBody({ type: SigninDto, required: true, description: 'Sign-in body' })
-  async signin(@Body() payload: SigninDto): Promise<{ message: string }> {
+  async signin(@Body() payload: SigninDto): Promise<void> {
     await this.AuthService.signin(payload);
-    return { message: 'User created' };
   }
 
   @Public()
@@ -38,6 +37,12 @@ export class AuthController {
     @Body() loginDto: LoginDto,
   ): Promise<{ message: string; access_token: string; user: Partial<users> }> {
     const { accessToken, user } = await this.AuthService.login(loginDto);
+    if (!user.verificationToken && user.isEmailVerified === false) {
+      throw new HttpException(
+        'Please verify your email first',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
     return {
       message: 'Logged in successfully',
       access_token: accessToken,
