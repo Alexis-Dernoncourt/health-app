@@ -1,8 +1,8 @@
 import {
+  Alert,
   Image,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  ScrollView,
   StyleSheet,
   Text,
   ToastAndroid,
@@ -10,12 +10,12 @@ import {
 } from 'react-native';
 import React, { useLayoutEffect } from 'react';
 import { HomeTabScreenProps } from '../../../navigation/types';
-import { Button } from 'react-native-paper';
+import { ActivityIndicator, Button } from 'react-native-paper';
 import Input from '../../../components/Form/Input';
 import Layout from '../../Layout';
 import { COLORS } from '../../../lib/constants';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { Camera, LucideCamera } from 'lucide-react-native';
+import { ImagePlus, LucideCamera } from 'lucide-react-native';
 import { Header } from '../../../components/Header/Header';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { Controller, useForm } from 'react-hook-form';
@@ -23,6 +23,10 @@ import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { recipeService } from '../../../services/recipeService';
 import FabButton from '../../../components/Elements/FAB';
+import CameraCapture from '../../../components/Elements/CameraCapture';
+import { ScrollView } from 'react-native-gesture-handler';
+import { IaRecipeType } from '../../types';
+import client from '../../../api/client';
 
 const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
   const AddRecipeSchema = z.object({
@@ -45,6 +49,8 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
 
   type AddRecipeFormType = z.infer<typeof AddRecipeSchema>;
 
+  const [iaCapture, setIaCapture] = React.useState(false);
+  const [iaLoading, setIaLoading] = React.useState(false);
   const [imageFile, setImageFile] = React.useState<{
     uri: string;
     name: string;
@@ -63,6 +69,7 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isValid, isSubmitting },
   } = useForm<AddRecipeFormType>({
     defaultValues: {
@@ -78,6 +85,43 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
     },
     resolver: zodResolver(AddRecipeSchema),
   });
+  const handlePhotoTaken = async (file: {
+    name: string;
+    type: string;
+    uri: string;
+  }) => {
+    if (!file) return;
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      setIaLoading(true);
+      const { data } = await client.post('/ai/analyze-recipe', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const structuredRecipe: IaRecipeType = data;
+      setValue('image', structuredRecipe.image ?? null);
+      setValue('title', structuredRecipe.title);
+      setValue('description', structuredRecipe.description);
+      setValue('ingredients', structuredRecipe.ingredients);
+      setValue('steps', structuredRecipe.steps.join('$').replace(/\$/g, '\n'));
+      setValue('calories', structuredRecipe.calories);
+      setValue('prep_time', structuredRecipe.prep_time);
+      setValue('cook_time', structuredRecipe.cook_time);
+      setValue('servings', structuredRecipe.servings);
+    } catch (err: any) {
+      Alert.alert('Erreur', err.message);
+    } finally {
+      setIaCapture(false);
+      setIaLoading(false);
+      ToastAndroid.show(
+        "Les informations ont bien été extraites. 🚀 Verifiez-les avant d'ajouter la recette !",
+        ToastAndroid.LONG,
+      );
+    }
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -89,8 +133,8 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
     });
   }, [navigation, reset]);
 
-  const renderCameraIcon = (color: keyof typeof COLORS = 'black') => {
-    return <Camera color={COLORS[color]} />;
+  const renderIcon = (color: keyof typeof COLORS = 'black') => {
+    return <ImagePlus color={COLORS[color]} />;
   };
 
   const handleImage = async () => {
@@ -107,7 +151,6 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
         const { fileName, type, uri } = result.assets[0];
         if (fileName && type && uri) {
           setImageFile({ uri, name: fileName, type });
-          // await recipeApi.updateRecipe(formData);
           ToastAndroid.show("L'image a bien été ajoutée", ToastAndroid.LONG);
         }
       }
@@ -143,205 +186,220 @@ const AddRecipeScreen = ({ navigation }: HomeTabScreenProps<'AddRecipe'>) => {
 
   return (
     <Layout>
-      <ScrollView onScroll={onScroll}>
-        {imageFile?.uri && (
-          <View style={styles.imageWrapper}>
-            <Image
-              resizeMode="contain"
-              key={imageFile.uri}
-              alt=""
-              accessibilityLabel="image de la recette"
-              source={{ uri: imageFile.uri }}
-              style={styles.image}
-            />
+      {iaCapture ? (
+        iaLoading ? (
+          <View style={styles.loading}>
+            <Text>
+              Le traitement de l'image est en cours, veuillez patienter...
+            </Text>
+            <ActivityIndicator size="large" />
           </View>
-        )}
-        <Button
-          onPress={handleImage}
-          mode="contained"
-          style={styles.button}
-          textColor={COLORS.black}
-          icon={() => renderCameraIcon('black')}
-        >
-          {imageFile?.uri ? "Modifier l'image" : 'Ajouter une image'}
-        </Button>
-
-        <View style={styles.formWrapper}>
-          <Controller
-            name="title"
-            control={control}
-            rules={{ required: true, minLength: 3, maxLength: 128 }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                label="Titre de la recette"
-                style={styles.inputStyle}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                error={!!errors.title}
-                placeholder="Entrez le titre de la recette"
-              />
+        ) : (
+          <CameraCapture onPhotoTaken={handlePhotoTaken} />
+        )
+      ) : (
+        <>
+          <ScrollView onScroll={onScroll} scrollEventThrottle={16}>
+            {imageFile?.uri && (
+              <View style={styles.imageWrapper}>
+                <Image
+                  resizeMode="contain"
+                  key={imageFile.uri}
+                  alt=""
+                  accessibilityLabel="image de la recette"
+                  source={{ uri: imageFile.uri }}
+                  style={styles.image}
+                />
+              </View>
             )}
-          />
-          {errors.title && (
-            <Text style={styles.error}>{errors.title.message}</Text>
-          )}
+            <Button
+              onPress={handleImage}
+              mode="contained"
+              style={styles.button}
+              textColor={COLORS.black}
+              icon={() => renderIcon('black')}
+            >
+              {imageFile?.uri ? "Modifier l'image" : 'Ajouter une image'}
+            </Button>
 
-          <Controller
-            name="description"
-            control={control}
-            rules={{ required: true, minLength: 3, maxLength: 128 }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                label="Description de la recette"
-                style={styles.inputStyle}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                error={!!errors.description}
-                placeholder="Entrez la description de la recette"
+            <View style={styles.formWrapper}>
+              <Controller
+                name="title"
+                control={control}
+                rules={{ required: true, minLength: 3, maxLength: 128 }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input
+                    label="Titre de la recette"
+                    style={styles.inputStyle}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    error={!!errors.title}
+                    placeholder="Entrez le titre de la recette"
+                  />
+                )}
               />
-            )}
-          />
-          {errors.description && (
-            <Text style={styles.error}>{errors.description.message}</Text>
-          )}
+              {errors.title && (
+                <Text style={styles.error}>{errors.title.message}</Text>
+              )}
 
-          <Text style={styles.titleInput}>
-            Renseignez les INGREDIENTS de la recette en les séparant par une
-            virgule :
-          </Text>
-          <Controller
-            name="ingredients"
-            control={control}
-            rules={{ required: true, minLength: 3, maxLength: 128 }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                label="Ingrédients de la recette"
-                multiline={true}
-                style={styles.inputStyle}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value.toString()}
-                error={!!errors.ingredients}
-                placeholder="Entrez les ingrédients de la recette"
+              <Controller
+                name="description"
+                control={control}
+                rules={{ required: true, minLength: 3, maxLength: 128 }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input
+                    label="Description de la recette"
+                    style={styles.inputStyle}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    error={!!errors.description}
+                    placeholder="Entrez la description de la recette"
+                  />
+                )}
               />
-            )}
-          />
-          {errors.ingredients && (
-            <Text style={styles.error}>{errors.ingredients.message}</Text>
-          )}
+              {errors.description && (
+                <Text style={styles.error}>{errors.description.message}</Text>
+              )}
 
-          <Text style={styles.titleInput}>
-            Renseignez les ETAPES de la recette en les séparant d'un retour à la
-            ligne :
-          </Text>
-          <Controller
-            name="steps"
-            control={control}
-            rules={{ required: true, minLength: 3, maxLength: 128 }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                label="Etapes de la recette"
-                multiline={true}
-                style={styles.inputStyle}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value.toString()}
-                error={!!errors.steps}
-                placeholder="Entrez les etapes de la recette"
+              <Text style={styles.titleInput}>
+                Renseignez les INGREDIENTS de la recette en les séparant par une
+                virgule :
+              </Text>
+              <Controller
+                name="ingredients"
+                control={control}
+                rules={{ required: true, minLength: 3, maxLength: 128 }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input
+                    label="Ingrédients de la recette"
+                    multiline={true}
+                    style={styles.inputStyle}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value.toString()}
+                    error={!!errors.ingredients}
+                    placeholder="Entrez les ingrédients de la recette"
+                  />
+                )}
               />
-            )}
-          />
-          {errors.steps && (
-            <Text style={styles.error}>{errors.steps.message}</Text>
-          )}
+              {errors.ingredients && (
+                <Text style={styles.error}>{errors.ingredients.message}</Text>
+              )}
 
-          <Controller
-            name="prep_time"
-            control={control}
-            rules={{ required: true, minLength: 3, maxLength: 128 }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                label="Temps de preparation"
-                style={styles.inputStyle}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                error={!!errors.prep_time}
-                placeholder="Entrez le temps de preparation"
+              <Text style={styles.titleInput}>
+                Renseignez les ETAPES de la recette en les séparant d'un retour
+                à la ligne :
+              </Text>
+              <Controller
+                name="steps"
+                control={control}
+                rules={{ required: true, minLength: 3, maxLength: 128 }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input
+                    label="Etapes de la recette"
+                    multiline={true}
+                    style={styles.inputStyle}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value.toString()}
+                    error={!!errors.steps}
+                    placeholder="Entrez les etapes de la recette"
+                  />
+                )}
               />
-            )}
-          />
-          {errors.prep_time && (
-            <Text style={styles.error}>{errors.prep_time.message}</Text>
-          )}
+              {errors.steps && (
+                <Text style={styles.error}>{errors.steps.message}</Text>
+              )}
 
-          <Controller
-            name="cook_time"
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                label="Temps de cuisson"
-                style={styles.inputStyle}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                error={!!errors.cook_time}
-                placeholder="Entrez le temps de cuisson"
+              <Controller
+                name="prep_time"
+                control={control}
+                rules={{ required: true, minLength: 3, maxLength: 128 }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input
+                    label="Temps de preparation"
+                    style={styles.inputStyle}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    error={!!errors.prep_time}
+                    placeholder="Entrez le temps de preparation"
+                  />
+                )}
               />
-            )}
-          />
-          {errors.cook_time && (
-            <Text style={styles.error}>{errors.cook_time.message}</Text>
-          )}
+              {errors.prep_time && (
+                <Text style={styles.error}>{errors.prep_time.message}</Text>
+              )}
 
-          <Controller
-            name="servings"
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                label="Nombre de personnes"
-                keyboardType="numeric"
-                style={styles.inputStyle}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                error={!!errors.servings}
-                placeholder="Entrez le nombre de personnes"
+              <Controller
+                name="cook_time"
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input
+                    label="Temps de cuisson"
+                    style={styles.inputStyle}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    error={!!errors.cook_time}
+                    placeholder="Entrez le temps de cuisson"
+                  />
+                )}
               />
-            )}
-          />
-          {errors.servings && (
-            <Text style={styles.error}>{errors.servings.message}</Text>
-          )}
-        </View>
+              {errors.cook_time && (
+                <Text style={styles.error}>{errors.cook_time.message}</Text>
+              )}
 
-        <Button
-          labelStyle={styles.saveRecipeButtonLabel}
-          style={
-            !isValid || isSubmitting
-              ? styles.saveRecipeButtonDisabled
-              : styles.saveRecipeButton
-          }
-          rippleColor={COLORS.primary}
-          onPress={handleSubmit(onSubmit)}
-          disabled={!isValid || isSubmitting}
-          loading={isSubmitting}
-        >
-          Enregistrer
-        </Button>
-      </ScrollView>
-      <FabButton
-        visible={true}
-        extended={isExtended}
-        label="Scanner une recette via l'IA"
-        textColor={COLORS.white}
-        style={styles.fabStyle}
-        icon={<LucideCamera color={COLORS.white} size={30} />}
-        iconMode="dynamic"
-        onPressEvent={() => console.log('Go to IA power !')}
-      />
+              <Controller
+                name="servings"
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input
+                    label="Nombre de personnes"
+                    keyboardType="numeric"
+                    style={styles.inputStyle}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    error={!!errors.servings}
+                    placeholder="Entrez le nombre de personnes"
+                  />
+                )}
+              />
+              {errors.servings && (
+                <Text style={styles.error}>{errors.servings.message}</Text>
+              )}
+            </View>
+
+            <Button
+              labelStyle={styles.saveRecipeButtonLabel}
+              style={
+                !isValid || isSubmitting
+                  ? styles.saveRecipeButtonDisabled
+                  : styles.saveRecipeButton
+              }
+              rippleColor={COLORS.primary}
+              onPress={handleSubmit(onSubmit)}
+              disabled={!isValid || isSubmitting}
+              loading={isSubmitting}
+            >
+              Enregistrer
+            </Button>
+          </ScrollView>
+          <FabButton
+            visible={true}
+            extended={isExtended}
+            label="Scanner une recette via l'IA"
+            textColor={COLORS.white}
+            style={styles.fabStyle}
+            icon={<LucideCamera color={COLORS.white} size={30} />}
+            iconMode="dynamic"
+            onPressEvent={() => setIaCapture(true)}
+          />
+        </>
+      )}
     </Layout>
   );
 };
@@ -354,6 +412,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingBottom: 20,
     marginTop: 40,
+  },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 50,
   },
   button: {
     backgroundColor: COLORS.light_blue,

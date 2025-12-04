@@ -35,7 +35,6 @@ const RecipesScreen = ({ navigation }: HomeTabScreenProps<'Recipes'>) => {
     isRefetching,
     refetch,
   } = recipeService.useGetRecipes();
-  console.log('🚀 ~ RecipesScreen ~ recipesData:', recipesData);
 
   if (error) {
     return (
@@ -57,6 +56,10 @@ const RecipesScreen = ({ navigation }: HomeTabScreenProps<'Recipes'>) => {
           //   ListHeaderComponent={ListHeaderComponent}
           //   ListFooterComponent={ListFooterComponent}
           contentContainerStyle={styles.flatListWrapper}
+          numColumns={2}
+          centerContent={true}
+          columnWrapperStyle={styles.columnWrapper}
+          initialNumToRender={20}
           style={styles.flatListStyles}
           data={recipesData}
           refreshing={isRefetching || isLoading}
@@ -127,7 +130,7 @@ const styles = StyleSheet.create({
   },
   topTitle: {
     marginVertical: 10,
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     textTransform: 'uppercase',
     color: COLORS.black,
@@ -141,12 +144,16 @@ const styles = StyleSheet.create({
   flatListStyles: {
     width: '100%',
   },
+  columnWrapper: {
+    justifyContent: 'space-between',
+    gap: 10,
+  },
   flatListItemWrapper: {
     borderRadius: 4,
     backgroundColor: 'red',
-    width: '100%',
-    height: 200,
-    marginVertical: 15,
+    width: '48%',
+    height: 150,
+    marginVertical: 10,
     overflow: 'hidden',
   },
   image: {
@@ -165,11 +172,11 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     paddingVertical: 5,
     paddingHorizontal: 10,
-    borderRadius: 40,
+    borderRadius: 10,
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: 'bold',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   errorText: {
     marginTop: 20,

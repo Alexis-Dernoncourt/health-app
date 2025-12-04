@@ -33,15 +33,19 @@ const Home = () => {
               ? 'Mes recettes favorites'
               : 'Les dernières recettes'}
           </Text>
-          <Slider
-            setScrollEnabled={setScrollEnabled}
-            recipesData={data}
-            isLoading={isLoading}
-            error={error}
-            isRefetching={isRefetching}
-          />
+          {data && (
+            <Slider
+              setScrollEnabled={setScrollEnabled}
+              recipesData={data}
+              isLoading={isLoading}
+              error={error}
+              isRefetching={isRefetching}
+              maxDataValue={4}
+              key="HomeSlider"
+            />
+          )}
         </View>
-        <View style={{ margin: 20 }}>
+        <View style={{ marginBottom: 60 }}>
           <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
             {user?.firstname || 'no user'}
           </Text>

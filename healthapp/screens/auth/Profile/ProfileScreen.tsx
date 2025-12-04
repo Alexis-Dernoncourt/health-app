@@ -127,16 +127,20 @@ const Profile = ({ navigation }: HomeTabScreenProps<'Profile'>) => {
         </View>
 
         <View style={styles.container}>
-          <Text style={styles.text}>Mes recettes ajoutées :</Text>
-          <Slider
-            setScrollEnabled={setScrollEnabled}
-            recipesData={data}
-            isLoading={isLoading}
-            error={error}
-            isRefetching={isRefetching}
-            height={150}
-            width={350}
-          />
+          <Text style={styles.text}>Mes 4 dernières recettes ajoutées :</Text>
+          {data && (
+            <Slider
+              setScrollEnabled={setScrollEnabled}
+              recipesData={data}
+              isLoading={isLoading}
+              error={error}
+              isRefetching={isRefetching}
+              height={150}
+              width={350}
+              maxDataValue={4}
+              key="ProfileSlider"
+            />
+          )}
         </View>
         <View style={styles.container}>
           <Text style={styles.text}>Mes recettes favorites :</Text>

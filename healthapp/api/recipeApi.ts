@@ -2,7 +2,10 @@ import client from './client';
 import { Recipe } from './types';
 
 export const recipeApi = {
-  getRecipes: () => client.get<Recipe[]>('/recipes'),
+  getRecipes: (numberOfRecipes?: number, currentPage?: number) =>
+    client.get<Recipe[]>('/recipes', {
+      params: { numberOfRecipes: numberOfRecipes, currentPage: currentPage },
+    }),
   getUserRecipes: () => client.get<Recipe[]>('/recipes/user'),
   getRecipe: (id: string) => client.get<Recipe>(`/recipes/${id}`),
   createRecipe: async (payload: FormData) =>

@@ -4,10 +4,10 @@ import { Recipe } from '../api/types';
 import queryClient from '../lib/react-query';
 
 export const recipeService = {
-  useGetRecipes() {
+  useGetRecipes(numberOfRecipes?: number, currentPage?: number) {
     return useQuery({
       queryKey: ['recipes'],
-      queryFn: () => recipeRepository.getRecipes(),
+      queryFn: () => recipeRepository.getRecipes(numberOfRecipes, currentPage),
     });
   },
   useGetRecipe(id: string) {

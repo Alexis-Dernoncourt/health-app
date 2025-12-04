@@ -10,9 +10,12 @@ import Slider from '../../../components/Home/Slider';
 import HomeInfos from '../../../components/Home/HomeInfos';
 // import { authService } from '../../../services/authService';
 import { useLogin } from '../../../lib/react-query/auth';
+import { userService } from '../../../services/userService';
 
 // const HomePublic = ({navigation}: HomeTabScreenProps<'Home'>) => {
 const HomePublic = () => {
+  const { data, isLoading, error, isRefetching } =
+    userService.useGetUserRecipes();
   const [scrollEnabled, setScrollEnabled] = React.useState(true);
   const login = useLogin();
 
@@ -33,7 +36,17 @@ const HomePublic = () => {
         <HomeInfos />
         <View style={styles.elementMargin}>
           <Text style={styles.titleSection}>Les dernières recettes</Text>
-          <Slider setScrollEnabled={setScrollEnabled} />
+          {data && (
+            <Slider
+              setScrollEnabled={setScrollEnabled}
+              recipesData={data}
+              isLoading={isLoading}
+              error={error}
+              isRefetching={isRefetching}
+              maxDataValue={3}
+              key="HomePublicSlider"
+            />
+          )}
         </View>
         <View style={styles.buttonContainer}>
           <Button

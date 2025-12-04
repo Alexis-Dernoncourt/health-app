@@ -33,6 +33,7 @@ export const ISBImageItem = memo(({ recipe }: { recipe: Recipe }) => {
           navigation.navigate('RecipeDetails', { recipeId: recipe.id });
         }
       }}
+      key={recipe.id}
     >
       <ActivityIndicator size="small" />
       <Image
@@ -101,6 +102,7 @@ const PaginationItem: React.FC<{
 };
 
 const Slider = ({
+  key,
   setScrollEnabled,
   recipesData,
   isLoading,
@@ -108,14 +110,17 @@ const Slider = ({
   isRefetching,
   height = 220,
   width,
+  maxDataValue,
 }: {
+  key: string;
   setScrollEnabled: React.Dispatch<React.SetStateAction<boolean>>;
-  recipesData: Recipe[] | undefined;
+  recipesData: Recipe[];
   isLoading: boolean;
   error: any;
   isRefetching: boolean;
   height?: number;
   width?: number;
+  maxDataValue?: number;
 }) => {
   const window = Dimensions.get('window');
   const PAGE_WIDTH = window.width;
@@ -143,10 +148,15 @@ const Slider = ({
     );
   }
 
+  const recipesValue = maxDataValue
+    ? recipesData.slice(0, maxDataValue)
+    : recipesData;
+
   return (
     <View style={styles.container}>
       {recipesData && (
         <Carousel
+          key={key}
           {...baseOptions}
           snapEnabled={true}
           // panGestureHandlerProps={{ activeOffsetX: [-10, 10] }}
@@ -161,16 +171,16 @@ const Slider = ({
             return (progressValue.value = absoluteProgress);
           }}
           mode="parallax"
-          data={recipesData}
+          data={recipesValue}
           renderItem={data => <ISBImageItem recipe={data.item} />}
           // customConfig={() => {
           //   return {type: 'negative', viewCount: 2};
           // }}
         />
       )}
-      {!!progressValue && (
+      {!!progressValue && recipesData && (
         <View style={styles.paginationContainer}>
-          {recipesData?.map((recipe, index) => {
+          {recipesValue.map((recipe, index) => {
             return (
               <PaginationItem
                 backgroundColor={COLORS.primary_accent}

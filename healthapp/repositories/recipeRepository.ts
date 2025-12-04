@@ -2,8 +2,8 @@ import { recipeApi } from '../api/recipeApi';
 import { Recipe } from '../api/types';
 
 export const recipeRepository = {
-  async getRecipes() {
-    const { data } = await recipeApi.getRecipes();
+  async getRecipes(numberOfRecipes?: number, currentPage?: number) {
+    const { data } = await recipeApi.getRecipes(numberOfRecipes, currentPage);
     return data;
   },
   async getRecipe(id: string) {

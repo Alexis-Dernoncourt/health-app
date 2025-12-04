@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   fabStyle: {
-    bottom: 20,
+    bottom: 80,
     right: 16,
     position: 'absolute',
   },
