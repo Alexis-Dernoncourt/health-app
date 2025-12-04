@@ -9,6 +9,7 @@ import {
   ParseFilePipe,
   Patch,
   Post,
+  Query,
   Req,
   UploadedFile,
   UseInterceptors,
@@ -56,8 +57,15 @@ export class RecipesController {
 
   @Public()
   @Get()
-  findAll() {
-    return this.recipeService.findAll();
+  findAll(
+    @Query('numberOfRecipes') numberOfRecipes?: string,
+    @Query('currentPage') currentPage?: string,
+  ) {
+    if (!numberOfRecipes || !currentPage) return this.recipeService.findAll();
+    return this.recipeService.findAll(
+      parseInt(numberOfRecipes),
+      parseInt(currentPage),
+    );
   }
 
   @Get(':id')

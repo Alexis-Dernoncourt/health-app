@@ -36,8 +36,13 @@ export class RecipesService {
     }
   }
 
-  async findAll() {
-    return await this.prisma.recipes.findMany();
+  async findAll(number: number = 20, page: number = 1) {
+    return await this.prisma.recipes.findMany({
+      orderBy: { created_at: 'desc' },
+      where: { image: { not: null } },
+      take: number,
+      skip: (page - 1) * number,
+    });
   }
 
   async findOne(id: string) {
