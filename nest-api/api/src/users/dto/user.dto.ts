@@ -22,11 +22,6 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEmail()
   email?: string;
-
-  //   @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  image?: string;
 }
 
 export class ImageUploadBody {

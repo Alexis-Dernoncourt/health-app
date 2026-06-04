@@ -7,6 +7,10 @@ import { clientStorage } from '../mmkv_store';
 
 async function userFn(): Promise<User | null> {
   const USER_ID = clientStorage.getItem('userId');
+  const token = clientStorage.getItem('token');
+  console.log('🚀 ~ userFn ~ token:', token);
+
+  console.log('🚀 ~ userFn ~ USER_ID:', USER_ID);
   if (!USER_ID) {
     return null;
   }

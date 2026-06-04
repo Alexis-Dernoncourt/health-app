@@ -112,7 +112,7 @@ const Slider = ({
   width,
   maxDataValue,
 }: {
-  key: string;
+  key?: string;
   setScrollEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   recipesData: Recipe[];
   isLoading: boolean;

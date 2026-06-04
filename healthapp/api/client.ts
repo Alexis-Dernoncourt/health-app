@@ -12,15 +12,22 @@ const client = axios.create({
 client.interceptors.request.use(
   config => {
     const USER_TOKEN = clientStorage.getItem('usertoken');
+    console.log('🚀 ~ USER_TOKEN:', USER_TOKEN);
     config.headers.Authorization = `Bearer ${USER_TOKEN}`;
     return config;
   },
-  error => Promise.reject(error),
+  error => {
+    console.log('🚀 ~ error:', error);
+    return Promise.reject(error);
+  },
 );
 
 client.interceptors.response.use(
   response => response,
-  error => Promise.reject(error),
+  error => {
+    console.log('🚀 ~ error:', error);
+    return Promise.reject(error);
+  },
 );
 
 export default client;

@@ -33,6 +33,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     fontFamily: 'Roboto',
-    color: COLORS.tertiary,
+    color: COLORS.black,
   },
 });

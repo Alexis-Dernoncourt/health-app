@@ -13,10 +13,10 @@ import { recipeService } from '../../../services/recipeService';
 // const Home = ({navigation}: HomeTabScreenProps<'Home'>) => {
 const Home = () => {
   const { user } = useCurrentUser();
-  console.log('🚀 ~ Home ~ user:', user);
   const [scrollEnabled, setScrollEnabled] = React.useState(true);
   const { data, isLoading, error, isRefetching } =
     recipeService.useGetRecipes();
+  console.log('🚀 ~ Home ~ data:', data);
 
   return (
     <Layout>
@@ -35,13 +35,13 @@ const Home = () => {
           </Text>
           {data && (
             <Slider
+              key="HomeSlider"
               setScrollEnabled={setScrollEnabled}
-              recipesData={data}
+              recipesData={data || []}
               isLoading={isLoading}
               error={error}
               isRefetching={isRefetching}
               maxDataValue={4}
-              key="HomeSlider"
             />
           )}
         </View>

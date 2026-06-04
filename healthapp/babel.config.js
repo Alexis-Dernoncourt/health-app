@@ -3,6 +3,6 @@ module.exports = {
   plugins: [
     // '@babel/plugin-proposal-export-namespace-from',
     '@babel/plugin-transform-export-namespace-from',
-    'react-native-reanimated/plugin', // ⚠️ toujours en dernier
+    'react-native-worklets/plugin', // ⚠️ toujours en dernier
   ],
 };

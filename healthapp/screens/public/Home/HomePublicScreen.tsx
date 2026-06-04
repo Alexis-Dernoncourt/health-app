@@ -38,13 +38,13 @@ const HomePublic = () => {
           <Text style={styles.titleSection}>Les dernières recettes</Text>
           {data && (
             <Slider
+              key="HomePublicSlider"
               setScrollEnabled={setScrollEnabled}
               recipesData={data}
               isLoading={isLoading}
               error={error}
               isRefetching={isRefetching}
               maxDataValue={3}
-              key="HomePublicSlider"
             />
           )}
         </View>

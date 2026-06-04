@@ -28,7 +28,8 @@ export class UsersService {
       if (existingUser) {
         throw new HttpException('Email already exists', 400);
       }
-      const verificationToken = randomBytes(64).toString('hex');
+      const verificationToken =
+        randomBytes(64).toString('hex') + '&email=' + createUserDto.email;
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
       await this.sendVerificationEmail(createUserDto.email, verificationToken);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -72,15 +73,22 @@ export class UsersService {
     try {
       const user = await this.prisma.users.findUnique({
         where: { verificationToken: token },
-        select: { password: false, id: true },
+        select: { password: false, id: true, email: true },
       });
       console.log('🚀 ~ UsersService ~ verifyEmail ~ user:', user);
       if (!user) {
         throw new HttpException('Invalid verification token', 400);
       }
+
+      const newEmail = token.split('&email=')[1];
+      const emailAreEquals = user.email === newEmail;
       await this.prisma.users.update({
         where: { id: user.id },
-        data: { verificationToken: null, isEmailVerified: true },
+        data: {
+          verificationToken: null,
+          isEmailVerified: true,
+          email: emailAreEquals ? user.email : newEmail,
+        },
       });
       return { message: 'Email verified successfully.' };
     } catch (error) {
@@ -192,28 +200,33 @@ export class UsersService {
     console.log('🚀 ~ UsersService ~ update ~ updateUserDto:', updateUserDto);
     try {
       await this.prisma.users.findFirstOrThrow({ where: { id } });
-      const updatedUser = updateUserDto;
-      // const image = updateUserDto.image;
-      // console.log('🚀 ~ UsersService ~ update ~ image:', file);
-      // const uploadResult = await this.cloudinary.uploadFile(file, `users`);
-      // updatedUser.image = uploadResult ?? null;
-      // if (image) {
-      // }
-      console.log('🚀 ~ UsersService ~ update ~ updatedUser:', updatedUser);
-      try {
+      if (updateUserDto.email) {
+        const emailExists = await this.findByEmail(updateUserDto.email);
+        if (emailExists) {
+          throw new HttpException('Email is not valid', 400);
+        }
+        const token = randomBytes(64).toString('hex');
         await this.prisma.users.update({
           where: { id },
-          data: { ...updatedUser },
+          data: { verificationToken: token },
         });
-      } catch (error) {
-        console.log('🚀 ~ UsersService ~ update ~ error:', error);
-        throw new Error("Can't update user");
+        (await this.sendVerificationEmail(updateUserDto.email, token)) +
+          '&email=' +
+          updateUserDto.email;
+        return {
+          message:
+            'Please check your mails to verify your email address before updating.',
+        };
       }
+      await this.prisma.users.update({
+        where: { id },
+        data: { ...updateUserDto },
+      });
+      return { message: 'The user was updated successfully' };
     } catch (error: any) {
       console.log('🚀 ~ UsersService ~ findOne ~ error:', error);
-      throw new HttpException(error.message ?? "Can't found this user", 400);
+      throw new HttpException(error.message ?? "Can't update this user", 400);
     }
-    return `The #${id} user was updated`;
   }
 
   async changePassword(id: string, newPassword: string) {
@@ -224,7 +237,7 @@ export class UsersService {
         where: { id },
         data: { password: hashedPassword },
       });
-      return { message: `The #${id} user password was updated` };
+      return { message: 'The user password was updated' };
     } catch (error) {
       console.log('🚀 ~ UsersService ~ changePassword ~ error:', error);
       throw new HttpException("Can't update user password", 400);
@@ -243,7 +256,7 @@ export class UsersService {
       await this.prisma.auth_access_token.delete({
         where: { id: userToken?.id },
       });
-      return { message: `The #${id} user was deleted` };
+      return { message: 'The user was deleted' };
     } catch (error) {
       console.log('🚀 ~ UsersService ~ findOne ~ error:', error);
       throw new HttpException("Can't found this user", 400);

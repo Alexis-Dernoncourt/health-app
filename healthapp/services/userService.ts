@@ -48,6 +48,22 @@ export const userService = {
       },
     });
   },
+  useUpdateUserPassword(id: string) {
+    return useMutation({
+      mutationFn: (payload: { password: string }) =>
+        userRepository.updateUserPassword(id, payload),
+      onSuccess: async res => {
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['user_' + id] }),
+          queryClient.invalidateQueries({ queryKey: ['user'] }),
+        ]);
+        return res;
+      },
+      onError: () => {
+        console.log('User update failed');
+      },
+    });
+  },
   useDeleteUser() {
     return useMutation({
       mutationFn: (id: string) => userRepository.deleteUser(id),

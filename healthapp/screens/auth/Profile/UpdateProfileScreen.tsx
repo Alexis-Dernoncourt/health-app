@@ -4,7 +4,7 @@ import { StyleSheet, ToastAndroid, View } from 'react-native';
 import Input from '../../../components/Form/Input';
 import { useCurrentUser } from '../../../hooks';
 import { useForm, Controller } from 'react-hook-form';
-import { Button, Text } from 'react-native-paper';
+import { Button, Modal, Portal, Text } from 'react-native-paper';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigation } from '@react-navigation/native';
@@ -13,19 +13,26 @@ import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { userService } from '../../../services/userService';
 
 const UpdateProfileScreen = () => {
-  const UserSchema = z.object({
-    firstname: z
-      .string()
-      .min(3, { message: 'Le prénom doit avoir au moins 3 caractères' }),
-    lastname: z
-      .string()
-      .min(3, { message: 'Le nom doit avoir au moins 3 caractères' }),
-    email: z.email({ message: "L'email doit être valide" }),
-    password: z
-      .string()
-      .min(8, { message: 'Le mot de passe doit avoir 8 caractères' }),
-  });
-
+  const UserSchema = z
+    .object({
+      firstname: z.string({ message: 'Le prénom doit être valide' }).min(3, {
+        message: 'Le prénom doit avoir au moins 3 caractères',
+      }),
+      lastname: z.string({ message: 'Le nom doit être valide' }).min(3, {
+        message: 'Le nom doit avoir au moins 3 caractères',
+      }),
+      email: z.email({ message: "L'email doit être valide" }).optional(),
+      password: z
+        .string({ message: 'Le mot de passe doit être valide' })
+        .optional(),
+      passwordConfirm: z
+        .string({ message: 'Le mot de passe de confirmation doit être valide' })
+        .optional(),
+    })
+    .refine(data => !data.password || data.password === data.passwordConfirm, {
+      message: 'Les mots de passe ne correspondent pas',
+      path: ['password', 'passwordConfirm'],
+    });
   type UserFormType = z.infer<typeof UserSchema>;
   type User = {
     firstname: string;
@@ -36,7 +43,11 @@ const UpdateProfileScreen = () => {
   const navigation = useNavigation();
   const { user, refetch } = useCurrentUser();
   const updateUser = userService.useUpdateUser(user!.id);
+  const updateUserPassword = userService.useUpdateUserPassword(user!.id);
   const [passwordVisible, setPasswordVisible] = React.useState(false);
+  const [visible, setVisible] = React.useState(false);
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
 
   const {
     control,
@@ -45,13 +56,14 @@ const UpdateProfileScreen = () => {
     formState: { errors, isValid, isSubmitting },
   } = useForm<UserFormType>({
     defaultValues: {
-      firstname: user!.firstname,
-      lastname: user!.lastname,
-      email: user!.email,
+      firstname: user?.firstname ?? '',
+      lastname: user?.lastname ?? '',
+      email: user?.email ?? '',
       password: '',
     },
     resolver: zodResolver(UserSchema),
   });
+  console.log('🚀 ~ UpdateProfileScreen ~ errors, isValid:', errors, isValid);
 
   // Function to handle form submission
   const onSubmit = (data: UserFormType) => {
@@ -60,8 +72,16 @@ const UpdateProfileScreen = () => {
       Object.entries(data).filter(
         ([key, value]) => value !== (user as User)[key as keyof User],
       ),
-    );
-    updateUser.mutate(filteredFormData);
+    ) as UserFormType;
+    const { password, ...rest } = filteredFormData;
+    if (data.password) {
+      updateUserPassword.mutate({ password: password! });
+      ToastAndroid.show(
+        'Votre mot de passe a bien été mis à jour',
+        ToastAndroid.LONG,
+      );
+    }
+    if (rest) updateUser.mutate(rest);
     ToastAndroid.show('Votre profil a bien été mis à jour', ToastAndroid.LONG);
     refetch();
     navigation.navigate('Profile');
@@ -82,6 +102,54 @@ const UpdateProfileScreen = () => {
 
   return (
     <View style={styles.formWrapper}>
+      <Portal>
+        <Modal
+          visible={visible}
+          onDismiss={hideModal}
+          contentContainerStyle={styles.modalContainerStyle}
+        >
+          <View style={styles.formWrapper}>
+            <Controller
+              name="password"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  label="Password"
+                  style={styles.inputStyle}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  error={!!errors.password}
+                  placeholder="Entrez votre nouveau mot-de-passe"
+                  secureTextEntry={passwordVisible}
+                />
+              )}
+            />
+            {errors.password && (
+              <Text style={styles.error}>{errors.password.message}</Text>
+            )}
+            <Controller
+              name="passwordConfirm"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  label="Confirmer Password"
+                  style={styles.inputStyle}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  error={!!errors.passwordConfirm}
+                  placeholder="Confirmez votre nouveau mot-de-passe"
+                  secureTextEntry={passwordVisible}
+                />
+              )}
+            />
+            {errors.password && (
+              <Text style={styles.error}>{errors.password.message}</Text>
+            )}
+          </View>
+        </Modal>
+      </Portal>
       <Controller
         name="firstname"
         control={control}
@@ -138,47 +206,9 @@ const UpdateProfileScreen = () => {
       />
       {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
 
-      {passwordVisible && (
-        <>
-          <Controller
-            name="password"
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                label="Password"
-                style={styles.inputStyle}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                error={!!errors.password}
-                placeholder="Entrez votre nouveau mot-de-passe"
-                secureTextEntry={passwordVisible}
-              />
-            )}
-          />
-          {errors.password && (
-            <Text style={styles.error}>{errors.password.message}</Text>
-          )}
-        </>
-      )}
-
-      {!passwordVisible ? (
-        <Button
-          mode="outlined"
-          style={styles.margin}
-          onPress={() => setPasswordVisible(prev => !prev)}
-        >
-          Modifier password
-        </Button>
-      ) : (
-        <Button
-          mode="outlined"
-          style={styles.margin}
-          onPress={() => setPasswordVisible(prev => !prev)}
-        >
-          Cacher password
-        </Button>
-      )}
+      <Button mode="outlined" style={styles.margin} onPress={showModal}>
+        Modifier password
+      </Button>
 
       <Button
         mode="contained"
@@ -196,6 +226,7 @@ const UpdateProfileScreen = () => {
         onPress={handleSubmit(onSubmit)}
         loading={isSubmitting}
         style={styles.saveBtnStyle}
+        labelStyle={styles.saveBtnLabelStyle}
       >
         Sauvegarder
       </Button>
@@ -259,6 +290,9 @@ const styles = StyleSheet.create({
     borderColor: COLORS.primary_accent,
     borderRadius: 10,
   },
+  saveBtnLabelStyle: {
+    color: COLORS.white,
+  },
   abortBtnStyle: {
     marginTop: 20,
     backgroundColor: COLORS.gray,
@@ -267,5 +301,9 @@ const styles = StyleSheet.create({
   },
   abortBtnLabelStyle: {
     color: COLORS.black,
+  },
+  modalContainerStyle: {
+    backgroundColor: COLORS.white,
+    padding: 20,
   },
 });

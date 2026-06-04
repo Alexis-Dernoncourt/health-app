@@ -4,6 +4,7 @@ import React from 'react';
 import useDarkMode from '../hooks/useDarkMode';
 import { LayoutProps } from './types';
 import { COLORS } from '../lib/constants';
+import { PaperProvider } from 'react-native-paper';
 
 const Layout = ({ children }: LayoutProps) => {
   const { isDarkMode, backgroundStyle } = useDarkMode();
@@ -14,7 +15,7 @@ const Layout = ({ children }: LayoutProps) => {
         translucent
         backgroundColor={COLORS.blurred}
       />
-      {children}
+      <PaperProvider>{children}</PaperProvider>
     </SafeAreaProvider>
   );
 };

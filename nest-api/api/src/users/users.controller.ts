@@ -45,7 +45,7 @@ export class UsersController {
 
   @Get('/recipes')
   findAllByUser(@Req() req: RequestWithUser) {
-    return this.usersService.findAllCreatedRecipes(req.user.userId);
+    return this.usersService.findAllCreatedRecipes(req.user?.userId);
   }
 
   @Public()

@@ -16,7 +16,11 @@ import { userService } from '../../../services/userService';
 
 const Profile = ({ navigation }: HomeTabScreenProps<'Profile'>) => {
   const [scrollEnabled, setScrollEnabled] = React.useState(false);
-  const { user, isLoading: userLoading } = useCurrentUser();
+  const {
+    user,
+    isLoading: userLoading,
+    isRefetching: userRefetching,
+  } = useCurrentUser();
   const logout = useLogout();
   const { data, isLoading, error, isRefetching } =
     userService.useGetUserRecipes();
@@ -77,6 +81,7 @@ const Profile = ({ navigation }: HomeTabScreenProps<'Profile'>) => {
   return (
     <Layout>
       <ScrollView scrollEnabled={scrollEnabled}>
+        {/* <Skeleton isLoading={userRefetching} containerStyle={styles.container}> */}
         <View style={styles.container}>
           {user.image ? (
             <>
@@ -98,7 +103,6 @@ const Profile = ({ navigation }: HomeTabScreenProps<'Profile'>) => {
             user.lastname || ''
           }`}</Text>
         </View>
-
         <View style={styles.containerInline}>
           <Button
             mode="outlined"
@@ -130,6 +134,7 @@ const Profile = ({ navigation }: HomeTabScreenProps<'Profile'>) => {
           <Text style={styles.text}>Mes 4 dernières recettes ajoutées :</Text>
           {data && (
             <Slider
+              key="ProfileSlider"
               setScrollEnabled={setScrollEnabled}
               recipesData={data}
               isLoading={isLoading}
@@ -138,7 +143,6 @@ const Profile = ({ navigation }: HomeTabScreenProps<'Profile'>) => {
               height={150}
               width={350}
               maxDataValue={4}
-              key="ProfileSlider"
             />
           )}
         </View>

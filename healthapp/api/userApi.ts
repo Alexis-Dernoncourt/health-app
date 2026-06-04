@@ -21,6 +21,8 @@ export const userApi = {
       password?: string;
     },
   ) => client.patch<{ message: string }>(`/users/${id}`, payload),
+  updateUserPassword: (id: string, payload: { password: string }) =>
+    client.patch<{ message: string }>(`/users/password/${id}`, payload),
   updateUserImage: (image: FormData) =>
     client.post<{ message: string }>(`/users/image`, image, {
       headers: {

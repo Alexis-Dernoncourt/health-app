@@ -22,6 +22,10 @@ export const userRepository = {
     const { data } = await userApi.updateUser(id, payload);
     return data;
   },
+  async updateUserPassword(id: string, payload: { password: string }) {
+    const { data } = await userApi.updateUserPassword(id, payload);
+    return data;
+  },
   async deleteUser(id: string) {
     const { data } = await userApi.deleteUser(id);
     return data;
